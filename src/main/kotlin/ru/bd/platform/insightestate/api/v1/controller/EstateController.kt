@@ -22,6 +22,12 @@ class EstateController (
 ) {
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun findAll(
+        @RequestParam(name = "bads", required = false)
+        bads: Int? = null,
+
+        @RequestParam(name = "year", required = false)
+        year: Int? = null,
+
         @RequestParam(name = "type", required = false)
         type: EstateType? = null,
 
@@ -36,6 +42,8 @@ class EstateController (
         @Max(100, message = "Максимальное значение 100")
         pageSize: Int? = null
     ): PageDtoRs<EstateListDto> = service.findAll(
+        bads = bads,
+        year = year,
         type = type,
         pageable = PageRequest.of(
             pageNumber ?: 0,
