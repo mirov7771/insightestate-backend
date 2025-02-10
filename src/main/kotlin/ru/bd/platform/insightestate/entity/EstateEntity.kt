@@ -7,7 +7,7 @@ import ru.nemodev.platform.core.db.entity.AbstractEntity
 import java.time.LocalDateTime
 import java.util.*
 
-@Table("cards")
+@Table("estate")
 class EstateEntity (
     id: UUID? = null,
     createdAt: LocalDateTime = LocalDateTime.now(),
@@ -20,6 +20,12 @@ class EstateEntity (
 @StoreJson
 data class EstateDetail (
     val rate: String,
+    val name: String,
+    val price: Long,
+    val profitAmount: Long,
+    val profitTerm: Int,
+    val images: List<String>,
+    val type: EstateType,
 )
 
 enum class EstateType {
