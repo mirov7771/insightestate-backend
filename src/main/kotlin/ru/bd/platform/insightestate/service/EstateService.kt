@@ -85,6 +85,21 @@ class EstateServiceImpl (
         }
         return EstateInfoDto(
             id = dao.id,
+            rate = dao.estateDetail.rate,
+            name = dao.estateDetail.name,
+            priceStart = dao.estateDetail.priceStart,
+            priceEnd = dao.estateDetail.priceEnd,
+            profitAmount = dao.estateDetail.profitAmount,
+            profitTerm = dao.estateDetail.profitTerm,
+            images = dao.estateDetail.images,
+            type = dao.estateDetail.type,
+            squareStart = dao.estateDetail.squareStart,
+            squareEnd = dao.estateDetail.squareEnd,
+            beds = dao.estateDetail.beds,
+            attachmentSecurity = dao.estateDetail.attachmentSecurity,
+            investmentPotential = dao.estateDetail.investmentPotential,
+            locationOfTheObject = dao.estateDetail.locationOfTheObject,
+            comfortOfLife = dao.estateDetail.comfortOfLife,
         )
     }
 }

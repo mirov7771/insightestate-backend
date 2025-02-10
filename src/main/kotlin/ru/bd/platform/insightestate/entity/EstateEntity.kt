@@ -27,6 +27,13 @@ data class EstateDetail (
     val profitTerm: Int,
     val images: List<String>,
     val type: EstateType,
+    val squareStart: Int,
+    val squareEnd: Int,
+    val beds: Int,
+    val attachmentSecurity: String,
+    val investmentPotential: String,
+    val locationOfTheObject: String,
+    val comfortOfLife: String,
 )
 
 enum class EstateType {
