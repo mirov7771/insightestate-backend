@@ -117,6 +117,7 @@ class EstateServiceImpl (
             irr = dao.estateDetail.irr,
             projectImage = dao.estateDetail.projectImage,
             district = dao.estateDetail.district,
+            geoPosition = dao.estateDetail.geoPosition,
         )
     }
 }

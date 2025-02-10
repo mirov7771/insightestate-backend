@@ -53,6 +53,7 @@ data class EstateDetail (
     val rentalIncome: BigDecimal,
     val projectImage: String? = null,
     val district: String,
+    val geoPosition: String,
 )
 
 enum class EstateType {

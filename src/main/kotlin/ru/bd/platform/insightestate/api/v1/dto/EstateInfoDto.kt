@@ -135,4 +135,8 @@ data class EstateInfoDto (
      * Район
      */
     val district: String,
+    /**
+     * На карте
+     */
+    val geoPosition: String,
 )
