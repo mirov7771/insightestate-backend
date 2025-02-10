@@ -11,8 +11,8 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
     @Query("""
         select *
           from estate  
-       where (:priceStart is null or (estate_detail ->> 'price' ->> :priceStart))
-         and (:priceEnd is null or (estate_detail ->> 'price' ->> :priceEnd))
+       where (:priceStart is null or (estate_detail ->> 'priceStart' ->> :priceStart))
+         and (:priceEnd is null or (estate_detail ->> 'priceEnd' ->> :priceEnd))
          and (:type is null or (estate_detail ->> 'type' ->> :type))
         order by created_at desc
         limit :limit offset :offset

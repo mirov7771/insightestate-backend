@@ -21,7 +21,8 @@ class EstateEntity (
 data class EstateDetail (
     val rate: String,
     val name: String,
-    val price: Long,
+    val priceStart: Long,
+    val priceEnd: Long,
     val profitAmount: Long,
     val profitTerm: Int,
     val images: List<String>,

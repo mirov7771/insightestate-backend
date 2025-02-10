@@ -7,6 +7,8 @@ import ru.bd.platform.insightestate.api.v1.dto.EstateListDto
 import ru.bd.platform.insightestate.entity.EstateType
 import ru.bd.platform.insightestate.repository.EstateRepository
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
+import ru.nemodev.platform.core.exception.error.ErrorCode
+import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
 import java.util.*
 
 interface EstateService {
@@ -64,7 +66,7 @@ class EstateServiceImpl (
                 id = it.id,
                 rate = it.estateDetail.rate,
                 name = it.estateDetail.name,
-                price = it.estateDetail.price,
+                price = it.estateDetail.priceStart,
                 profitAmount = it.estateDetail.profitAmount,
                 profitTerm = it.estateDetail.profitTerm,
                 images = it.estateDetail.images
@@ -78,6 +80,11 @@ class EstateServiceImpl (
     override fun findById(
         id: UUID
     ): EstateInfoDto {
-        TODO("Not yet implemented")
+        val dao = repository.findById(id).orElseThrow {
+            NotFoundLogicalException(errorCode = ErrorCode.createNotFound("Объект не найден"))
+        }
+        return EstateInfoDto(
+            id = dao.id,
+        )
     }
 }
