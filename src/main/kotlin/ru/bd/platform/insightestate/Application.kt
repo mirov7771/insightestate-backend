@@ -1,4 +1,4 @@
-package ru.bd.platform.paymentgate
+package ru.bd.platform.insightestate
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
