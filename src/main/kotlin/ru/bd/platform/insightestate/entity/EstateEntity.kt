@@ -4,6 +4,8 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import ru.nemodev.platform.core.db.annotation.StoreJson
 import ru.nemodev.platform.core.db.entity.AbstractEntity
+import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -34,6 +36,23 @@ data class EstateDetail (
     val investmentPotential: String,
     val locationOfTheObject: String,
     val comfortOfLife: String,
+    val level: String,
+    val deliveryDate: LocalDate,
+    val floors: Int,
+    val apartments: Int,
+    val beach: String,
+    val airport: String,
+    val parking: String,
+    val developer: String,
+    val mall: String,
+    val childRoom: Boolean = false,
+    val coWorking: Boolean = false,
+    val gym: Boolean = false,
+    val roi: BigDecimal,
+    val irr: BigDecimal,
+    val rentalIncome: BigDecimal,
+    val projectImage: String? = null,
+    val district: String,
 )
 
 enum class EstateType {

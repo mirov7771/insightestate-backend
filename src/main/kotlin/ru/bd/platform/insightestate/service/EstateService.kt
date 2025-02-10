@@ -100,6 +100,23 @@ class EstateServiceImpl (
             investmentPotential = dao.estateDetail.investmentPotential,
             locationOfTheObject = dao.estateDetail.locationOfTheObject,
             comfortOfLife = dao.estateDetail.comfortOfLife,
+            deliveryDate = dao.estateDetail.deliveryDate,
+            floors = dao.estateDetail.floors,
+            apartments = dao.estateDetail.apartments,
+            beach = dao.estateDetail.beach,
+            airport = dao.estateDetail.airport,
+            parking = dao.estateDetail.parking,
+            developer = dao.estateDetail.developer,
+            level = dao.estateDetail.level,
+            mall = dao.estateDetail.mall,
+            childRoom = dao.estateDetail.childRoom,
+            coWorking = dao.estateDetail.coWorking,
+            gym = dao.estateDetail.gym,
+            rentalIncome = dao.estateDetail.rentalIncome,
+            roi = dao.estateDetail.roi,
+            irr = dao.estateDetail.irr,
+            projectImage = dao.estateDetail.projectImage,
+            district = dao.estateDetail.district,
         )
     }
 }
