@@ -5,29 +5,71 @@ import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
-import org.springframework.stereotype.Repository
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
+import ru.bd.platform.insightestate.api.v1.dto.EstateInfoDto
 import ru.bd.platform.insightestate.api.v1.dto.EstateListDto
 import ru.bd.platform.insightestate.entity.EstateType
 import ru.bd.platform.insightestate.service.EstateService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
+import java.util.UUID
 
 @RestController
 @RequestMapping("estate", produces = [MediaType.APPLICATION_JSON_VALUE])
 class EstateController (
     private val service: EstateService
 ) {
+    /**
+     * АПИ для получения списка объектов недвижимости с пагинацией и фильтрами
+     */
     @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun findAll(
+        /**
+         * Комфорт и инвестиционный потенциал
+         * 0 Наибольшая доходность
+         * 1 Самые безопасные для инвестиций
+         * 2 Самые комфортные для жизни
+         * 3 Самые удобные локации
+         */
+        @RequestParam(name = "potential", required = false)
+        potential: List<Int>? = null,
+
+        /**
+         * Стоимость
+         * 100000 - до $100 000
+         * 200000 - $100 000 — $200 000
+         * 500000 - $200 000 — $500 000
+         * 1000000 - $500 000 — $1 000 000
+         * 1000001 - от $1 000 000
+         */
+        @RequestParam(name = "price", required = false)
+        price: Long? = null,
+
+        /**
+         * Количество спален
+         * 0 - Студия
+         * 1 - 1 cпальня
+         * 2 - 2 спальни
+         * 3 - 3 спальни
+         * 4 - 4+ спальни
+         */
         @RequestParam(name = "beds", required = false)
-        beds: Int? = null,
+        beds: List<Int>? = null,
 
+        /**
+         * Дата сдачи объекта
+         * 2025
+         * 2026
+         * 2027
+         * 2028
+         */
         @RequestParam(name = "year", required = false)
-        year: Int? = null,
+        year: List<Int>? = null,
 
+        /**
+         * Тип объекта
+         * APARTMENT Квартира
+         * VILLA Вилла
+         */
         @RequestParam(name = "type", required = false)
         type: EstateType? = null,
 
@@ -42,6 +84,8 @@ class EstateController (
         @Max(100, message = "Максимальное значение 100")
         pageSize: Int? = null
     ): PageDtoRs<EstateListDto> = service.findAll(
+        potential = potential,
+        price = price,
         beds = beds,
         year = year,
         type = type,
@@ -50,4 +94,13 @@ class EstateController (
             pageSize ?: 25
         )
     )
+
+    /**
+     * АПИ для получения детальной информации по объекту недвижимости
+     */
+    @GetMapping("{id}")
+    fun findById(
+        @PathVariable
+        id: UUID,
+    ): EstateInfoDto = service.findById(id)
 }

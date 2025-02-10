@@ -24,6 +24,7 @@ data class EstateDetail (
 
 enum class EstateType {
     VILLA,
-    APARTMENT,
-    ALL
+    APARTMENT
 }
+
+
