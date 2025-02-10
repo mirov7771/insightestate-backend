@@ -9,7 +9,7 @@ import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 
 interface EstateService {
     fun findAll(
-        bads: Int?,
+        beds: Int?,
         year: Int?,
         type: EstateType?,
         pageable: PageRequest
@@ -21,7 +21,7 @@ class EstateServiceImpl (
     private val repository: EstateRepository,
 ) : EstateService {
     override fun findAll(
-        bads: Int?,
+        beds: Int?,
         year: Int?,
         type: EstateType?,
         pageable: PageRequest
