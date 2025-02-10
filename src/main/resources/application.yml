@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: bdp-payment-gate
+    developed-by: CoreTeam
+  boot:
+    admin:
+      client:
+        instance:
+          service-url: ${BDP_PAYMENT_GATE_URL:http://localhost:8080}
+        enabled: false
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/bdp_payment_gate}
+    username: ${DATABASE_USERNAME:bdp_payment_gate_admin}
+    password: ${DATABASE_PASSWORD:bdp_payment_gate_admin}
+  flyway:
+    enabled: false
