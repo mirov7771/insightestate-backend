@@ -35,9 +35,11 @@ dependencies {
     val nemodevPlatformVersion = "1.0.0"
     implementation("$nemodevPlatformGroup:core-starter:$nemodevPlatformVersion")
     implementation("$nemodevPlatformGroup:core-db:$nemodevPlatformVersion")
+    implementation("$nemodevPlatformGroup:core-security-oauth2-resource:$nemodevPlatformVersion")
 
     // spring
     val springBootVersion = "3.3.2"
+    implementation("org.springframework.boot:spring-boot-starter-mail:$springBootVersion")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose:$springBootVersion")
     kapt("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
 

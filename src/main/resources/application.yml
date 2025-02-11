@@ -12,8 +12,33 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/insightestate}
     username: ${DATABASE_USERNAME:insightestate_admin}
     password: ${DATABASE_PASSWORD:insightestate_admin}
-  flyway:
-    enabled: false
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME:todo@gmail.com}
+    password: ${EMAIL_PASSWORD:todo}
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+insightestate:
+  auth:
+    tokens:
+      rsa-private-key: ${AUTH_RSA_PRIVATE_KEY:-----BEGIN PRIVATE KEY-----MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDcUFvhqcKeS+S7bNorU/vAXcjHKTnSpZCQ//ViEjY8/ispxGtDJItMEa8kn/TxHBxRDZpXT1K99WRWI5Nw1MfxMxWAw+yfSbsTQAXVoXsc5IJDEH+3n8rR245GstB2GEgmSgV2gXaYNrlQ2H8PWoZaLsSOQ/pcEL4tvkyOwlbQbBrp/Y7Q8N+iSWW5Qv0f0XVIgA+38KiG4GEWvb/FeC+IdaQIG/roh8ESFlKMHQAbEB34DIylstMJc/uSTBv1aaE2UMFp5LHCt8gfSzy5WFSI3iqRo+UBMdFVbtTHjwp4CH+9OaiIJbC8/47cUn74oWM34MyOIFEAkOUCN0azr/MhAgMBAAECggEAcHDy8/FYSsIhMycTEhoC2uMCneMEh+XIKrj3292/oNF35hFBTTtRfLlp0h9xO71FFnkC1Jy/dgPP+caecW+nvAp+ZwGXupQ+zkxWrfmEg/J8KQ46oNUFBqYvrxWEH0G1URVmRF0+0eDcI87aylNBTrWfy5wWIvbImUAOgq3c8PHIz7ZDvL2KrqcNMGUR8op/6oOVJFMSJGbOQN/SKlWPCAv4AmyRGCG9vUW+9Pe/ucL+f7SJofJO0XQqPpy5jwv5ycVWcX9R8/YlKRvtOa6ljaV0McGCr4h4ULiStab0wpuv6zqL98V5rVJuK/oDXqoZCqt907i2mgPl+1U/H6OJIQKBgQD8OagfhfiBdLAkRLNNpKYYNY5nS0gk3zBLrJCogS60oIuZ8F3AfMrFd3op8qAUcGRo3MNqocmpOFQSYkt5XiMWQGuI2/G57wzwRhPRi8rcfObErofOZaYLntWmAn32gNf7qDynmGE3yii82bR0kYcx1NpBFQnYdEyFqHKehEWl+wKBgQDfnHD2KHz+wCsiyJyl7qzYSlRsa52gjzBWv7pyPLJbBhPMJBOOFd94pFGcLgpTEk+tflTg8KeUsdBIznjTuq9ccYYw+JEJMNuSueuByjV8+TUKuQBg7pwu1cHfvHtajRNZ9ufiu5bIxTEbYA1MpdIRJMgl9fIVNobeGfFGPfeskwKBgBj7MO6mWz2fLA77ivLGuvis3UTXzPZx8JueJNm7qb+UIx+FEhQNiBvUwJHFCRvdIeTM8MHv8kRDYvhLKgSEUV9T1BLDDgcHaTWnCzF28gmyiTyzuJm1saN3ANwnZQh0LHAtcox66C4ZZL2HpnrhKw3Bcjh99/KrWiTm0StoGGnfAoGBAK+AjJRW8MvNLc3uICyH6HcV168Ew8GZwLnFX2N7ygxw96bYhdSVzEBWz4rCA+5xR8IGjj3CA/VLngsWqnSbaDkpDMZwwPyysRM3AuVqPJLq0TuqOebaQBDuSmz89N/8K70HcbZdvxmy0zkGKUoIN5inAsPwheEqW64ENH8J8dMrAoGBAOcKPU8ldSgWtd1PpwsutlXMSQ9fHXqLa1G+00iJlvSOZPdkj6rsRTcwVpLHoKxcVu1eOhAyG/pGpWUrdo+Gd3udyduvsjsVa8hlIoJnhsBk46eEKz9fO9UqIG6IYoc2Aa5cRNicj1P2f1PkJ4GeYXFTFTeC07jgPSPVL98ksB4N-----END PRIVATE KEY-----}
+      access:
+        time-to-live: ${ACCESS_TOKEN_TIME_TO_LIVE:60m}
+      refresh:
+        time-to-live: ${REFRESH_TOKEN_TIME_TO_LIVE:60m}
+
+platform:
+  security:
+    oauth2-resource:
+      rsa-key:
+        public-key: ${AUTH_RSA_PUBLIC_KEY:-----BEGIN PUBLIC KEY-----MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA3FBb4anCnkvku2zaK1P7wF3Ixyk50qWQkP/1YhI2PP4rKcRrQySLTBGvJJ/08RwcUQ2aV09SvfVkViOTcNTH8TMVgMPsn0m7E0AF1aF7HOSCQxB/t5/K0duORrLQdhhIJkoFdoF2mDa5UNh/D1qGWi7EjkP6XBC+Lb5MjsJW0Gwa6f2O0PDfoklluUL9H9F1SIAPt/CohuBhFr2/xXgviHWkCBv66IfBEhZSjB0AGxAd+AyMpbLTCXP7kkwb9WmhNlDBaeSxwrfIH0s8uVhUiN4qkaPlATHRVW7Ux48KeAh/vTmoiCWwvP+O3FJ++KFjN+DMjiBRAJDlAjdGs6/zIQIDAQAB-----END PUBLIC KEY-----}
+      auth-paths:
+        - path: /admin/v1/users/**
+          methods: POST,PUT,PATCH,DELETE
+          roles: ${ADMIN_USER_ROLES:ADMIN}
 
 springdoc:
   open-api:
@@ -25,8 +50,8 @@ springdoc:
       display-name: Admin API
       packages-to-scan:
         - "ru.nemodev.insightestate.api.admin"
-    - group: oauth
-      display-name: OAuth API
+    - group: auth
+      display-name: Auth API
       packages-to-scan:
         - "ru.nemodev.insightestate.api.auth"
     - group: client
