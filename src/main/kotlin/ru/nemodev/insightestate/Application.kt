@@ -1,4 +1,4 @@
-package ru.bd.platform.insightestate
+package ru.nemodev.insightestate
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication

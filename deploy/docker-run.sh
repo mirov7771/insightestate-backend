@@ -1,0 +1,4 @@
+DOCKER_COMPOSE_FILE=$1
+SERVICE_NAME=$2
+
+sudo docker compose --file "$DOCKER_COMPOSE_FILE" up -d "$SERVICE_NAME"

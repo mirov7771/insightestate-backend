@@ -1,7 +1,7 @@
 spring:
   application:
-    name: insightestate-backend
-    developed-by: CoreTeam
+    name: insightestate
+    developed-by: ArturMirovTeam
   boot:
     admin:
       client:
@@ -9,8 +9,27 @@ spring:
           service-url: http://localhost:8080
         enabled: false
   datasource:
-    url: jdbc:postgresql://localhost:5432/insightestate_bd
-    username: superuser
-    password: 123456
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/insightestate}
+    username: ${DATABASE_USERNAME:insightestate_admin}
+    password: ${DATABASE_PASSWORD:insightestate_admin}
   flyway:
     enabled: false
+
+springdoc:
+  open-api:
+    info:
+      title: Каталог недвижимости
+      description: Каталог недвижимости
+  group-configs:
+    - group: admin
+      display-name: Admin API
+      packages-to-scan:
+        - "ru.nemodev.insightestate.api.admin"
+    - group: oauth
+      display-name: OAuth API
+      packages-to-scan:
+        - "ru.nemodev.insightestate.api.auth"
+    - group: client
+      display-name: Client API
+      packages-to-scan:
+        - "ru.nemodev.insightestate.api.client"

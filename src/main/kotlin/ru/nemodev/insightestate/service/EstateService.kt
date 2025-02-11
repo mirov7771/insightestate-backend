@@ -1,11 +1,11 @@
-package ru.bd.platform.insightestate.service
+package ru.nemodev.insightestate.service
 
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Service
-import ru.bd.platform.insightestate.api.v1.dto.EstateInfoDto
-import ru.bd.platform.insightestate.api.v1.dto.EstateListDto
-import ru.bd.platform.insightestate.entity.EstateType
-import ru.bd.platform.insightestate.repository.EstateRepository
+import ru.nemodev.insightestate.api.client.v1.dto.EstateInfoDto
+import ru.nemodev.insightestate.api.client.v1.dto.EstateListDto
+import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException

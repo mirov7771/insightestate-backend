@@ -1,4 +1,4 @@
-package ru.bd.platform.insightestate.service
+package ru.nemodev.insightestate.service
 
 import org.springframework.stereotype.Service
 

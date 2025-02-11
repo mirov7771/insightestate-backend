@@ -1,4 +1,4 @@
-package ru.bd.platform.insightestate.entity
+package ru.nemodev.insightestate.entity
 
 import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table

@@ -1,0 +1,6 @@
+CONTAINER_NAME=$1
+IMAGE_NAME=$2
+
+docker stop "$CONTAINER_NAME"
+docker rm "$CONTAINER_NAME"
+docker rmi "$IMAGE_NAME"

@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  insightestate-backend:
+    image: "nemodev/insightestate-backend"
+    container_name: insightestate-backend
+    restart: always
+    environment:
+      DATABASE_URL: jdbc:postgresql://postgres:5432/insightestate
+      DATABASE_PASSWORD: ROucKPoLoNgu
+      S3_MINIO_URL: http://minio:9000
+      S3_MINIO_SECRET_KEY: QRzWm1XgAyKIhAVCWCKst3h1PfVA1mp8KuitF5r1
+    ports:
+      - "8080:8080"
+    networks:
+      - insightestate
+    depends_on:
+      postgres:
+        condition: service_started
+        restart: true
+      minio:
+        condition: service_started
+        restart: true
+
+  postgres:
+    image: "postgres:latest"
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: insightestate
+      POSTGRES_USER: insightestate_admin
+      POSTGRES_PASSWORD: ROucKPoLoNgu
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    networks:
+      - insightestate
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: always
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_storage:/data
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: BLundRaiNATE
+      AWS_S3_FORCE_PATH_STYLE: false
+    command: server --console-address ":9001" /data
+    networks:
+      - insightestate
+
+volumes:
+  postgres_storage: { }
+  minio_storage: { }
+
+networks:
+  insightestate:
+    driver: bridge

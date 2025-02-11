@@ -1,0 +1,7 @@
+spring:
+  docker:
+    compose:
+      enabled: true
+      file: ./local/docker/docker-compose.yml
+
+TRACING_ENABLED: false

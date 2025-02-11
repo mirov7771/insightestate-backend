@@ -1,8 +1,8 @@
-package ru.bd.platform.insightestate.api.v1.dto
+package ru.nemodev.insightestate.api.client.v1.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class EstateListDto (

@@ -1,7 +1,7 @@
-CREATE TABLE estate
+create table estate
 (
-    id              UUID        NOT NULL PRIMARY KEY,
-    created_at      TIMESTAMP   WITHOUT TIME ZONE NOT NULL,
-    updated_at      TIMESTAMP   WITHOUT TIME ZONE NOT NULL,
-    estate_detail   JSONB       NOT NULL
+    id              uuid        not null primary key,
+    created_at      timestamp   without time zone not null,
+    updated_at      timestamp   without time zone not null,
+    estate_detail   json        not null
 );

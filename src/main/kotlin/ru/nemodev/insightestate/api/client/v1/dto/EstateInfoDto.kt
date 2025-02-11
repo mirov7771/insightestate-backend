@@ -1,11 +1,11 @@
-package ru.bd.platform.insightestate.api.v1.dto
+package ru.nemodev.insightestate.api.client.v1.dto
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import ru.bd.platform.insightestate.entity.EstateType
-import ru.bd.platform.insightestate.entity.Square
+import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.entity.Square
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.UUID
+import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class EstateInfoDto (

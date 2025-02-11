@@ -13,7 +13,7 @@ plugins {
     kotlin("plugin.spring") version kotlinVersion
 }
 
-group = "ru.bd.platform"
+group = "ru.nemodev"
 version = System.getenv("SERVICE_VERSION") ?: "1.0.0"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
@@ -32,9 +32,15 @@ repositories {
 
 dependencies {
     val nemodevPlatformGroup = "ru.nemodev.platform"
-    val nemodevPlatformVersion = "1.0.20"
+    val nemodevPlatformVersion = "1.0.0"
     implementation("$nemodevPlatformGroup:core-starter:$nemodevPlatformVersion")
     implementation("$nemodevPlatformGroup:core-db:$nemodevPlatformVersion")
+
+    // spring
+    val springBootVersion = "3.3.2"
+    developmentOnly("org.springframework.boot:spring-boot-docker-compose:$springBootVersion")
+    kapt("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
+
 }
 
 jacoco {

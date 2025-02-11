@@ -1,4 +1,4 @@
-package ru.bd.platform.insightestate.api.v1.controller
+package ru.nemodev.insightestate.api.client.v1.controller
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
@@ -6,12 +6,12 @@ import jakarta.validation.constraints.Min
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
-import ru.bd.platform.insightestate.api.v1.dto.EstateInfoDto
-import ru.bd.platform.insightestate.api.v1.dto.EstateListDto
-import ru.bd.platform.insightestate.entity.EstateType
-import ru.bd.platform.insightestate.service.EstateService
+import ru.nemodev.insightestate.api.client.v1.dto.EstateInfoDto
+import ru.nemodev.insightestate.api.client.v1.dto.EstateListDto
+import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.service.EstateService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
-import java.util.UUID
+import java.util.*
 
 @RestController
 @RequestMapping("estate", produces = [MediaType.APPLICATION_JSON_VALUE])
