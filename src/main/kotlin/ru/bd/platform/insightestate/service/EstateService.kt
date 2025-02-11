@@ -69,7 +69,10 @@ class EstateServiceImpl (
                 price = it.estateDetail.priceStart,
                 profitAmount = it.estateDetail.profitAmount,
                 profitTerm = it.estateDetail.profitTerm,
-                images = it.estateDetail.images
+                images = it.estateDetail.images,
+                level = it.estateDetail.level,
+                beach = it.estateDetail.beach,
+                deliveryDate = it.estateDetail.deliveryDate
             ) },
             pageSize = list.size,
             pageNumber = pageable.pageNumber,
