@@ -1,10 +1,13 @@
 package ru.bd.platform.insightestate.api.v1.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import ru.bd.platform.insightestate.entity.EstateType
+import ru.bd.platform.insightestate.entity.Square
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.UUID
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 data class EstateInfoDto (
     val id: UUID,
     /**
@@ -16,21 +19,13 @@ data class EstateInfoDto (
      */
     val name: String,
     /**
-     *Цена, от
-     */
-    val priceStart: Long,
-    /**
-     *Цена, до
-     */
-    val priceEnd: Long,
-    /**
      *Доходность %
      */
-    val profitAmount: Long,
+    val profitAmount: Long? = null,
     /**
      *Доходность срок
      */
-    val profitTerm: Int,
+    val profitTerm: Int? = null,
     /**
      *Картинки
      */
@@ -40,17 +35,13 @@ data class EstateInfoDto (
      */
     val type: EstateType,
     /**
-     *Площадь, м2, от
+     * Планировка
      */
-    val squareStart: Int,
-    /**
-     *Площадь, м2, до
-     */
-    val squareEnd: Int,
+    val square: Square,
     /**
      * Планировка, спальни
      */
-    val beds: Int,
+    val beds: Int? = null,
     /**
      *Безопасность вложений
      */
@@ -78,7 +69,7 @@ data class EstateInfoDto (
     /**
      *Всего этажей
      */
-    val floors: Int,
+    val floors: Int? = null,
     /**
      *Всего квартир
      */
@@ -98,7 +89,7 @@ data class EstateInfoDto (
     /**
      *Парковка
      */
-    val parking: String,
+    val parking: String? = null,
     /**
      *Застройщик
      */
