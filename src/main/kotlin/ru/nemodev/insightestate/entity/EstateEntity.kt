@@ -4,7 +4,6 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import ru.nemodev.platform.core.db.annotation.StoreJson
 import ru.nemodev.platform.core.db.entity.AbstractEntity
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
@@ -121,11 +120,11 @@ data class EstateDetail (
     /**
      * IRR
      */
-    val irr: BigDecimal,
+    val irr: String? = null,
     /**
      * 10-year ROI
      */
-    val roi: BigDecimal,
+    val roi: String? = null,
 
     /**
      * Ссылка на карту
@@ -134,7 +133,7 @@ data class EstateDetail (
     /**
      * Суммарный ROI
      */
-    val summaryRoi: BigDecimal,
+    val summaryRoi: String? = null,
     /**
      * Краткое описание проектов для слайдов
      */
@@ -174,13 +173,56 @@ data class EstateDetail (
     /**
      * Cap rate (1 st year after compl.)
      */
-    val rentalIncome: BigDecimal,
+    val rentalIncome: String? = null,
+    /**
+     * Страна происхождения застройщика
+     */
+    val developerCountry: String? = null,
+    /**
+     * Количество проектов, шт.
+     */
+    val countProjects: Int? = null,
+    /**
+     * Количество проектов на этапе строительства, шт.
+     */
+    val buildProjects: Int? = null,
+    /**
+     * Количество проектов сданных, шт.
+     */
+    val soldProjects: Int? = null,
+    /**
+     * Статус проекта
+     */
+    val status: Status,
+    /**
+     * Количество проданных юнитов, шт
+     */
+    val soldUnits: Int? = null,
+    /**
+     * Остаток юнитов, шт.
+     */
+    val availableUnits: Int? = null,
+    /**
+     * Школы в локации (задать радиус км.)
+     */
+    val schools: String? = null,
+    /**
+     * Тип продукта
+     */
+    val projectType: String? = null,
+    /**
+     * Средняя цена по проекту
+     */
+    val avgCost: String? = null,
+    /**
+     * Средняя стоимость, Виллы
+     */
+    val avgPrice: String? = null,
 
-
-    val images: List<String>,
+    val images: List<String>? = null,
     val projectImage: String? = null,
-    val priceStart: Long,
-    val priceEnd: Long,
+    val priceStart: Long? = null,
+    val priceEnd: Long? = null,
     val floors: Int? = null,
     val type: EstateType,
     val profitAmount: Long? = null,
@@ -203,7 +245,7 @@ data class Square (
 
 data class SquareParams (
     val size: StartEndParams? = null,
-    val price: StartEndParams? = null,
+    val price: StartEndParams? = null
 )
 
 data class StartEndParams (
@@ -214,6 +256,11 @@ data class StartEndParams (
 enum class EstateType {
     VILLA,
     APARTMENT
+}
+
+enum class Status {
+    BUILD,
+    FINISHED,
 }
 
 

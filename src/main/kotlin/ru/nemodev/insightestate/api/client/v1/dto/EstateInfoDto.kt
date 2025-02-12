@@ -3,7 +3,6 @@ package ru.nemodev.insightestate.api.client.v1.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.entity.Square
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.*
 
@@ -109,15 +108,15 @@ data class EstateInfoDto (
     /**
      *ROI за 10 лет
      */
-    val roi: BigDecimal,
+    val roi: String? = null,
     /**
      *IRR за 10 лет
      */
-    val irr: BigDecimal,
+    val irr: String? = null,
     /**
      *Чистый арендный доход
      */
-    val rentalIncome: BigDecimal,
+    val rentalIncome: String? = null,
     /**
      *План проекта
      */
