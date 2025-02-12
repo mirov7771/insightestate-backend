@@ -31,6 +31,15 @@ insightestate:
         time-to-live: ${REFRESH_TOKEN_TIME_TO_LIVE:60m}
 
 platform:
+  integration:
+    s3-minio:
+      access-key: ${S3_MINIO_ACCESS_KEY:admin}
+      secret-key: ${S3_MINIO_SECRET_KEY:admin1234}
+      bucket: ${S3_MINIO_BUCKET:estate-images}
+      file-content-type: ${S3_MINIO_FILE_CONTENT_TYPE:image/jpeg}
+      upload-file-part-size: 5MB
+      http-client:
+        url: ${S3_MINIO_URL:http://127.0.0.1:9000}
   security:
     oauth2-resource:
       rsa-key:

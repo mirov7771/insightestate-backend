@@ -9,7 +9,7 @@ services:
       DATABASE_URL: jdbc:postgresql://postgres:5432/insightestate
       DATABASE_PASSWORD: ROucKPoLoNgu
       S3_MINIO_URL: http://minio:9000
-      S3_MINIO_SECRET_KEY: QRzWm1XgAyKIhAVCWCKst3h1PfVA1mp8KuitF5r1
+      S3_MINIO_SECRET_KEY: BLundRaiNATE
       EMAIL_USERNAME: todo@gmail.com
       EMAIL_PASSWORD: todo
     ports:
