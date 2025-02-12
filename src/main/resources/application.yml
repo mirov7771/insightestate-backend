@@ -54,6 +54,11 @@ springdoc:
     info:
       title: Каталог недвижимости
       description: Каталог недвижимости
+    servers:
+      - description: LOCAL
+        url: http://localhost:8080
+      - description: PROD
+        url: ${SERVER_PROD_URL:http://77.238.232.18:8080}
   group-configs:
     - group: admin
       display-name: Admin API

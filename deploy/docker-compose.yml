@@ -6,6 +6,7 @@ services:
     container_name: insightestate-backend
     restart: always
     environment:
+      SERVER_PROD_URL: http://77.238.232.18:8080
       DATABASE_URL: jdbc:postgresql://postgres:5432/insightestate
       DATABASE_PASSWORD: ROucKPoLoNgu
       S3_MINIO_URL: http://minio:9000

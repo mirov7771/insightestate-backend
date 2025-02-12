@@ -1,4 +1,4 @@
-package ru.nemodev.insightestate.service
+package ru.nemodev.insightestate.service.security
 
 import org.springframework.stereotype.Service
 import java.security.SecureRandom
