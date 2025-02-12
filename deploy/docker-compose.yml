@@ -56,6 +56,19 @@ services:
     networks:
       - insightestate
 
+  minio-mc:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set local http://host.docker.internal:9000 admin BLundRaiNATE;
+      /usr/bin/mc mb local/estate-images;
+      /usr/bin/mc policy set public local/estate-images;
+      "
+    networks:
+      - insightestate
+
 volumes:
   postgres_storage: { }
   minio_storage: { }

@@ -35,8 +35,8 @@ services:
     entrypoint: >
       /bin/sh -c "
       /usr/bin/mc alias set local http://host.docker.internal:9000 admin admin1234;
-      /usr/bin/mc mb local/insightestate-gallery-images;
-      /usr/bin/mc policy set public local/insightestate-gallery-images;
+      /usr/bin/mc mb local/estate-images;
+      /usr/bin/mc policy set public local/estate-images;
       "
 
 volumes:
