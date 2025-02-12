@@ -53,7 +53,7 @@ class EstateController (
          * 4 - 4+ спальни
          */
         @RequestParam(name = "beds", required = false)
-        beds: List<Int>? = null,
+        beds: List<String>? = null,
 
         /**
          * Дата сдачи объекта

@@ -9,13 +9,14 @@ import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.util.*
 
 interface EstateService {
     fun findAll(
         potential: List<Int>?,
         price: Long?,
-        beds: List<Int>?,
+        beds: List<String>?,
         year: List<Int>?,
         type: EstateType?,
         pageable: PageRequest
@@ -33,7 +34,7 @@ class EstateServiceImpl (
     override fun findAll(
         potential: List<Int>?,
         price: Long?,
-        beds: List<Int>?,
+        beds: List<String>?,
         year: List<Int>?,
         type: EstateType?,
         pageable: PageRequest
@@ -54,10 +55,35 @@ class EstateServiceImpl (
                 1000000
             }
         }
+
+        var isStudio: String? = null
+        var isOneRoom: String? = null
+        var isTwoRoom: String? = null
+        var isThreeRoom: String? = null
+        var isFourRoom: String? = null
+        var isFiveRoom: String? = null
+
+        if (beds.isNotNullOrEmpty()) {
+            isStudio = beds!!.contains("Студия").toString()
+            isOneRoom = beds.contains("1").toString()
+            isTwoRoom = beds.contains("2").toString()
+            isThreeRoom = beds.contains("3").toString()
+            isFourRoom = beds.contains("4").toString()
+            isFiveRoom = beds.contains("4+").toString()
+        }
+        var estateType: String? = null
+        if (type != null)
+            estateType = type.toString()
         val list = repository.findByParams(
+            isStudio = isStudio,
+            isOneRoom = isOneRoom,
+            isTwoRoom = isTwoRoom,
+            isThreeRoom = isThreeRoom,
+            isFourRoom = isFourRoom,
+            isFiveRoom = isFiveRoom,
             priceStart = priceStart,
             priceEnd = priceEnd,
-            type = type.toString(),
+            type = estateType,
             limit = pageable.pageSize,
             offset = pageable.offset
         )
@@ -66,7 +92,7 @@ class EstateServiceImpl (
                 id = it.id,
                 rate = it.estateDetail.rate,
                 name = it.estateDetail.name,
-                price = it.estateDetail.priceStart ?: 0,
+                price = it.estateDetail.priceStart,
                 profitAmount = it.estateDetail.profitAmount,
                 profitTerm = it.estateDetail.profitTerm,
                 images = it.estateDetail.images ?: emptyList(),
@@ -95,7 +121,6 @@ class EstateServiceImpl (
             images = dao.estateDetail.images ?: emptyList(),
             type = dao.estateDetail.type,
             square = dao.estateDetail.square,
-            beds = dao.estateDetail.beds,
             attachmentSecurity = dao.estateDetail.attachmentSecurity,
             investmentPotential = dao.estateDetail.investmentPotential,
             locationOfTheObject = dao.estateDetail.locationOfTheObject,

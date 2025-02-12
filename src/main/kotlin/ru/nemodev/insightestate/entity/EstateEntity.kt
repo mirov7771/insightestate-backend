@@ -4,7 +4,6 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import ru.nemodev.platform.core.db.annotation.StoreJson
 import ru.nemodev.platform.core.db.entity.AbstractEntity
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -47,7 +46,7 @@ data class EstateDetail (
     /**
      * Приоритет
      */
-    val priority: Int = 0,
+    val priority: String? = null,
     /**
      * Developer
      */
@@ -75,7 +74,7 @@ data class EstateDetail (
     /**
      * Окончание строительства, мес. год.
      */
-    val deliveryDate: LocalDate,
+    val deliveryDate: String? = null,
     /**
      * Локация
      */
@@ -145,11 +144,11 @@ data class EstateDetail (
     /**
      * Минимальная - Максимальная площадь
      */
-    val square: Square,
+    var square: Square? = null,
     /**
      * Общее количество юнитов, шт.
      */
-    val apartments: Int,
+    val apartments: String,
     /**
      * Спорт
      */
@@ -181,15 +180,15 @@ data class EstateDetail (
     /**
      * Количество проектов, шт.
      */
-    val countProjects: Int? = null,
+    val countProjects: String? = null,
     /**
      * Количество проектов на этапе строительства, шт.
      */
-    val buildProjects: Int? = null,
+    val buildProjects: String? = null,
     /**
      * Количество проектов сданных, шт.
      */
-    val soldProjects: Int? = null,
+    val soldProjects: String? = null,
     /**
      * Статус проекта
      */
@@ -197,11 +196,11 @@ data class EstateDetail (
     /**
      * Количество проданных юнитов, шт
      */
-    val soldUnits: Int? = null,
+    val soldUnits: String? = null,
     /**
      * Остаток юнитов, шт.
      */
-    val availableUnits: Int? = null,
+    val availableUnits: String? = null,
     /**
      * Школы в локации (задать радиус км.)
      */
@@ -221,13 +220,19 @@ data class EstateDetail (
 
     val images: List<String>? = null,
     val projectImage: String? = null,
-    val priceStart: Long? = null,
-    val priceEnd: Long? = null,
-    val floors: Int? = null,
-    val type: EstateType,
+    var priceStart: String? = null,
+    var priceEnd: String? = null,
+    val floors: String? = null,
+    var type: EstateType = EstateType.VILLA,
     val profitAmount: Long? = null,
-    val profitTerm: Int? = null,
-    val beds: Int? = null,
+    val profitTerm: String? = null,
+
+    var isStudio: Boolean = false,
+    var isOneRoom: Boolean = false,
+    var isTwoRoom: Boolean = false,
+    var isThreeRoom: Boolean = false,
+    var isFourRoom: Boolean = false,
+    var isFiveRoom: Boolean = false,
 )
 
 data class Square (

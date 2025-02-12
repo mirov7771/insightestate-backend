@@ -3,7 +3,6 @@ package ru.nemodev.insightestate.api.client.v1.dto
 import com.fasterxml.jackson.annotation.JsonInclude
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.entity.Square
-import java.time.LocalDate
 import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -24,7 +23,7 @@ data class EstateInfoDto (
     /**
      *Доходность срок
      */
-    val profitTerm: Int? = null,
+    val profitTerm: String? = null,
     /**
      *Картинки
      */
@@ -36,11 +35,7 @@ data class EstateInfoDto (
     /**
      * Планировка
      */
-    val square: Square,
-    /**
-     * Планировка, спальни
-     */
-    val beds: Int? = null,
+    val square: Square? = null,
     /**
      *Безопасность вложений
      */
@@ -64,15 +59,15 @@ data class EstateInfoDto (
     /**
      * Дата сдачи
      */
-    val deliveryDate: LocalDate,
+    val deliveryDate: String? = null,
     /**
      *Всего этажей
      */
-    val floors: Int? = null,
+    val floors: String? = null,
     /**
      *Всего квартир
      */
-    val apartments: Int,
+    val apartments: String,
     /**
      *До пляжа
      */
