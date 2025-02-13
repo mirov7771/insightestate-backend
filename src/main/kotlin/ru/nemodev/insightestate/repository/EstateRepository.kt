@@ -20,6 +20,10 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
          and (:isThreeRoom is null or (estate_detail ->> 'isThreeRoom' = :isThreeRoom))
          and (:isFourRoom is null or (estate_detail ->> 'isFourRoom' = :isFourRoom))
          and (:isFiveRoom is null or (estate_detail ->> 'isFiveRoom' = :isFiveRoom))
+         and (:attachmentSecurity is null or (cast(estate.estate_detail ->> 'attachmentSecurity' as numeric) > :attachmentSecurity))
+         and (:investmentPotential is null or (cast(estate.estate_detail ->> 'investmentPotential' as numeric) > :investmentPotential))
+         and (:locationOfTheObject is null or (cast(estate.estate_detail ->> 'locationOfTheObject' as numeric) > :locationOfTheObject))
+         and (:comfortOfLife is null or (cast(estate.estate_detail ->> 'comfortOfLife' as numeric) > :comfortOfLife))
         order by created_at desc
         limit :limit offset :offset
     """)
@@ -33,6 +37,10 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         priceStart: Long?,
         priceEnd: Long?,
         type: String?,
+        attachmentSecurity: Int?,
+        investmentPotential: Int?,
+        locationOfTheObject: Int?,
+        comfortOfLife: Int?,
         offset: Long,
         limit: Int
     ): List<EstateEntity>

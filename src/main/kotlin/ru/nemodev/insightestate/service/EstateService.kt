@@ -74,6 +74,16 @@ class EstateServiceImpl (
         var estateType: String? = null
         if (type != null)
             estateType = type.toString()
+        var attachmentSecurity: Int? = null
+        var investmentPotential: Int? = null
+        var locationOfTheObject: Int? = null
+        var comfortOfLife: Int? = null
+        if (potential.isNullOrEmpty()) {
+            attachmentSecurity = if (potential!!.contains(0)) 9 else null
+            investmentPotential = if (potential.contains(1)) 9 else null
+            locationOfTheObject = if (potential.contains(2)) 9 else null
+            comfortOfLife = if (potential.contains(3)) 9 else null
+        }
         val list = repository.findByParams(
             isStudio = isStudio,
             isOneRoom = isOneRoom,
@@ -84,6 +94,10 @@ class EstateServiceImpl (
             priceStart = priceStart,
             priceEnd = priceEnd,
             type = estateType,
+            attachmentSecurity = attachmentSecurity,
+            investmentPotential = investmentPotential,
+            locationOfTheObject = locationOfTheObject,
+            comfortOfLife = comfortOfLife,
             limit = pageable.pageSize,
             offset = pageable.offset
         )
