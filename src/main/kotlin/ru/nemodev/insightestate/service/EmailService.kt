@@ -3,6 +3,7 @@ package ru.nemodev.insightestate.service
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
+import ru.nemodev.platform.core.logging.sl4j.Loggable
 
 interface EmailService {
     fun signUpSendConfirmCode(email: String, confirmCode: String)
@@ -12,6 +13,8 @@ interface EmailService {
 class EmailServiceImpl(
     private val emailSender: JavaMailSender
 ) : EmailService {
+
+    companion object : Loggable
 
     override fun signUpSendConfirmCode(email: String, confirmCode: String) {
         send(
@@ -28,6 +31,8 @@ class EmailServiceImpl(
             this.text = message
         }
 
-        //emailSender.send(simpleMailMessage)
+        emailSender.send(simpleMailMessage)
+
+        logInfo { "Email sent to $email\n subject - $subject\n message -$simpleMailMessage" }
     }
 }

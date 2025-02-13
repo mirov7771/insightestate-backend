@@ -11,8 +11,8 @@ services:
       DATABASE_PASSWORD: ROucKPoLoNgu
       S3_MINIO_URL: http://minio:9000
       S3_MINIO_SECRET_KEY: BLundRaiNATE
-      EMAIL_USERNAME: todo@gmail.com
-      EMAIL_PASSWORD: todo
+      EMAIL_USERNAME: it@insightestate.com
+      EMAIL_PASSWORD: dqyynkrxicwoaqwv
     ports:
       - "8080:8080"
     networks:

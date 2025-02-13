@@ -58,13 +58,13 @@ class AuthServiceImpl(
         } else {
             val signUpConfirmCode = confirmCodeGenerator.generateDigits()
 
-            userService.create(
-                login = request.login,
-                signUpConfirmCode = signUpConfirmCode,
-            )
             emailService.signUpSendConfirmCode(
                 email = request.login,
                 confirmCode = signUpConfirmCode
+            )
+            userService.create(
+                login = request.login,
+                signUpConfirmCode = signUpConfirmCode,
             )
         }
     }
