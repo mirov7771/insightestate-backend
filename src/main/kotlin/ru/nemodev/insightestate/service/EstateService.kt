@@ -78,7 +78,7 @@ class EstateServiceImpl (
         var investmentPotential: Int? = null
         var locationOfTheObject: Int? = null
         var comfortOfLife: Int? = null
-        if (potential.isNullOrEmpty()) {
+        if (potential.isNotNullOrEmpty()) {
             attachmentSecurity = if (potential!!.contains(0)) 9 else null
             investmentPotential = if (potential.contains(1)) 9 else null
             locationOfTheObject = if (potential.contains(2)) 9 else null
