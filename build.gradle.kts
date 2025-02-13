@@ -36,6 +36,7 @@ dependencies {
     implementation("$nemodevPlatformGroup:core-starter:$nemodevPlatformVersion")
     implementation("$nemodevPlatformGroup:core-db:$nemodevPlatformVersion")
     implementation("$nemodevPlatformGroup:core-security-oauth2-resource:$nemodevPlatformVersion")
+    implementation("$nemodevPlatformGroup:core-integration-s3-minio:$nemodevPlatformVersion")
 
     // spring
     val springBootVersion = "3.3.2"

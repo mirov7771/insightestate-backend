@@ -10,7 +10,7 @@ import ru.nemodev.insightestate.entity.UserStatus
 import ru.nemodev.insightestate.repository.UserRepository
 
 interface UserService : UserDetailsService {
-    fun findByLogin(login: String): UserEntity?
+    fun findByLogin(login: String, status: UserStatus? = null): UserEntity?
     fun create(login: String, signUpConfirmCode: String): UserEntity
     fun update(userEntity: UserEntity): UserEntity
 }
@@ -20,8 +20,8 @@ class UserServiceImpl(
     private val userRepository: UserRepository,
 ) : UserService {
 
-    override fun findByLogin(login: String): UserEntity? {
-        return userRepository.findByLogin(login = login)
+    override fun findByLogin(login: String, status: UserStatus?): UserEntity? {
+        return userRepository.findByLogin(login = login, status = status)
     }
 
     override fun create(login: String, signUpConfirmCode: String): UserEntity {
@@ -41,8 +41,8 @@ class UserServiceImpl(
     }
 
     override fun loadUserByUsername(username: String): UserDetails {
-        return findByLogin(login = username)
-            ?: throw UsernameNotFoundException("Пользователь $username не найден")
+        return findByLogin(login = username, status = UserStatus.ACTIVE)
+            ?: throw UsernameNotFoundException("Active user $username not found")
     }
 
 }
