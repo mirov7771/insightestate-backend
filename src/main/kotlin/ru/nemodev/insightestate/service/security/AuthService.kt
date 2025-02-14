@@ -140,9 +140,9 @@ class AuthServiceImpl(
         val authToken = authBasicToken.toAuthenticationToken()
         val authentication = authManager.authenticate(authToken)
 
-        val user = authentication.principal as UserEntity
-        val accessToken = generateToken(user, appProperties.auth.tokens.access.timeToLive)
-        val refreshToken = generateToken(user, appProperties.auth.tokens.refresh.timeToLive)
+        val userEntity = authentication.principal as UserEntity
+        val accessToken = generateToken(userEntity, appProperties.auth.tokens.access.timeToLive)
+        val refreshToken = generateToken(userEntity, appProperties.auth.tokens.refresh.timeToLive)
 
         return SignInDtoRs(
             accessToken = accessToken.tokenValue,

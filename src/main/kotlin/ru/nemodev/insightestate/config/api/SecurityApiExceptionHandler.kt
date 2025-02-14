@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.authentication.BadCredentialsException
+import org.springframework.security.core.AuthenticationException
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
@@ -19,8 +21,8 @@ class SecurityApiExceptionHandler {
         }
     }
 
-    @ExceptionHandler(BadCredentialsException::class)
-    fun onBadCredentialsException(exception: BadCredentialsException, request: HttpServletRequest): ResponseEntity<ErrorDtoRs> {
+    @ExceptionHandler(BadCredentialsException::class, UsernameNotFoundException::class)
+    fun onBadCredentialsException(exception: AuthenticationException, request: HttpServletRequest): ResponseEntity<ErrorDtoRs> {
         logError(exception) { getRequestError(request) }
 
         return ResponseEntity(
