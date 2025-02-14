@@ -25,6 +25,8 @@ interface EstateService {
     fun findById(
         id: UUID
     ): EstateInfoDto
+
+    fun findAllList(): List<EstateListDto>
 }
 
 @Service
@@ -158,5 +160,36 @@ class EstateServiceImpl (
             district = dao.estateDetail.district,
             geoPosition = dao.estateDetail.geoPosition,
         )
+    }
+
+    override fun findAllList(): List<EstateListDto> {
+        return repository.findByParams(
+            isStudio = null,
+            isOneRoom = null,
+            isTwoRoom = null,
+            isThreeRoom = null,
+            isFourRoom = null,
+            isFiveRoom = null,
+            priceStart = null,
+            priceEnd = null,
+            type = null,
+            attachmentSecurity = null,
+            investmentPotential = null,
+            locationOfTheObject = null,
+            comfortOfLife = null,
+            limit = 100,
+            offset = 0
+        ).map { EstateListDto(
+            id = it.id,
+            rate = it.estateDetail.rate,
+            name = it.estateDetail.name,
+            price = it.estateDetail.priceStart,
+            profitAmount = it.estateDetail.profitAmount,
+            profitTerm = it.estateDetail.profitTerm,
+            images = it.estateDetail.images ?: emptyList(),
+            level = it.estateDetail.level,
+            beach = it.estateDetail.beach,
+            deliveryDate = it.estateDetail.deliveryDate
+        ) }
     }
 }

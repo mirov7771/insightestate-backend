@@ -103,4 +103,7 @@ class EstateController (
         @PathVariable
         id: UUID,
     ): EstateInfoDto = service.findById(id)
+
+    @GetMapping("list")
+    fun findList() = service.findAllList()
 }
