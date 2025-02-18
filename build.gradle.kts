@@ -25,9 +25,9 @@ allprojects {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven { url = uri(System.getenv("NEXUS_URL") ?: "https://nexus.bistrodengi.ru/repository/maven-releases/") }
     maven { url = uri("https://jitpack.io") }
-    mavenLocal()
 }
 
 dependencies {
@@ -44,6 +44,9 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-docker-compose:$springBootVersion")
     kapt("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
 
+    val apachePoiVersion = "5.3.0"
+    implementation("org.apache.poi:poi:$apachePoiVersion")
+    implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
 }
 
 jacoco {

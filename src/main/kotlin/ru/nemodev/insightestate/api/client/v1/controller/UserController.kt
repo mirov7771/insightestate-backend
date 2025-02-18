@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
@@ -72,6 +73,7 @@ class UserController (
         @Parameter(description = "Токен basic auth", required = true, hidden = true)
         @RequestHeader("Authorization") authBasicToken: String,
 
+        @Valid
         @RequestBody
         request: UserUpdateDtoRq
     ) {

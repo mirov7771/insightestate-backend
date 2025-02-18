@@ -1,12 +1,12 @@
-package ru.nemodev.insightestate.api.client.v1.dto
+package ru.nemodev.insightestate.api.client.v1.dto.estate
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import ru.nemodev.insightestate.entity.EstateType
-import ru.nemodev.insightestate.entity.Square
+//import ru.nemodev.insightestate.entity.Square
 import java.util.*
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-data class EstateInfoDto (
+data class EstateDetailDtoRs (
     val id: UUID,
     /**
      *Итоговая оценка
@@ -35,7 +35,7 @@ data class EstateInfoDto (
     /**
      * Планировка
      */
-    val square: Square? = null,
+//    val square: Square? = null,
     /**
      *Безопасность вложений
      */

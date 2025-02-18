@@ -4,6 +4,8 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import ru.nemodev.platform.core.db.annotation.StoreJson
 import ru.nemodev.platform.core.db.entity.AbstractEntity
+import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -23,249 +25,170 @@ class EstateEntity (
  */
 @StoreJson
 data class EstateDetail (
-    /**
-     * Project Id
-     */
-    val projectId: String,
-    /**
-     * Проект
-     */
-    val name: String,
-    /**
-     * Выкуплена земля
-     */
-    val landSold: Boolean,
-    /**
-     * Наличие EIA
-     */
-    val eia: Boolean,
-    /**
-     * Готовность
-     */
-    val readiness: String,
-    /**
-     * Приоритет
-     */
-    val priority: String? = null,
-    /**
-     * Developer
-     */
-    val developer: String,
-    /**
-     * Наша итоговая оценка
-     */
-    val rate: String,
-    /**
-     * Безопасность вложений
-     */
-    val attachmentSecurity: String,
-    /**
-     * Инвестиционный потенциал
-     */
-    val investmentPotential: String,
-    /**
-     * Расположение проекта
-     */
-    val locationOfTheObject: String,
-    /**
-     * Комфорт жизни
-     */
-    val comfortOfLife: String,
-    /**
-     * Окончание строительства, мес. год.
-     */
-    val deliveryDate: String? = null,
-    /**
-     * Локация
-     */
-    val location: String,
-    /**
-     * Район
-     */
-    val district: String,
-    /**
-     * Пляж
-     */
-    val beachName: String,
-    /**
-     * Время пути до моря пешком, мин.
-     */
-    val beach: String,
-    /**
-     * Время пути до моря на машине, мин.
-     */
-    val beachCar: String,
-    /**
-     * Время пути до аэропорта, мин.
-     */
-    val airport: String,
-    /**
-     * Время до ближайшего крупного ТЦ на машине, мин.
-     */
-    val mall: String,
-    /**
-     * Время до ближайшего крупного ТЦ на пешком, мин.
-     */
-    val mallWalk: String,
-    /**
-     * Класс
-     */
-    val level: String,
+    val projectId: String,                      // id проекта
+    val name: String,                           // название проекта
+    val shortDescriptionRu: String? = null,     // краткое описание ru
+    val shortDescriptionEn: String? = null,     // краткое описание en
 
-    /**
-     * Паркинг
-     */
-    val parking: String? = null,
-    /**
-     * IRR
-     */
-    val irr: String? = null,
-    /**
-     * 10-year ROI
-     */
-    val roi: String? = null,
+    val landPurchased: Boolean,                 // земля выкуплена
+    val eiaEnabled: Boolean,                    // наличие EIA
+    val readyStatus: EstateReadyStatus,         // статус готовности TODO вроде это поле не нужно вообще т.к в таблице как фильтр объектов которые доступны на сайте
+    val priority: Int? = null,                  // приоритет TODO вроде это поле не нужно вообще т.к в таблице используется как приоритет для заполнения полей?
+    val developer: EstateDeveloper,             // застройщик
+    val grade: EstateGrade,                     // оценка проекта
+    val projectCount: ProjectCount,             // количество проектов
+    val status: EstateStatus,                   // статус проекта
+    val saleDate: LocalDate? = null,            // дата начала продаж // TODO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
+    val buildEndDate: LocalDate? = null,        // дата окончания строительства
+    val unitCount: UnitCount,                   // количество юнитов
+    val constructionSchedule: String? = null,   // график строительства // TODO вроде поле не нужно и везде пустое?
 
-    /**
-     * Ссылка на карту
-     */
-    val geoPosition: String,
-    /**
-     * Суммарный ROI
-     */
-    val summaryRoi: String? = null,
-    /**
-     * Краткое описание проектов для слайдов
-     */
-    val shortDescription: String? = null,
-    /**
-     * Eng описание проектов для слайдов (перевод)
-     */
-    val engDescription: String? = null,
-    /**
-     * Минимальная - Максимальная площадь
-     */
-    var square: Square? = null,
-    /**
-     * Общее количество юнитов, шт.
-     */
-    val apartments: String,
-    /**
-     * Спорт
-     */
-    val gym: Boolean = false,
-    /**
-     * Для детей
-     */
-    val childRoom: Boolean = false,
-    /**
-     * Развлекательные
-     */
-    val entertainment: Boolean = false,
-    /**
-     * Магазины
-     */
-    val shops: Boolean = false,
-    /**
-     * Co-working
-     */
-    val coWorking: Boolean = false,
-    /**
-     * Cap rate (1 st year after compl.)
-     */
-    val rentalIncome: String? = null,
-    /**
-     * Страна происхождения застройщика
-     */
-    val developerCountry: String? = null,
-    /**
-     * Количество проектов, шт.
-     */
-    val countProjects: String? = null,
-    /**
-     * Количество проектов на этапе строительства, шт.
-     */
-    val buildProjects: String? = null,
-    /**
-     * Количество проектов сданных, шт.
-     */
-    val soldProjects: String? = null,
-    /**
-     * Статус проекта
-     */
-    val status: Status,
-    /**
-     * Количество проданных юнитов, шт
-     */
-    val soldUnits: String? = null,
-    /**
-     * Остаток юнитов, шт.
-     */
-    val availableUnits: String? = null,
-    /**
-     * Школы в локации (задать радиус км.)
-     */
-    val schools: String? = null,
-    /**
-     * Тип продукта
-     */
-    val projectType: String? = null,
-    /**
-     * Средняя цена по проекту
-     */
-    val avgCost: String? = null,
-    /**
-     * Средняя стоимость, Виллы
-     */
-    val avgPrice: String? = null,
+    var type: EstateType,                       // тип проекта
+    val level: EstateLevelType,                 // класс проекта
+    val product: EstateProductType,             // тип продукта
+    val profitability: EstateProfitability,     // доходность
 
-    val images: List<String>? = null,
-    val projectImage: String? = null,
-    var priceStart: String? = null,
-    var priceEnd: String? = null,
-    val floors: String? = null,
-    var type: EstateType = EstateType.VILLA,
-    val profitAmount: Long? = null,
-    val profitTerm: String? = null,
+    val location: EstateLocation,               // локация
+    val infrastructure: EstateInfrastructure,   // инфраструктура
+    val options: EstateOptions,                 // опции
 
-    var isStudio: Boolean = false,
-    var isOneRoom: Boolean = false,
-    var isTwoRoom: Boolean = false,
-    var isThreeRoom: Boolean = false,
-    var isFourRoom: Boolean = false,
-    var isFiveRoom: Boolean = false,
+    val price: MinMaxAvgParam,                  // стоимость
+    val profitAmount: BigDecimal? = null,       // профит - TODO где брать эту инфу?
+    val profitTerm: Int? = null,                // срок окупаемости - TODO где брать эту инфу?
+    val ceilingHeight: BigDecimal? = null,      // высота потолка
+    val floors: Int? = null,                    // этажей - TODO где брать эту инфу?
+    val roomLayouts: RoomLayouts,               // планировки комнат
+
+    val projectImage: String? = null,           // фото проекта
+    val images: List<String>? = null,           // остальные фото
 )
 
-data class Square (
-    val studio: SquareParams? = null,
-    val oneRoom: SquareParams? = null,
-    val twoRooms: SquareParams? = null,
-    val threeRooms: SquareParams? = null,
-    val fourRooms: SquareParams? = null,
-    val fiveRooms: SquareParams? = null,
-    val villaTwoRooms: SquareParams? = null,
-    val villaThreeRooms: SquareParams? = null,
-    val villaFourRooms: SquareParams? = null,
-    val villaFiveRooms: SquareParams? = null,
+// Оценка проекта
+data class EstateGrade(
+    val final: BigDecimal,                  // итоговая оценка
+    val investmentSecurity: BigDecimal,     // безопасность вложений
+    val investmentPotential: BigDecimal,    // инвестиционный потенциал
+    val projectLocation: BigDecimal,        // расположение проекта
+    val comfortOfLife: BigDecimal,          // комфорт жизни
 )
 
-data class SquareParams (
-    val size: StartEndParams? = null,
-    val price: StartEndParams? = null
+// Застройщик
+data class EstateDeveloper(
+    val name: String,                   // название
+    val country: String? = null,        // страна
+    val yearOfFoundation: Int? = null,  // год основания
 )
 
-data class StartEndParams (
-    val end: String? = null,
-    val start: String? = null,
+// Число проектов
+data class ProjectCount(
+    val total: Int,                             // количество всего
+    val build: Int,                             // количество на этапе строительства
+    val finished: Int,                          // количество завершенных
+    val deviationFromDeadline: Int? = null,     // количество просроченных
 )
+
+// Число юнитов
+data class UnitCount(
+    val total: Int,                                 // всего
+    val sailed: Int? = null,                        // продано
+    val available: Int                              // доступно
+)
+
+// Локация проекта
+data class EstateLocation(
+    val name: String,                               // локация
+    val district: String,                           // район
+    val beach: String,                              // пляж
+    val mapUrl: String,                             // ссылка на карту
+)
+
+// Инфраструктура
+data class EstateInfrastructure(
+    val beachTime: TravelTime,                      // время в пути до пляжа
+    val airportTime: TravelTime,                    // время в пути до аэропорта
+    val mallTime: TravelTime,                       // время в пути до тц
+    val schoolRadius: BigDecimal,                   // школа в радиусе в км
+    val nurserySchoolRadius: BigDecimal? = null,    // детский сад в радиусе в км
+)
+
+// Время в пути в минутах
+data class TravelTime(
+    val walk: Int?,                                 // пешком
+    val car: Int,                                   // на машине
+)
+
+// Доходность
+data class EstateProfitability(
+    val roi: BigDecimal,
+    val roiSummary: BigDecimal,
+    val irr: BigDecimal,
+    val capRateFirstYear: BigDecimal,
+)
+
+// Опции
+data class EstateOptions(
+    val parkingSize: Int? = null,       // паркинг
+    val gym: Boolean,                   // спортзал
+    val childRoom: Boolean,             // для детей
+    val shop: Boolean,                  // магазины
+    val entertainment: Boolean,         // развлекательные
+    val coWorking: Boolean,             // co-working
+)
+
+// Планировки
+data class RoomLayouts(
+    val studio: RoomParams? = null,
+    val one: RoomParams? = null,
+    val two: RoomParams? = null,
+    val three: RoomParams? = null,
+    val four: RoomParams? = null,
+    val five: RoomParams? = null,
+    val villaTwo: RoomParams? = null,
+    val villaThree: RoomParams? = null,
+    val villaFour: RoomParams? = null,
+    val villaFive: RoomParams? = null,
+)
+
+// Параметры планировки
+data class RoomParams(
+    val pricePerMeter: MinMaxAvgParam,
+    val price: MinMaxAvgParam,
+    val square: MinMaxAvgParam,
+)
+
+data class MinMaxAvgParam (
+    val min: BigDecimal,
+    val max: BigDecimal,
+    val avg: BigDecimal? = null,
+)
+
+enum class EstateLevelType {
+    COMFORT,
+    LUX,
+    PREMIUM,
+    UNKNOWN,
+}
+
+enum class EstateProductType {
+    INVESTMENT,
+    RESIDENCE,
+    UNKNOWN
+}
+
+enum class EstateReadyStatus {
+    DONE,
+    SOLD_OUT
+}
 
 enum class EstateType {
     VILLA,
     APARTMENT
 }
 
-enum class Status {
+enum class EstateStatus {
     BUILD,
     FINISHED,
+    UNKNOWN
 }
 
 
