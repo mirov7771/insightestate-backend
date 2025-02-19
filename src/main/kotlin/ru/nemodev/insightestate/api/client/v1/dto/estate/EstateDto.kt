@@ -1,0 +1,144 @@
+package ru.nemodev.insightestate.api.client.v1.dto.estate
+
+import ru.nemodev.insightestate.entity.EstateLevelType
+import ru.nemodev.insightestate.entity.EstateProductType
+import ru.nemodev.insightestate.entity.EstateStatus
+import ru.nemodev.insightestate.entity.EstateType
+import java.math.BigDecimal
+import java.util.*
+
+data class EstateDtoRs(
+    val id: UUID,
+    val projectId: String,
+    val name: String,
+    val grade: BigDecimal,
+    val priceMin: BigDecimal,
+    val roi: BigDecimal,
+    val buildEndDate: String,
+    val level: EstateLevelType,
+    val beachTravelTime: Int,
+    val images: List<String>,
+)
+
+data class EstateDetailDtoRs(
+    val id: UUID,
+    val projectId: String,
+    val name: String,
+    val shortDescriptionRu: String?,
+    val shortDescriptionEn: String?,
+
+    val landPurchased: Boolean,
+    val eiaEnabled: Boolean,
+    val developer: EstateDeveloperDto,
+    val grade: EstateGradeDto,
+    val projectCount: ProjectCountDto,
+    val status: EstateStatus,
+    val saleDate: String?,
+    val buildEndDate: String?,
+    val unitCount: UnitCountDto,
+    val constructionSchedule: String?,
+
+    var type: EstateType,
+    val level: EstateLevelType,
+    val product: EstateProductType,
+    val profitability: EstateProfitabilityDto,
+
+    val location: EstateLocationDto,
+    val infrastructure: EstateInfrastructureDto,
+    val options: EstateOptionsDto,
+
+    val price: MinMaxAvgParamDto,
+    val ceilingHeight: BigDecimal?,
+    val floors: Int?,
+    val roomLayouts: RoomLayoutsDto,
+
+    val images: List<String>
+) {
+    data class EstateGradeDto(
+        val final: BigDecimal,
+        val investmentSecurity: BigDecimal,
+        val investmentPotential: BigDecimal,
+        val projectLocation: BigDecimal,
+        val comfortOfLife: BigDecimal,
+    )
+
+    data class EstateDeveloperDto(
+        val name: String,
+        val country: String?,
+        val yearOfFoundation: Int?,
+    )
+
+    data class ProjectCountDto(
+        val total: Int,
+        val build: Int,
+        val finished: Int,
+        val deviationFromDeadline: Int?,
+    )
+
+    data class UnitCountDto(
+        val total: Int,
+        val sailed: Int?,
+        val available: Int
+    )
+
+    data class EstateLocationDto(
+        val name: String,
+        val district: String,
+        val beach: String,
+        val mapUrl: String,
+    )
+
+    data class EstateInfrastructureDto(
+        val beachTime: TravelTimeDto,
+        val airportTime: TravelTimeDto,
+        val mallTime: TravelTimeDto,
+        val schoolRadius: BigDecimal,
+        val nurserySchoolRadius: BigDecimal?,
+    )
+
+    data class TravelTimeDto(
+        val walk: Int?,
+        val car: Int,
+    )
+
+    data class EstateProfitabilityDto(
+        val roi: BigDecimal,
+        val roiSummary: BigDecimal,
+        val irr: BigDecimal,
+        val capRateFirstYear: BigDecimal,
+    )
+
+    data class EstateOptionsDto(
+        val parkingSize: Int?,
+        val gym: Boolean,
+        val childRoom: Boolean,
+        val shop: Boolean,
+        val entertainment: Boolean,
+        val coWorking: Boolean,
+    )
+
+    data class RoomLayoutsDto(
+        val studio: RoomParamsDto?,
+        val one: RoomParamsDto?,
+        val two: RoomParamsDto?,
+        val three: RoomParamsDto?,
+        val four: RoomParamsDto?,
+        val five: RoomParamsDto?,
+        val villaTwo: RoomParamsDto?,
+        val villaThree: RoomParamsDto?,
+        val villaFour: RoomParamsDto?,
+        val villaFive: RoomParamsDto?,
+    )
+
+    data class RoomParamsDto(
+        val pricePerMeter: MinMaxAvgParamDto,
+        val price: MinMaxAvgParamDto,
+        val square: MinMaxAvgParamDto,
+    )
+
+    data class MinMaxAvgParamDto (
+        val min: BigDecimal,
+        val max: BigDecimal,
+        val avg: BigDecimal?,
+    )
+}

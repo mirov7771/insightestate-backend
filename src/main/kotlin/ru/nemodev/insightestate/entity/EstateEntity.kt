@@ -38,7 +38,7 @@ data class EstateDetail (
     val grade: EstateGrade,                     // оценка проекта
     val projectCount: ProjectCount,             // количество проектов
     val status: EstateStatus,                   // статус проекта
-    val saleDate: LocalDate? = null,            // дата начала продаж // TODO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
+    val saleDate: LocalDate? = null,            // дата начала продаж // TODO вроде поле нигде не требуется - в таблице нужно поменять формат на дату как у даты окончания строительства
     val buildEndDate: LocalDate? = null,        // дата окончания строительства
     val unitCount: UnitCount,                   // количество юнитов
     val constructionSchedule: String? = null,   // график строительства // TODO вроде поле не нужно и везде пустое?
@@ -53,8 +53,6 @@ data class EstateDetail (
     val options: EstateOptions,                 // опции
 
     val price: MinMaxAvgParam,                  // стоимость
-    val profitAmount: BigDecimal? = null,       // профит - TODO где брать эту инфу?
-    val profitTerm: Int? = null,                // срок окупаемости - TODO где брать эту инфу?
     val ceilingHeight: BigDecimal? = null,      // высота потолка
     val floors: Int? = null,                    // этажей - TODO где брать эту инфу?
     val roomLayouts: RoomLayouts,               // планировки комнат

@@ -180,8 +180,6 @@ class EstateExcelParserImpl : EstateExcelParser {
                             max = getMaxPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
                             avg = row.getBigDecimal("EA") // TODO средняя стоимость указана только для вилл
                         ),
-                        profitAmount = null, // TODO откуда брать?
-                        profitTerm = null,   // TODO откуда брать?
                         ceilingHeight = row.getBigDecimal("BI", 1),
                         floors = null, // TODO колонки с этажами нет?
                         roomLayouts = RoomLayouts(

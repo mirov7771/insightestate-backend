@@ -2,13 +2,18 @@ package ru.nemodev.insightestate.service.estate
 
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import ru.nemodev.insightestate.api.client.v1.converter.toDetailDtoRs
+import ru.nemodev.insightestate.api.client.v1.converter.toDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
+import ru.nemodev.platform.core.exception.error.ErrorCode
+import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
 import java.math.BigDecimal
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 interface EstateService {
 
@@ -105,57 +110,17 @@ class EstateServiceImpl (
         )
 
         return PageDtoRs(
-            items = estateList.map {
-                EstateDtoRs(
-                    id = it.id,
-                    projectId = it.estateDetail.projectId,
-                    name = it.estateDetail.name,
-                )
-           },
+            items = estateList.map { it.toDtoRs() },
             pageSize = estateList.size,
             pageNumber = pageable.pageNumber,
             hasMore = estateList.size >= pageable.pageSize
         )
     }
 
-    override fun findById(
-        id: UUID
-    ): EstateDetailDtoRs {
-        TODO()
-//        val dao = repository.findById(id).orElseThrow {
-//            NotFoundLogicalException(errorCode = ErrorCode.createNotFound("Объект не найден"))
-//        }
-//        return EstateDetailDtoRs(
-//            id = dao.id,
-//            rate = dao.estateDetail.rate,
-//            name = dao.estateDetail.name,
-//            profitAmount = dao.estateDetail.profitAmount,
-//            profitTerm = dao.estateDetail.profitTerm,
-//            images = dao.estateDetail.images ?: emptyList(),
-//            type = dao.estateDetail.type,
-//            square = dao.estateDetail.square,
-//            attachmentSecurity = dao.estateDetail.attachmentSecurity,
-//            investmentPotential = dao.estateDetail.investmentPotential,
-//            locationOfTheObject = dao.estateDetail.locationOfTheObject,
-//            comfortOfLife = dao.estateDetail.comfortOfLife,
-//            deliveryDate = dao.estateDetail.deliveryDate,
-//            floors = dao.estateDetail.floors,
-//            apartments = dao.estateDetail.apartments,
-//            beach = dao.estateDetail.beach,
-//            airport = dao.estateDetail.airport,
-//            parking = dao.estateDetail.parking,
-//            developer = dao.estateDetail.developerName,
-//            level = dao.estateDetail.level,
-//            mall = dao.estateDetail.mall,
-//            childRoom = dao.estateDetail.childRoom,
-//            coWorking = dao.estateDetail.coWorking,
-//            gym = dao.estateDetail.gym,
-//            rentalIncome = dao.estateDetail.rentalIncome,
-//            roi = dao.estateDetail.roi,
-//            irr = dao.estateDetail.irr,
-//            projectImage = dao.estateDetail.projectImage,
-//            district = dao.estateDetail.district,
-//            geoPosition = dao.estateDetail.geoPosition,
-//        )
+    override fun findById(id: UUID): EstateDetailDtoRs {
+        val estateEntity = repository.findById(id).getOrNull()
+            ?: throw NotFoundLogicalException(errorCode = ErrorCode.createNotFound("Project object not found"))
+
+        return estateEntity.toDetailDtoRs()
     }
 }
