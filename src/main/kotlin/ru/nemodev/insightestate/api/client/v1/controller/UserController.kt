@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -17,13 +18,14 @@ import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 
 @RestController
 @RequestMapping("/users", produces = [MediaType.APPLICATION_JSON_VALUE])
+@Tag(name = "Пользователи")
 class UserController (
     private val userService: UserService
 ) {
 
     @SecurityRequirement(name = "basicAuth")
     @Operation(
-        summary = "Получение пользователя",
+        summary = "Получение пользователя, требуется заголовок Authorization: Basic Auth",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
@@ -50,7 +52,7 @@ class UserController (
 
     @SecurityRequirement(name = "basicAuth")
     @Operation(
-        summary = "Обновление информации пользователя",
+        summary = "Обновление информации пользователя, требуется заголовок Authorization: Basic Auth",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",

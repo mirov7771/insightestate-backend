@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
+import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
@@ -27,6 +28,7 @@ import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
     type = SecuritySchemeType.HTTP,
     `in` = SecuritySchemeIn.HEADER
 )
+@Tag(name = "Auth")
 class AuthController (
     private val authService: AuthService
 ) {
@@ -144,7 +146,7 @@ class AuthController (
 
     @SecurityRequirement(name = "basicAuth")
     @Operation(
-        summary = "Авторизация (получение JWT токена)",
+        summary = "Авторизация (получение JWT токена), требуется заголовок Authorization: Basic Auth",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
