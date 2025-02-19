@@ -168,7 +168,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                             nurserySchoolRadius = row.getBigDecimal("BC", 1),
                         ),
                         options = EstateOptions(
-                            parkingSize = row.getInt("BG"),
+                            parkingSize = row.getInt("BG")?.let { if (it == 0) null else it },
                             gym = row.getBoolean("CE"),
                             childRoom = row.getBoolean("CF"),
                             shop = row.getBoolean("CG"),

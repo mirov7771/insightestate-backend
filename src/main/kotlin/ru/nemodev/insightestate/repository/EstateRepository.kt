@@ -10,6 +10,8 @@ import java.util.*
 @Repository
 interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
 
+    // TODO в целом т.к это справочник и записей мало можно вытаскивать просто весь список и всю фильтрацию делать в коде? =)
+    // т.к запрос сложный для понимания в целом но простой для исполнения =)
     @Query("""
         select * from estate  
         where (:types::text[] is null or (estate_detail ->> 'type' = any(:types)))
@@ -28,23 +30,58 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
                 and (:gradeProjectLocation is null or ((estate_detail -> 'grade' ->> 'projectLocation')::numeric >= :gradeProjectLocation))
                 and (:gradeComfortOfLife is null or ((estate_detail -> 'grade' ->> 'comfortOfLife')::numeric >= :gradeComfortOfLife))
             )
+            and ((:maxBeachWalkTravelTimeOne is null or ((estate_detail -> 'infrastructure' -> 'beachTime' ->> 'walk')::numeric) <= :maxBeachWalkTravelTimeOne)
+                and (:minBeachWalkTravelTimeTwo is null or ((:minBeachWalkTravelTimeTwo <= (estate_detail -> 'infrastructure' -> 'beachTime' ->> 'walk')::numeric) and ((estate_detail -> 'infrastructure' -> 'beachTime' ->> 'walk')::numeric <= :maxBeachWalkTravelTimeTwo)))
+                and (:minBeachWalkTravelTimeFree is null or ((:minBeachWalkTravelTimeFree <= (estate_detail -> 'infrastructure' -> 'beachTime' ->> 'walk')::numeric) and ((estate_detail -> 'infrastructure' -> 'beachTime' ->> 'walk')::numeric  <= :minBeachWalkTravelTimeFree)))
+                and (:maxBeachCarTravelTimeOne is null or ((estate_detail -> 'infrastructure' -> 'beachTime' ->> 'car')::numeric) <= :maxBeachCarTravelTimeOne)
+                and (:minBeachCarTravelTimeTwo is null or ((:minBeachCarTravelTimeTwo <= (estate_detail -> 'infrastructure' -> 'beachTime' ->> 'car')::numeric) and ((estate_detail -> 'infrastructure' -> 'beachTime' ->> 'car')::numeric <= :maxBeachCarTravelTimeTwo)))
+                and (:minBeachCarTravelTimeFree is null or ((:minBeachCarTravelTimeFree <= (estate_detail -> 'infrastructure' -> 'beachTime' ->> 'car')::numeric) and ((estate_detail -> 'infrastructure' -> 'beachTime' ->> 'car')::numeric <= :maxBeachCarTravelTimeFree)))
+            )
+            and ((:maxAirportCarTravelTimeOne is null or ((estate_detail -> 'infrastructure' -> 'airportTime' ->> 'car')::numeric) <= :maxAirportCarTravelTimeOne)
+                and (:minAirportCarTravelTimeTwo is null or ((:minAirportCarTravelTimeTwo <= (estate_detail -> 'infrastructure' -> 'airportTime' ->> 'car')::numeric) and ((estate_detail -> 'infrastructure' -> 'airportTime' ->> 'car')::numeric <= :maxAirportCarTravelTimeTwo)))
+                and (:maxAirportCarTravelTimeFree is null or ((estate_detail -> 'infrastructure' -> 'airportTime' ->> 'car')::numeric) > :maxAirportCarTravelTimeFree)
+            )
+            and (:parking is null or (:parking and ((estate_detail -> 'options' ->> 'parkingSize')::numeric > 0)) or (:parking = false and ((estate_detail -> 'options' -> 'parkingSize' is null))))
         order by created_at desc
         limit :limit offset :offset
     """)
     fun findByParams(
         types: Array<String>?,
         buildEndYears: Array<String>?,
+
         isStudioRoom: Boolean?,
         isOneRoom: Boolean?,
         isTwoRoom: Boolean?,
         isFreeRoom: Boolean?,
         isFourRoom: Boolean?,
+
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
+
         gradeInvestmentSecurity: BigDecimal?,
         gradeInvestmentPotential: BigDecimal?,
         gradeProjectLocation: BigDecimal?,
         gradeComfortOfLife: BigDecimal?,
+
+        maxBeachWalkTravelTimeOne: Int?,
+        minBeachWalkTravelTimeTwo: Int?,
+        maxBeachWalkTravelTimeTwo: Int?,
+        minBeachWalkTravelTimeFree: Int?,
+        maxBeachWalkTravelTimeFree: Int?,
+
+        maxBeachCarTravelTimeOne: Int?,
+        minBeachCarTravelTimeTwo: Int?,
+        maxBeachCarTravelTimeTwo: Int?,
+        minBeachCarTravelTimeFree: Int?,
+        maxBeachCarTravelTimeFree: Int?,
+
+        maxAirportCarTravelTimeOne: Int?,
+        minAirportCarTravelTimeTwo: Int?,
+        maxAirportCarTravelTimeTwo: Int?,
+        maxAirportCarTravelTimeFree: Int?,
+
+        parking: Boolean?,
+
         offset: Long,
         limit: Int
     ): List<EstateEntity>

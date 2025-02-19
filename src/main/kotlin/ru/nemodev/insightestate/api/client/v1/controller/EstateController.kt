@@ -68,6 +68,30 @@ class EstateController (
         @RequestParam(name = "grades", required = false)
         grades: Set<String>?,
 
+        /**
+         * Время до пляжа
+         * 1 Менее 5 мин пешком
+         * 2 6-10 мин пешком
+         * 3 11-30 мин пешком
+         * 11 Менее 5 мин на машине
+         * 12 6-10 мин на машине
+         * 13 11-30 мин на машине
+         */
+        @RequestParam(name = "beachTravelTimes", required = false)
+        beachTravelTimes: Set<String>?,
+
+        /**
+         * Время до аэропорта
+         * 1 до 30 мин на машине
+         * 2 до 60 мин на машине
+         * 3 60+ мин на машине
+         */
+        @RequestParam(name = "airportTravelTimes", required = false)
+        airportTravelTimes: Set<String>?,
+
+        @RequestParam(name = "parking", required = false)
+        parking: Boolean?,
+
         @RequestParam(name = "pageNumber", required = false)
         @Valid
         @Min(0, message = "Минимальное значение 0")
@@ -84,6 +108,9 @@ class EstateController (
         rooms = rooms,
         price = price,
         grades = grades,
+        beachTravelTimes = beachTravelTimes,
+        airportTravelTimes = airportTravelTimes,
+        parking = parking,
         pageable = PageRequest.of(
             pageNumber ?: 0,
             pageSize ?: 25
