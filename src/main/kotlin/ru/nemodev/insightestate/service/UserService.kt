@@ -21,6 +21,9 @@ interface UserService : UserDetailsService {
     fun update(userEntity: UserEntity): UserEntity
     fun update(authBasicToken: String, request: UserUpdateDtoRq)
     fun getUser(authBasicToken: String): UserDtoRs
+
+    //Временно на мвп
+    fun createWithoutConfirm(login: String): UserEntity
 }
 
 @Service
@@ -86,4 +89,15 @@ class UserServiceImpl(
             ?: throw UsernameNotFoundException("Active user $username not found")
     }
 
+    override fun createWithoutConfirm(login: String): UserEntity {
+        return userRepository.save(
+            UserEntity(
+                userDetail = UserDetailEntity(
+                    login = login,
+                    signUpConfirmCode = "0000",
+                    status = UserStatus.SIGN_UP_CONFIRMED,
+                )
+            )
+        )
+    }
 }

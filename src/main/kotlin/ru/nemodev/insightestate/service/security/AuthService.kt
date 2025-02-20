@@ -111,9 +111,10 @@ class AuthServiceImpl(
 
     override fun signUpEnd(request: SignUpEndDtoRq) {
         val userEntity = userService.findByLogin(request.login)
-            ?: throw NotFoundLogicalException(
-                errorCode = ErrorCode.createNotFound("User with email ${request.login} not found")
-            )
+//            ?: throw NotFoundLogicalException(
+//                errorCode = ErrorCode.createNotFound("User with email ${request.login} not found")
+//            )
+            ?: userService.createWithoutConfirm(request.login)
 
         if (userEntity.userDetail.status.isActive()) {
             throw ValidationLogicException(
