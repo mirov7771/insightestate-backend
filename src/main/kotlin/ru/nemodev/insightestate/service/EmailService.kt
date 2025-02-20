@@ -1,7 +1,7 @@
 package ru.nemodev.insightestate.service
 
-import org.springframework.mail.SimpleMailMessage
-import org.springframework.mail.javamail.JavaMailSender
+import org.springframework.mail.javamail.JavaMailSenderImpl
+import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
 import ru.nemodev.platform.core.logging.sl4j.Loggable
 
@@ -11,7 +11,7 @@ interface EmailService {
 
 @Service
 class EmailServiceImpl(
-    private val emailSender: JavaMailSender
+    private val emailSender: JavaMailSenderImpl
 ) : EmailService {
 
     companion object : Loggable
@@ -25,14 +25,16 @@ class EmailServiceImpl(
     }
 
     private fun send(email: String, subject: String, message: String) {
-        val simpleMailMessage = SimpleMailMessage().apply {
-            this.setTo(email)
-            this.subject = subject
-            this.text = message
+        val emailMessage = emailSender.createMimeMessage()
+        MimeMessageHelper(emailMessage, false).apply {
+            setFrom("it@insightestate.com", "insightestate")
+            setTo(email)
+            setSubject(subject)
+            setText(message)
         }
 
-        emailSender.send(simpleMailMessage)
+        emailSender.send(emailMessage)
 
-        logInfo { "Email sent to $email\n subject - $subject\n message -$simpleMailMessage" }
+        logInfo { "Email sent to $email\n subject - $subject\n message -$message" }
     }
 }

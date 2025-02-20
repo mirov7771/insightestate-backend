@@ -18,8 +18,12 @@ spring:
     username: ${EMAIL_USERNAME:it@insightestate.com}
     password: ${EMAIL_PASSWORD:dqyynkrxicwoaqwv}
     properties:
+      mail.transport.protocol: smtp
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.writetimeout: 5000
 
 insightestate:
   auth:
