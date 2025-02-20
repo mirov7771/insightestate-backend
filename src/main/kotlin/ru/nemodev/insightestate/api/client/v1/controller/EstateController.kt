@@ -12,10 +12,11 @@ import jakarta.validation.constraints.Min
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
+import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
 import ru.nemodev.insightestate.entity.EstateType
-import ru.nemodev.insightestate.service.estate.EstateService
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
@@ -24,7 +25,7 @@ import java.util.*
 @RequestMapping("/v1/estate", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "Объекты строек")
 class EstateController (
-    private val service: EstateService
+    private val estateProcessor: EstateProcessor
 ) {
 
     @Operation(
@@ -88,7 +89,7 @@ class EstateController (
         @Min(1, message = "Минимальное значение 1")
         @Max(100, message = "Максимальное значение 100")
         pageSize: Int? = 25
-    ): PageDtoRs<EstateDtoRs> = service.findAll(
+    ): PageDtoRs<EstateDtoRs> = estateProcessor.findAll(
         types = types,
         buildEndYears = buildEndYears,
         rooms = rooms,
@@ -119,5 +120,39 @@ class EstateController (
     fun findById(
         @PathVariable
         id: UUID,
-    ): EstateDetailDtoRs = service.findById(id)
+    ): EstateDetailDtoRs = estateProcessor.findById(id)
+
+    @Operation(
+        summary = "Загрузить объекты из excel файла, все объекты удаляются и загружаются новые",
+        responses = [
+            ApiResponse(responseCode = "200", description = "Успешный ответ"),
+            ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            ),
+            ApiResponse(responseCode = "500", description = "Ошибка обработки запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            )
+        ]
+    )
+    @PostMapping("/load", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun loadFromFile(
+        @RequestPart("file")
+        filePart: MultipartFile
+    ) = estateProcessor.loadFromFile(filePart)
+
+    @Operation(
+        summary = "Загрузить фото объектов из директории, все фото обновляются, процесс загрузки не быстрый т.к фото много",
+        responses = [
+            ApiResponse(responseCode = "200", description = "Успешный ответ"),
+            ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            ),
+            ApiResponse(responseCode = "500", description = "Ошибка обработки запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            )
+        ]
+    )
+    @PostMapping("/load/images")
+    fun loadImageFromDir() = estateProcessor.loadImagesFromDir()
+
 }

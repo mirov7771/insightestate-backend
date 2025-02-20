@@ -24,9 +24,9 @@ cd ../ && sh build-local.sh && cd deploy
 sudo sh docker-build.sh $IMAGE_NAME $IMAGE_ARCHIVE_NAME
 #
 ## Загружаем на сервер образ
-sshpass -p $SERVER_PASSWORD scp $IMAGE_ARCHIVE_NAME $SERVER_USER@$SERVER_HOST:$SERVER_DOCKER_IMAGE_DIR
+sh server-upload-file.sh $SERVER_HOST $SERVER_USER $SERVER_PASSWORD $IMAGE_ARCHIVE_NAME $SERVER_DOCKER_IMAGE_DIR
 # Загружаем docker-compose
-sshpass -p $SERVER_PASSWORD scp $DOCKER_COMPOSE_FILE $SERVER_USER@$SERVER_HOST:$SERVER_DOCKER_DIR
+sh server-upload-file.sh $SERVER_HOST $SERVER_USER $SERVER_PASSWORD $DOCKER_COMPOSE_FILE $SERVER_DOCKER_DIR
 # Подключаемся к серверу удаляем контейнер + образ
 sshpass -p $SERVER_PASSWORD ssh $SERVER_USER@$SERVER_HOST sudo 'bash -s' < docker-remove.sh $CONTAINER_NAME $IMAGE_NAME
 # Подключаемся к серверу загружаем образ

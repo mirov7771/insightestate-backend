@@ -57,8 +57,9 @@ data class EstateDetail (
     val floors: Int? = null,                    // этажей - TODO где брать эту инфу?
     val roomLayouts: RoomLayouts,               // планировки комнат
 
-    val projectImage: String? = null,           // фото проекта
-    val images: List<String>? = null,           // остальные фото
+    var facilityImages: MutableList<String>? = null,   // фото объекта
+    var exteriorImages: MutableList<String>? = null,   // фото экстерьера
+    var interiorImages: MutableList<String>? = null,   // фото интерьера
 )
 
 // Оценка проекта

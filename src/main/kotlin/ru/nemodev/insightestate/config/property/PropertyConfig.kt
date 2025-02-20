@@ -12,6 +12,8 @@ class PropertyConfig
 @ConfigurationProperties("insightestate")
 data class AppProperties(
     val auth: Auth,
+    val imageBaseUrl: String,
+    val estate: Estate
 ) {
     data class Auth(
         val tokens: AuthTokens
@@ -26,4 +28,8 @@ data class AppProperties(
             )
         }
     }
+
+    data class Estate(
+        val imageDir: String
+    )
 }

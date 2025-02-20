@@ -17,7 +17,9 @@ data class EstateDtoRs(
     val buildEndDate: String,
     val level: EstateLevelType,
     val beachTravelTime: Int,
-    val images: List<String>,
+    var facilityImages: List<String>?,
+    var exteriorImages: List<String>?,
+    var interiorImages: List<String>?,
 )
 
 data class EstateDetailDtoRs(
@@ -52,7 +54,9 @@ data class EstateDetailDtoRs(
     val floors: Int?,
     val roomLayouts: RoomLayoutsDto,
 
-    val images: List<String>
+    var facilityImages: List<String>?,
+    var exteriorImages: List<String>?,
+    var interiorImages: List<String>?,
 ) {
     data class EstateGradeDto(
         val final: BigDecimal,

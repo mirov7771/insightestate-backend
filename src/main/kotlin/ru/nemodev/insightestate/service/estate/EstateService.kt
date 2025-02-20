@@ -2,13 +2,9 @@ package ru.nemodev.insightestate.service.estate
 
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
-import ru.nemodev.insightestate.api.client.v1.converter.toDetailDtoRs
-import ru.nemodev.insightestate.api.client.v1.converter.toDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
+import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.repository.EstateRepository
-import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
 import java.math.BigDecimal
@@ -27,11 +23,11 @@ interface EstateService {
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         pageable: Pageable
-    ): PageDtoRs<EstateDtoRs>
+    ): List<EstateEntity>
 
     fun findById(
         id: UUID
-    ): EstateDetailDtoRs
+    ): EstateEntity
 }
 
 @Service
@@ -49,7 +45,7 @@ class EstateServiceImpl (
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         pageable: Pageable
-    ): PageDtoRs<EstateDtoRs> {
+    ): List<EstateEntity> {
 
         val minPrice = when (price) {
             "1" -> BigDecimal.ZERO
@@ -109,18 +105,13 @@ class EstateServiceImpl (
             offset = pageable.offset
         )
 
-        return PageDtoRs(
-            items = estateList.map { it.toDtoRs() },
-            pageSize = estateList.size,
-            pageNumber = pageable.pageNumber,
-            hasMore = estateList.size >= pageable.pageSize
-        )
+        return estateList
     }
 
-    override fun findById(id: UUID): EstateDetailDtoRs {
+    override fun findById(id: UUID): EstateEntity {
         val estateEntity = repository.findById(id).getOrNull()
             ?: throw NotFoundLogicalException(errorCode = ErrorCode.createNotFound("Project object not found"))
 
-        return estateEntity.toDetailDtoRs()
+        return estateEntity
     }
 }

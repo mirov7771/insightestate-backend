@@ -33,6 +33,9 @@ insightestate:
         time-to-live: ${ACCESS_TOKEN_TIME_TO_LIVE:60m}
       refresh:
         time-to-live: ${REFRESH_TOKEN_TIME_TO_LIVE:60m}
+  image-base-url: ${IMAGE_BASE_URL:http://127.0.0.1:9000}
+  estate:
+    image-dir: ${ESTATE_IMAGE_DIR:/Users/nemodev/Downloads/estate/images/estate-images} # TODO для локальной загрузки меняем путь на свой
 
 platform:
   integration:
