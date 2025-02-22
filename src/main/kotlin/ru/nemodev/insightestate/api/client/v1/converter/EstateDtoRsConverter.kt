@@ -26,7 +26,7 @@ class EstateDtoRsConverter(
             id = source.id,
             projectId = estateDetail.projectId,
             name = estateDetail.name,
-            grade = estateDetail.grade.final,
+            grade = estateDetail.grade.main,
             priceMin = estateDetail.price.min,
             roi = estateDetail.profitability.roi,
             buildEndDate = estateDetail.buildEndDate?.format(dateTimeFormatter) ?: "-",

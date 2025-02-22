@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
+import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
@@ -122,6 +124,7 @@ class EstateController (
         id: UUID,
     ): EstateDetailDtoRs = estateProcessor.findById(id)
 
+    // TODO вынести эти методы ниже в admin контроллер и закрыть апикеем
     @Operation(
         summary = "Загрузить объекты из excel файла, все объекты удаляются и загружаются новые",
         responses = [
@@ -155,4 +158,20 @@ class EstateController (
     @PostMapping("/load/images")
     fun loadImageFromDir() = estateProcessor.loadImagesFromDir()
 
+    @Operation(
+        summary = "Выгрузить объекты в csv формате",
+        responses = [
+            ApiResponse(responseCode = "200", description = "Успешный ответ"),
+            ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            ),
+            ApiResponse(responseCode = "500", description = "Ошибка обработки запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            )
+        ]
+    )
+    @GetMapping("/file/csv", produces = ["text/csv"])
+    fun downloadCsvFile(): ResponseEntity<InputStreamResource> {
+        return estateProcessor.downloadCsvFile()
+    }
 }

@@ -35,10 +35,9 @@ data class EstateDetailDtoRs(
     val grade: EstateGradeDto,
     val projectCount: ProjectCountDto,
     val status: EstateStatus,
-    val saleDate: String?,
+    val saleStartDate: String?,
     val buildEndDate: String?,
     val unitCount: UnitCountDto,
-    val constructionSchedule: String?,
 
     var type: EstateType,
     val level: EstateLevelType,
@@ -59,7 +58,7 @@ data class EstateDetailDtoRs(
     var interiorImages: List<String>?,
 ) {
     data class EstateGradeDto(
-        val final: BigDecimal,
+        val main: BigDecimal,
         val investmentSecurity: BigDecimal,
         val investmentPotential: BigDecimal,
         val projectLocation: BigDecimal,
@@ -118,7 +117,7 @@ data class EstateDetailDtoRs(
         val childRoom: Boolean,
         val shop: Boolean,
         val entertainment: Boolean,
-        val coWorking: Boolean,
+        val coworking: Boolean,
     )
 
     data class RoomLayoutsDto(

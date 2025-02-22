@@ -34,7 +34,6 @@ class UserServiceImpl(
     private val passwordEncoder: PasswordEncoder
 ) : UserService {
 
-    // TODO апи получения деталей + редактирование полей
     override fun findByLogin(login: String, status: UserStatus?): UserEntity? {
         return userRepository.findByLogin(login = login, status = status)
     }

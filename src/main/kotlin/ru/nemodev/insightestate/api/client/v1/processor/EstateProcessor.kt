@@ -1,6 +1,8 @@
 package ru.nemodev.insightestate.api.client.v1.processor
 
+import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Pageable
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
@@ -34,6 +36,8 @@ interface EstateProcessor {
 
     fun loadFromFile(filePart: MultipartFile)
     fun loadImagesFromDir()
+
+    fun downloadCsvFile(): ResponseEntity<InputStreamResource>
 }
 
 @Component
@@ -89,6 +93,10 @@ class EstateProcessorImpl(
 
     override fun loadImagesFromDir() {
         estateImageLoader.loadFromDir()
+    }
+
+    override fun downloadCsvFile(): ResponseEntity<InputStreamResource> {
+        return estateService.downloadCsvFile().toResponseEntity()
     }
 
 }

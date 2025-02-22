@@ -32,16 +32,13 @@ data class EstateDetail (
 
     val landPurchased: Boolean,                 // земля выкуплена
     val eiaEnabled: Boolean,                    // наличие EIA
-    val readyStatus: EstateReadyStatus,         // статус готовности TODO вроде это поле не нужно вообще т.к в таблице как фильтр объектов которые доступны на сайте
-    val priority: Int? = null,                  // приоритет TODO вроде это поле не нужно вообще т.к в таблице используется как приоритет для заполнения полей?
     val developer: EstateDeveloper,             // застройщик
     val grade: EstateGrade,                     // оценка проекта
     val projectCount: ProjectCount,             // количество проектов
     val status: EstateStatus,                   // статус проекта
-    val saleDate: LocalDate? = null,            // дата начала продаж // TODO вроде поле нигде не требуется - в таблице нужно поменять формат на дату как у даты окончания строительства
+    val saleStartDate: LocalDate? = null,       // дата начала продаж // TODO вроде поле нигде не требуется - в таблице нужно поменять формат на дату как у даты окончания строительства
     val buildEndDate: LocalDate? = null,        // дата окончания строительства
     val unitCount: UnitCount,                   // количество юнитов
-    val constructionSchedule: String? = null,   // график строительства // TODO вроде поле не нужно и везде пустое?
 
     var type: EstateType,                       // тип проекта
     val level: EstateLevelType,                 // класс проекта
@@ -54,7 +51,7 @@ data class EstateDetail (
 
     val price: MinMaxAvgParam,                  // стоимость
     val ceilingHeight: BigDecimal? = null,      // высота потолка
-    val floors: Int? = null,                    // этажей - TODO где брать эту инфу?
+    val floors: Int? = null,                    // этажность
     val roomLayouts: RoomLayouts,               // планировки комнат
 
     var facilityImages: MutableList<String>? = null,   // фото объекта
@@ -64,7 +61,7 @@ data class EstateDetail (
 
 // Оценка проекта
 data class EstateGrade(
-    val final: BigDecimal,                  // итоговая оценка
+    val main: BigDecimal,                   // итоговая оценка
     val investmentSecurity: BigDecimal,     // безопасность вложений
     val investmentPotential: BigDecimal,    // инвестиционный потенциал
     val projectLocation: BigDecimal,        // расположение проекта
@@ -131,7 +128,7 @@ data class EstateOptions(
     val childRoom: Boolean,             // для детей
     val shop: Boolean,                  // магазины
     val entertainment: Boolean,         // развлекательные
-    val coWorking: Boolean,             // co-working
+    val coworking: Boolean = false,     // co-working
 )
 
 // Планировки
@@ -161,11 +158,11 @@ data class MinMaxAvgParam (
     val avg: BigDecimal? = null,
 )
 
-enum class EstateLevelType {
-    COMFORT,
-    LUX,
-    PREMIUM,
-    UNKNOWN,
+enum class EstateLevelType(val csv: String) {
+    COMFORT("Комфорт"),
+    LUX("Люкс"),
+    PREMIUM("Премиум"),
+    UNKNOWN("Не указан"),
 }
 
 enum class EstateProductType {
@@ -179,9 +176,9 @@ enum class EstateReadyStatus {
     SOLD_OUT
 }
 
-enum class EstateType {
-    VILLA,
-    APARTMENT
+enum class EstateType(val csv: String) {
+    VILLA("villa"),
+    APARTMENT("kvartira")
 }
 
 enum class EstateStatus {

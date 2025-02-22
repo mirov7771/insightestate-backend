@@ -34,15 +34,13 @@ class EstateExcelParserImpl : EstateExcelParser {
 
                         landPurchased = row.getBoolean("C"),
                         eiaEnabled = row.getBoolean("D"),
-                        readyStatus = EstateReadyStatus.DONE,
-                        priority = row.getInt("F"),
                         developer = EstateDeveloper(
                             name = row.getString("G")!!,
                             country = row.getString("AI"),
                             yearOfFoundation = row.getInt("AK"),
                         ),
                         grade = EstateGrade(
-                            final = row.getBigDecimal("H", 1)!!,
+                            main = row.getBigDecimal("H", 1)!!,
                             investmentSecurity = row.getBigDecimal("I", 1)!!,
                             investmentPotential = row.getBigDecimal("N", 1)!!,
                             projectLocation = row.getBigDecimal("S", 1)!!,
@@ -59,14 +57,13 @@ class EstateExcelParserImpl : EstateExcelParser {
                             "Сдан" -> EstateStatus.FINISHED
                             else -> EstateStatus.UNKNOWN
                         },
-                        saleDate = null, // TODO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
+                        saleStartDate = null, // TODO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
                         buildEndDate = row.getLocalDate("AO"),
                         unitCount = UnitCount(
                             total = row.getInt("AP")!!,
                             sailed = row.getInt("AQ"),
                             available = row.getInt("AR")!!,
                         ),
-                        constructionSchedule = row.getString("AS"),
                         type = row.getString("EA").let {
                             if (it == null) EstateType.APARTMENT else EstateType.VILLA
                         },
@@ -115,7 +112,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                             childRoom = row.getBoolean("CF"),
                             shop = row.getBoolean("CG"),
                             entertainment = row.getBoolean("CH"),
-                            coWorking = false // TODO нет колонки?
+                            coworking = false // TODO нет колонки?
                         ),
                         price = MinMaxAvgParam(
                             min = getMinPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
@@ -123,7 +120,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                             avg = row.getBigDecimal("EA") // TODO средняя стоимость указана только для вилл
                         ),
                         ceilingHeight = row.getBigDecimal("BI", 1),
-                        floors = null, // TODO колонки с этажами нет?
+                        floors = row.getInt("BJ"),
                         roomLayouts = RoomLayouts(
                             studio = getRoomParams(row, listOf("CL", "CN", "CM"), listOf("DH", "DJ", "DI"), listOf("HN", "HO")),
                             one = getRoomParams(row, listOf("CO", "CQ", "CP"), listOf("DK", "DM", "DL"), listOf("HP", "HQ")),

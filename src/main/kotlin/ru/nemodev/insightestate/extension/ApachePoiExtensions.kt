@@ -20,7 +20,7 @@ fun Row.getString(cellName: String): String? {
     val cell = getCellByName(cellName) ?: return null
     val value = if (cell.cellType == CellType.STRING) cell.stringCellValue else cell.rawValue
 
-    return value?.nullIfEmpty()
+    return value?.trim()?.nullIfEmpty()
 }
 
 fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
@@ -44,7 +44,9 @@ fun Row.getBigDecimalFromPercent(cellName: String, scale: Int): BigDecimal? {
 
 fun Row.getInt(cellName: String): Int? {
     return this.getString(cellName)
-        ?.filter { it.isDigit() }?.toInt()
+        ?.filter { it.isDigit() }
+        ?.nullIfEmpty()
+        ?.toInt()
 }
 
 fun Row.getBoolean(cellName: String): Boolean {

@@ -47,6 +47,9 @@ dependencies {
     val apachePoiVersion = "5.3.0"
     implementation("org.apache.poi:poi:$apachePoiVersion")
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
+
+    val fastcsvVersion = "3.4.0"
+    implementation("de.siegmar:fastcsv:$fastcsvVersion")
 }
 
 jacoco {
