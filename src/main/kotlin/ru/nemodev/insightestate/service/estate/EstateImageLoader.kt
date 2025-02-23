@@ -2,7 +2,6 @@ package ru.nemodev.insightestate.service.estate
 
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.config.property.AppProperties
-import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.platform.core.extensions.getFileExtension
 import ru.nemodev.platform.core.integration.s3.minio.client.MinioS3Client
 import ru.nemodev.platform.core.logging.sl4j.Loggable
@@ -16,7 +15,7 @@ interface EstateImageLoader {
 class EstateImageLoaderImpl(
     private val appProperties: AppProperties,
     private val minioS3Client: MinioS3Client,
-    private val estateRepository: EstateRepository
+    private val estateService: EstateService
 ) : EstateImageLoader {
 
     companion object : Loggable
@@ -37,7 +36,7 @@ class EstateImageLoaderImpl(
     override fun loadFromDir() {
         logInfo { "Начало загрузки фото объектов недвижимости" }
 
-        val estateList = estateRepository.findAll()
+        val estateList = estateService.findAll()
         if (estateList.isEmpty()) {
             logWarn { "Фото объектов не могут быть загружены т.к объектов нет в базе данных" }
             return
@@ -111,7 +110,7 @@ class EstateImageLoaderImpl(
             }
         }
 
-        estateRepository.saveAll(estateList)
+        estateService.saveAll(estateList)
 
         logInfo { "Закончили загрузку фото объектов недвижимости" }
     }

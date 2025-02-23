@@ -126,7 +126,7 @@ class EstateController (
 
     // TODO вынести эти методы ниже в admin контроллер и закрыть апикеем
     @Operation(
-        summary = "Загрузить объекты из excel файла, все объекты удаляются и загружаются новые",
+        summary = "Загрузить объекты из excel файла, существующие объекты обновляются с сохранением картинок",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
@@ -159,7 +159,7 @@ class EstateController (
     fun loadImageFromDir() = estateProcessor.loadImagesFromDir()
 
     @Operation(
-        summary = "Выгрузить объекты в csv формате",
+        summary = "Выгрузить объекты в csv формате для WebFlow",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
@@ -170,8 +170,8 @@ class EstateController (
             )
         ]
     )
-    @GetMapping("/file/csv", produces = ["text/csv"])
-    fun downloadCsvFile(): ResponseEntity<InputStreamResource> {
-        return estateProcessor.downloadCsvFile()
+    @GetMapping("/webflow/file/csv", produces = ["text/csv"])
+    fun downloadWebFlowCsvFile(): ResponseEntity<InputStreamResource> {
+        return estateProcessor.downloadWebFlowCsvFile()
     }
 }

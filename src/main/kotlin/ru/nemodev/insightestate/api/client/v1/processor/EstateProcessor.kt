@@ -13,6 +13,7 @@ import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
+import ru.nemodev.insightestate.service.estate.EstateWebFlowCsvExporter
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
 
@@ -37,7 +38,7 @@ interface EstateProcessor {
     fun loadFromFile(filePart: MultipartFile)
     fun loadImagesFromDir()
 
-    fun downloadCsvFile(): ResponseEntity<InputStreamResource>
+    fun downloadWebFlowCsvFile(): ResponseEntity<InputStreamResource>
 }
 
 @Component
@@ -48,6 +49,7 @@ class EstateProcessorImpl(
 
     private val estateLoader: EstateLoader,
     private val estateImageLoader: EstateImageLoader,
+    private val estateWebFlowCsvExporter: EstateWebFlowCsvExporter
 ) : EstateProcessor {
 
     override fun findAll(
@@ -95,8 +97,8 @@ class EstateProcessorImpl(
         estateImageLoader.loadFromDir()
     }
 
-    override fun downloadCsvFile(): ResponseEntity<InputStreamResource> {
-        return estateService.downloadCsvFile().toResponseEntity()
+    override fun downloadWebFlowCsvFile(): ResponseEntity<InputStreamResource> {
+        return estateWebFlowCsvExporter.export().toResponseEntity()
     }
 
 }

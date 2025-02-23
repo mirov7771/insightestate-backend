@@ -1,9 +1,8 @@
 package ru.nemodev.insightestate.service.estate
 
-import org.springframework.core.io.ClassPathResource
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
-import ru.nemodev.insightestate.repository.EstateRepository
+import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
@@ -11,21 +10,16 @@ import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.io.InputStream
 
 interface EstateLoader {
-    fun loadFromFileInternal()
     fun loadFromFile(filePart: MultipartFile)
 }
 
 @Service
 class EstateLoaderImpl(
     private val estateExcelParser: EstateExcelParser,
-    private val estateRepository: EstateRepository,
+    private val estateService: EstateService,
 ) : EstateLoader {
 
     companion object : Loggable
-
-    override fun loadFromFileInternal() {
-        load(ClassPathResource("data/estate.xlsx").inputStream)
-    }
 
     override fun loadFromFile(filePart: MultipartFile) {
         if (filePart.originalFilename?.getFileExtension() != "xlsx") {
@@ -39,13 +33,28 @@ class EstateLoaderImpl(
 
     private fun load(inputStream: InputStream) {
         logInfo { "Начало парсинга объектов недвижимости" }
-        val estates = estateExcelParser.parse(inputStream)
-        logInfo { "Закончили парсинг объектов недвижимости всего - ${estates.size}" }
+        val parsedEstateList = estateExcelParser.parse(inputStream)
+        logInfo { "Закончили парсинг объектов недвижимости всего - ${parsedEstateList.size}" }
 
-        logInfo { "Начало удаления и загрузки новых объектов недвижимости" }
-        estateRepository.deleteAll()
-        estateRepository.saveAll(estates)
-        logInfo { "Закончили удаление и загрузку новых объектов недвижимости" }
+        logInfo { "Начало обновления и загрузки новых объектов недвижимости" }
+        val existsEstateByProjectMap = estateService.findAll().associateBy { it.estateDetail.projectId }.toMutableMap()
+        val newEstateList = mutableListOf<EstateEntity>()
+        newEstateList.forEach { newEstate ->
+            val existEstate = existsEstateByProjectMap[newEstate.estateDetail.projectId]
+            if (existEstate == null) {
+                newEstateList.add(newEstate)
+            } else {
+                // сохраняем ранее загруженные картинки
+                newEstate.estateDetail.facilityImages = existEstate.estateDetail.facilityImages
+                newEstate.estateDetail.exteriorImages = existEstate.estateDetail.exteriorImages
+                newEstate.estateDetail.interiorImages = existEstate.estateDetail.interiorImages
+                // обновляем информацию по объекту
+                existEstate.estateDetail = newEstate.estateDetail
+            }
+        }
+        estateService.saveAll(newEstateList)
+        estateService.saveAll(existsEstateByProjectMap.values.toList())
+        logInfo { "Закончили обновление и загрузку новых объектов недвижимости" }
     }
 
 }

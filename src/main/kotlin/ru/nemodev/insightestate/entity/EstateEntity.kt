@@ -16,7 +16,7 @@ class EstateEntity (
     updatedAt: LocalDateTime = LocalDateTime.now(),
 
     @Column("estate_detail")
-    val estateDetail: EstateDetail
+    var estateDetail: EstateDetail
 ) : AbstractEntity<UUID>(id, createdAt, updatedAt)
 
 /**
@@ -36,7 +36,7 @@ data class EstateDetail (
     val grade: EstateGrade,                     // оценка проекта
     val projectCount: ProjectCount,             // количество проектов
     val status: EstateStatus,                   // статус проекта
-    val saleStartDate: LocalDate? = null,       // дата начала продаж // TODO вроде поле нигде не требуется - в таблице нужно поменять формат на дату как у даты окончания строительства
+    val saleStartDate: LocalDate? = null,       // дата начала продаж // TODO в таблице нужно поменять формат на дату как у даты окончания строительства
     val buildEndDate: LocalDate? = null,        // дата окончания строительства
     val unitCount: UnitCount,                   // количество юнитов
 
