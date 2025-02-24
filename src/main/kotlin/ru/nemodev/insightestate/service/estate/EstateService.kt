@@ -30,11 +30,12 @@ interface EstateService {
         id: UUID
     ): EstateEntity
 
-    fun saveAll(estateList: List<EstateEntity>)
+    fun saveAll(estates: List<EstateEntity>)
+    fun findByIds(ids: List<UUID>): List<EstateEntity>
 }
 
 @Service
-class EstateServiceImpl (
+class EstateServiceImpl(
     private val repository: EstateRepository,
 ) : EstateService {
 
@@ -71,7 +72,7 @@ class EstateServiceImpl (
             else -> null
         }
 
-        val estateList = repository.findByParams(
+        val estates = repository.findByParams(
             types = types?.map { it.name }?.toTypedArray(),
             buildEndYears = buildEndYears?.map { it.toString() }?.toTypedArray(),
 
@@ -112,7 +113,7 @@ class EstateServiceImpl (
             offset = pageable.offset
         )
 
-        return estateList
+        return estates
     }
 
     override fun findById(id: UUID): EstateEntity {
@@ -122,7 +123,11 @@ class EstateServiceImpl (
         return estateEntity
     }
 
-    override fun saveAll(estateList: List<EstateEntity>) {
-        repository.saveAll(estateList)
+    override fun saveAll(estates: List<EstateEntity>) {
+        repository.saveAll(estates)
+    }
+
+    override fun findByIds(ids: List<UUID>): List<EstateEntity> {
+        return repository.findAllById(ids)
     }
 }

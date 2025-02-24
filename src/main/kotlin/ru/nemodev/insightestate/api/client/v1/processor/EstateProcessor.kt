@@ -63,7 +63,7 @@ class EstateProcessorImpl(
         parking: Boolean?,
         pageable: Pageable
     ): PageDtoRs<EstateDtoRs> {
-        val estateList = estateService.findAll(
+        val estates = estateService.findAll(
             types = types,
             buildEndYears = buildEndYears,
             rooms = rooms,
@@ -76,10 +76,10 @@ class EstateProcessorImpl(
         )
 
         return PageDtoRs(
-            items = estateList.map { estateDtoRsConverter.convert(it) },
-            pageSize = estateList.size,
+            items = estates.map { estateDtoRsConverter.convert(it) },
+            pageSize = estates.size,
             pageNumber = pageable.pageNumber,
-            hasMore = estateList.size >= pageable.pageSize
+            hasMore = estates.size >= pageable.pageSize
         )
     }
 

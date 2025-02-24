@@ -13,14 +13,14 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
-import ru.nemodev.insightestate.service.UserService
+import ru.nemodev.insightestate.api.client.v1.processor.UserProcessor
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 
 @RestController
 @RequestMapping("/users", produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "Пользователи")
 class UserController (
-    private val userService: UserService
+    private val userProcessor: UserProcessor
 ) {
 
     @SecurityRequirement(name = "basicAuth")
@@ -29,6 +29,9 @@ class UserController (
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            ),
+            ApiResponse(responseCode = "401", description = "Не авторизованный запрос",
                 content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
             ),
             ApiResponse(responseCode = "404", description = "Пользователь не найден",
@@ -47,7 +50,7 @@ class UserController (
         @Parameter(description = "Токен basic auth", required = true, hidden = true)
         @RequestHeader("Authorization") authBasicToken: String,
     ): UserDtoRs {
-        return userService.getUser(authBasicToken)
+        return userProcessor.getUser(authBasicToken)
     }
 
     @SecurityRequirement(name = "basicAuth")
@@ -79,6 +82,6 @@ class UserController (
         @RequestBody
         request: UserUpdateDtoRq
     ) {
-        userService.update(authBasicToken, request)
+        userProcessor.update(authBasicToken, request)
     }
 }

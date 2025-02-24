@@ -27,7 +27,7 @@ class EstateWebFlowCsvExporterImpl(
 ) : EstateWebFlowCsvExporter {
 
     override fun export(): FileData {
-        val estateList = estateService.findAll()
+        val estates = estateService.findAll()
 
         val stringWriter = StringWriter()
         val csvWriter = CsvWriter.builder()
@@ -94,7 +94,7 @@ class EstateWebFlowCsvExporterImpl(
                 "Best Grage NEW"
             )
 
-        estateList.forEach { estate ->
+        estates.forEach { estate ->
             val estateDetail = estate.estateDetail
             csvWriter.writeRecord(
                 estateDetail.name,

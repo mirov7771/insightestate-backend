@@ -36,8 +36,8 @@ class EstateImageLoaderImpl(
     override fun loadFromDir() {
         logInfo { "Начало загрузки фото объектов недвижимости" }
 
-        val estateList = estateService.findAll()
-        if (estateList.isEmpty()) {
+        val estates = estateService.findAll()
+        if (estates.isEmpty()) {
             logWarn { "Фото объектов не могут быть загружены т.к объектов нет в базе данных" }
             return
         }
@@ -79,7 +79,7 @@ class EstateImageLoaderImpl(
             return
         }
 
-        estateList.forEach { estate ->
+        estates.forEach { estate ->
             val estateImages = estateImageMap[estate.estateDetail.projectId]
             if (estateImages != null) {
                 estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
@@ -110,7 +110,7 @@ class EstateImageLoaderImpl(
             }
         }
 
-        estateService.saveAll(estateList)
+        estateService.saveAll(estates)
 
         logInfo { "Закончили загрузку фото объектов недвижимости" }
     }

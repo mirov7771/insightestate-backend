@@ -7,9 +7,8 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
-import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
-import ru.nemodev.insightestate.entity.UserDetailEntity
+import ru.nemodev.insightestate.entity.UserDetail
 import ru.nemodev.insightestate.entity.UserEntity
 import ru.nemodev.insightestate.entity.UserStatus
 import ru.nemodev.insightestate.extension.toAuthenticationToken
@@ -20,9 +19,9 @@ interface UserService : UserDetailsService {
     fun create(login: String, signUpConfirmCode: String): UserEntity
     fun update(userEntity: UserEntity): UserEntity
     fun update(authBasicToken: String, request: UserUpdateDtoRq)
-    fun getUser(authBasicToken: String): UserDtoRs
+    fun getUser(authBasicToken: String): UserEntity
 
-    //Временно на мвп
+    // TODO удалить? Временно на мвп
     fun createWithoutConfirm(login: String): UserEntity
 }
 
@@ -41,7 +40,7 @@ class UserServiceImpl(
     override fun create(login: String, signUpConfirmCode: String): UserEntity {
         return userRepository.save(
             UserEntity(
-                userDetail = UserDetailEntity(
+                userDetail = UserDetail(
                     login = login,
                     signUpConfirmCode = signUpConfirmCode,
                     status = UserStatus.SIGN_UP_CONFIRM_CODE,
@@ -55,10 +54,7 @@ class UserServiceImpl(
     }
 
     override fun update(authBasicToken: String, request: UserUpdateDtoRq) {
-        val authToken = authBasicToken.toAuthenticationToken()
-        val authentication = authManager.authenticate(authToken)
-
-        val userEntity = authentication.principal as UserEntity
+        val userEntity = getUser(authBasicToken)
         userEntity.userDetail.fio = request.fio
         userEntity.userDetail.mobileNumber = request.mobileNumber
         userEntity.userDetail.location = request.location
@@ -69,18 +65,13 @@ class UserServiceImpl(
         update(userEntity)
     }
 
-    override fun getUser(authBasicToken: String): UserDtoRs {
+    override fun getUser(authBasicToken: String): UserEntity {
         val authToken = authBasicToken.toAuthenticationToken()
         val authentication = authManager.authenticate(authToken)
 
         val userEntity = authentication.principal as UserEntity
 
-        return UserDtoRs(
-            login = userEntity.userDetail.login,
-            fio = userEntity.userDetail.fio!!,
-            mobileNumber = userEntity.userDetail.mobileNumber!!,
-            location = userEntity.userDetail.location!!
-        )
+        return userEntity
     }
 
     override fun loadUserByUsername(username: String): UserDetails {
@@ -91,7 +82,7 @@ class UserServiceImpl(
     override fun createWithoutConfirm(login: String): UserEntity {
         return userRepository.save(
             UserEntity(
-                userDetail = UserDetailEntity(
+                userDetail = UserDetail(
                     login = login,
                     signUpConfirmCode = "0000",
                     status = UserStatus.SIGN_UP_CONFIRMED,

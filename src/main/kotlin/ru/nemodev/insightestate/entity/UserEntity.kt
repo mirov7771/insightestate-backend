@@ -17,7 +17,7 @@ class UserEntity(
     updatedAt: LocalDateTime = createdAt,
 
     @Column("user_detail")
-    val userDetail: UserDetailEntity
+    val userDetail: UserDetail
 ) : AbstractEntity<UUID>(id, createdAt, updatedAt), UserDetails {
 
     companion object {
@@ -30,7 +30,7 @@ class UserEntity(
 }
 
 @StoreJson
-data class UserDetailEntity(
+data class UserDetail(
     val login: String,
     var passwordHash: String? = null,
     var signUpConfirmCode: String,

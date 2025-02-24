@@ -33,16 +33,16 @@ class EstateLoaderImpl(
 
     private fun load(inputStream: InputStream) {
         logInfo { "Начало парсинга объектов недвижимости" }
-        val parsedEstateList = estateExcelParser.parse(inputStream)
-        logInfo { "Закончили парсинг объектов недвижимости всего - ${parsedEstateList.size}" }
+        val parsedEstates = estateExcelParser.parse(inputStream)
+        logInfo { "Закончили парсинг объектов недвижимости всего - ${parsedEstates.size}" }
 
         logInfo { "Начало обновления и загрузки новых объектов недвижимости" }
         val existsEstateByProjectMap = estateService.findAll().associateBy { it.estateDetail.projectId }.toMutableMap()
-        val newEstateList = mutableListOf<EstateEntity>()
-        newEstateList.forEach { newEstate ->
+        val newEstates = mutableListOf<EstateEntity>()
+        newEstates.forEach { newEstate ->
             val existEstate = existsEstateByProjectMap[newEstate.estateDetail.projectId]
             if (existEstate == null) {
-                newEstateList.add(newEstate)
+                newEstates.add(newEstate)
             } else {
                 // сохраняем ранее загруженные картинки
                 newEstate.estateDetail.facilityImages = existEstate.estateDetail.facilityImages
@@ -52,7 +52,7 @@ class EstateLoaderImpl(
                 existEstate.estateDetail = newEstate.estateDetail
             }
         }
-        estateService.saveAll(newEstateList)
+        estateService.saveAll(newEstates)
         estateService.saveAll(existsEstateByProjectMap.values.toList())
         logInfo { "Закончили обновление и загрузку новых объектов недвижимости" }
     }
