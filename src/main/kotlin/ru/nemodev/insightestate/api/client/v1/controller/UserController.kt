@@ -18,14 +18,14 @@ import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 
 @RestController
 @RequestMapping("/users", produces = [MediaType.APPLICATION_JSON_VALUE])
-@Tag(name = "Пользователи")
+@Tag(name = "Пользователи", description = "Во всех запросах требуется заголовок Authorization: Basic Auth")
 class UserController (
     private val userProcessor: UserProcessor
 ) {
 
     @SecurityRequirement(name = "basicAuth")
     @Operation(
-        summary = "Получение пользователя, требуется заголовок Authorization: Basic Auth",
+        summary = "Получение пользователя",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
@@ -55,7 +55,7 @@ class UserController (
 
     @SecurityRequirement(name = "basicAuth")
     @Operation(
-        summary = "Обновление информации пользователя, требуется заголовок Authorization: Basic Auth",
+        summary = "Обновление информации пользователя",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),
             ApiResponse(responseCode = "400", description = "Не правильный формат запроса",

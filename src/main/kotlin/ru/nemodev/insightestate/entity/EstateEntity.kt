@@ -87,7 +87,7 @@ data class ProjectCount(
 data class UnitCount(
     val total: Int,                                 // всего
     val sailed: Int? = null,                        // продано
-    val available: Int                              // доступно
+    val available: Int? = null                      // доступно
 )
 
 // Локация проекта

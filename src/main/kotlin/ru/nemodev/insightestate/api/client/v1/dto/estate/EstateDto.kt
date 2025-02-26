@@ -81,7 +81,7 @@ data class EstateDetailDtoRs(
     data class UnitCountDto(
         val total: Int,
         val sailed: Int?,
-        val available: Int
+        val available: Int?
     )
 
     data class EstateLocationDto(

@@ -32,9 +32,9 @@ class EstateDtoRsConverter(
             buildEndDate = estateDetail.buildEndDate?.format(dateTimeFormatter) ?: "-",
             level = estateDetail.level,
             beachTravelTime = estateDetail.infrastructure.beachTime.walk ?: 0,
-            facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" },
-            exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" },
-            interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" },
+            facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
+            exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
+            interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
         )
     }
 }

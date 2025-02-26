@@ -62,7 +62,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                         unitCount = UnitCount(
                             total = row.getInt("AP")!!,
                             sailed = row.getInt("AQ"),
-                            available = row.getInt("AR")!!,
+                            available = row.getInt("AR"),
                         ),
                         type = row.getString("EA").let {
                             if (it == null) EstateType.APARTMENT else EstateType.VILLA

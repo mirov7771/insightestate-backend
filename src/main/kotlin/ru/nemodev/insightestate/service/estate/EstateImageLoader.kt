@@ -82,9 +82,9 @@ class EstateImageLoaderImpl(
         estates.forEach { estate ->
             val estateImages = estateImageMap[estate.estateDetail.projectId]
             if (estateImages != null) {
-                estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
-                estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
-                estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
+                estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList().ifEmpty { null }
+                estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList().ifEmpty { null }
+                estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList().ifEmpty { null }
 
                 estateImages.facilityImages.forEach { imageFile ->
                     minioS3Client.upload(

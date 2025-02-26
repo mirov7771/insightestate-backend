@@ -52,8 +52,8 @@ class EstateDetailDtoRsConverter(
                 deviationFromDeadline = estateDetail.projectCount.deviationFromDeadline,
             ),
             status = estateDetail.status,
-            saleStartDate = estateDetail.saleStartDate?.format(dateTimeFormatter) ?: "-",
-            buildEndDate = estateDetail.buildEndDate?.format(dateTimeFormatter) ?: "-",
+            saleStartDate = estateDetail.saleStartDate?.format(dateTimeFormatter),
+            buildEndDate = estateDetail.buildEndDate?.format(dateTimeFormatter),
             unitCount = EstateDetailDtoRs.UnitCountDto(
                 total = estateDetail.unitCount.total,
                 sailed = estateDetail.unitCount.sailed,
@@ -104,9 +104,9 @@ class EstateDetailDtoRsConverter(
                 villaFour = estateDetail.roomLayouts.villaFour?.toRoomParamsDto(),
                 villaFive = estateDetail.roomLayouts.villaFive?.toRoomParamsDto()
             ),
-            facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" },
-            exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" },
-            interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" },
+            facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
+            exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
+            interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
         )
     }
 }
