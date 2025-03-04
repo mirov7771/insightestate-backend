@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
+import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
@@ -29,7 +30,7 @@ interface EstateProcessor {
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         pageable: Pageable
-    ): PageDtoRs<EstateDtoRs>
+    ): CustomPageDtoRs
 
     fun findById(
         id: UUID
@@ -62,7 +63,7 @@ class EstateProcessorImpl(
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         pageable: Pageable
-    ): PageDtoRs<EstateDtoRs> {
+    ): CustomPageDtoRs {
         val estates = estateService.findAll(
             types = types,
             buildEndYears = buildEndYears,
@@ -75,11 +76,12 @@ class EstateProcessorImpl(
             pageable = pageable
         )
 
-        return PageDtoRs(
+        return CustomPageDtoRs(
             items = estates.map { estateDtoRsConverter.convert(it) },
             pageSize = estates.size,
             pageNumber = pageable.pageNumber,
-            hasMore = estates.size >= pageable.pageSize
+            hasMore = estates.size >= pageable.pageSize,
+            totalPages = estateService.findPages(pageable.pageSize)
         )
     }
 

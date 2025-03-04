@@ -32,6 +32,7 @@ interface EstateService {
 
     fun saveAll(estates: List<EstateEntity>)
     fun findByIds(ids: List<UUID>): List<EstateEntity>
+    fun findPages(pageCount: Int): Int
 }
 
 @Service
@@ -129,5 +130,10 @@ class EstateServiceImpl(
 
     override fun findByIds(ids: List<UUID>): List<EstateEntity> {
         return repository.findAllById(ids)
+    }
+
+    override fun findPages(pageCount: Int): Int {
+        val count = repository.findAllEstate() ?: return 0
+        return count / pageCount
     }
 }

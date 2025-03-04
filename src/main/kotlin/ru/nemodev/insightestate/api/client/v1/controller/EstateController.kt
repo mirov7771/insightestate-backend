@@ -15,6 +15,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
+import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
 import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
@@ -91,7 +92,7 @@ class EstateController (
         @Min(1, message = "Минимальное значение 1")
         @Max(100, message = "Максимальное значение 100")
         pageSize: Int? = 25
-    ): PageDtoRs<EstateDtoRs> = estateProcessor.findAll(
+    ): CustomPageDtoRs = estateProcessor.findAll(
         types = types,
         buildEndYears = buildEndYears,
         rooms = rooms,

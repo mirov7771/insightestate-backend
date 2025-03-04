@@ -85,4 +85,9 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         offset: Long,
         limit: Int
     ): List<EstateEntity>
+
+    @Query("""
+        select count(*) from 
+    """)
+    fun findAllEstate(): Int?
 }
