@@ -39,17 +39,17 @@ class EstateLoaderImpl(
         logInfo { "Начало обновления и загрузки новых объектов недвижимости" }
         val existsEstateByProjectMap = estateService.findAll().associateBy { it.estateDetail.projectId }.toMutableMap()
         val newEstates = mutableListOf<EstateEntity>()
-        newEstates.forEach { newEstate ->
-            val existEstate = existsEstateByProjectMap[newEstate.estateDetail.projectId]
+        parsedEstates.forEach { parsedEstate ->
+            val existEstate = existsEstateByProjectMap[parsedEstate.estateDetail.projectId]
             if (existEstate == null) {
-                newEstates.add(newEstate)
+                newEstates.add(parsedEstate)
             } else {
                 // сохраняем ранее загруженные картинки
-                newEstate.estateDetail.facilityImages = existEstate.estateDetail.facilityImages
-                newEstate.estateDetail.exteriorImages = existEstate.estateDetail.exteriorImages
-                newEstate.estateDetail.interiorImages = existEstate.estateDetail.interiorImages
+                parsedEstate.estateDetail.facilityImages = existEstate.estateDetail.facilityImages
+                parsedEstate.estateDetail.exteriorImages = existEstate.estateDetail.exteriorImages
+                parsedEstate.estateDetail.interiorImages = existEstate.estateDetail.interiorImages
                 // обновляем информацию по объекту
-                existEstate.estateDetail = newEstate.estateDetail
+                existEstate.estateDetail = parsedEstate.estateDetail
             }
         }
         estateService.saveAll(newEstates)

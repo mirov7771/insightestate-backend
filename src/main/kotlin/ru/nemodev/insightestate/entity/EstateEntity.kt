@@ -147,9 +147,9 @@ data class RoomLayouts(
 
 // Параметры планировки
 data class RoomParams(
-    val pricePerMeter: MinMaxAvgParam,
-    val price: MinMaxAvgParam,
-    val square: MinMaxAvgParam,
+    val pricePerMeter: MinMaxAvgParam? = null,
+    val price: MinMaxAvgParam? = null,
+    val square: MinMaxAvgParam? = null,
 )
 
 data class MinMaxAvgParam (

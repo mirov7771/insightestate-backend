@@ -134,9 +134,9 @@ data class EstateDetailDtoRs(
     )
 
     data class RoomParamsDto(
-        val pricePerMeter: MinMaxAvgParamDto,
-        val price: MinMaxAvgParamDto,
-        val square: MinMaxAvgParamDto,
+        val pricePerMeter: MinMaxAvgParamDto?,
+        val price: MinMaxAvgParamDto?,
+        val square: MinMaxAvgParamDto?,
     )
 
     data class MinMaxAvgParamDto (
