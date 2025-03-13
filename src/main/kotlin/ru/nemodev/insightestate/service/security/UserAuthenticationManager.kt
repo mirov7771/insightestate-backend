@@ -32,6 +32,17 @@ class UserAuthenticationManager(
         return createUsernamePasswordAuthenticationToken(user)
     }
 
+    // TODO временно
+    fun authenticateWithoutCheckPassword(authentication: Authentication): Authentication {
+        if ((authentication.credentials as String).isBlank()) {
+            throw BadCredentialsException(BAD_CREDENTIALS_MESSAGE)
+        }
+
+        val user = userService.loadUserByUsername(authentication.name)
+
+        return createUsernamePasswordAuthenticationToken(user)
+    }
+
     private fun createUsernamePasswordAuthenticationToken(userDetails: UserDetails): UsernamePasswordAuthenticationToken {
         return UsernamePasswordAuthenticationToken.authenticated(
             userDetails,

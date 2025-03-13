@@ -126,10 +126,13 @@ private fun MinMaxAvgParam.toMinMaxAvgParamDto(): EstateDetailDtoRs.MinMaxAvgPar
     )
 }
 
-private fun RoomParams.toRoomParamsDto(): EstateDetailDtoRs.RoomParamsDto {
+private fun RoomParams.toRoomParamsDto(): EstateDetailDtoRs.RoomParamsDto? {
+    if (pricePerMeter == null && price == null && square == null) {
+        return null
+    }
     return EstateDetailDtoRs.RoomParamsDto(
-        pricePerMeter = pricePerMeter.toMinMaxAvgParamDto(),
-        price = price.toMinMaxAvgParamDto(),
-        square = square.toMinMaxAvgParamDto(),
+        pricePerMeter = pricePerMeter?.toMinMaxAvgParamDto(),
+        price = price?.toMinMaxAvgParamDto(),
+        square = square?.toMinMaxAvgParamDto(),
     )
 }

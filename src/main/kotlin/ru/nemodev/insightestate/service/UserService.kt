@@ -1,7 +1,6 @@
 package ru.nemodev.insightestate.service
 
 import org.springframework.context.annotation.Lazy
-import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
@@ -13,6 +12,7 @@ import ru.nemodev.insightestate.entity.UserEntity
 import ru.nemodev.insightestate.entity.UserStatus
 import ru.nemodev.insightestate.extension.toAuthenticationToken
 import ru.nemodev.insightestate.repository.UserRepository
+import ru.nemodev.insightestate.service.security.UserAuthenticationManager
 
 interface UserService : UserDetailsService {
     fun findByLogin(login: String, status: UserStatus? = null): UserEntity?
@@ -29,7 +29,7 @@ interface UserService : UserDetailsService {
 class UserServiceImpl(
     private val userRepository: UserRepository,
     @Lazy // TODO сделать spring security authentication тогда не придется в каждом методе принимать токен и искать клиента
-    private val authManager: AuthenticationManager,
+    private val authManager: UserAuthenticationManager,
     private val passwordEncoder: PasswordEncoder
 ) : UserService {
 
@@ -67,7 +67,7 @@ class UserServiceImpl(
 
     override fun getUser(authBasicToken: String): UserEntity {
         val authToken = authBasicToken.toAuthenticationToken()
-        val authentication = authManager.authenticate(authToken)
+        val authentication = authManager.authenticateWithoutCheckPassword(authToken)
 
         val userEntity = authentication.principal as UserEntity
 

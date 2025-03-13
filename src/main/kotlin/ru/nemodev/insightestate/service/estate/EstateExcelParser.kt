@@ -117,7 +117,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                         price = MinMaxAvgParam(
                             min = getMinPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
                             max = getMaxPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
-                            avg = row.getBigDecimal("EA") // TODO средняя стоимость указана только для вилл
+                            avg = row.getBigDecimal("EA", 0) // TODO средняя стоимость указана только для вилл
                         ),
                         ceilingHeight = row.getBigDecimal("BI", 1),
                         floors = row.getInt("BJ"),
@@ -174,7 +174,7 @@ class EstateExcelParserImpl : EstateExcelParser {
         val price = getMinMaxAvgParam(row, priceCellNames)
         val square = getMinMaxAvgParam(row, squareCellNames)
 
-        if (pricePerMeter == null || price == null || square == null) {
+        if (price == null && square == null) {
             return null
         }
 
