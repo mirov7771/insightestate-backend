@@ -57,7 +57,6 @@ class AuthController (
     @PostMapping("/sign-up")
     fun signUp(
         @RequestBody
-        @Valid
         request: SignUpDtoRq
     ) {
         authService.signUp(request)
@@ -84,7 +83,6 @@ class AuthController (
     @PostMapping("/sign-up/confirm-code/check")
     fun signUpConfirmCodeCheck(
         @RequestBody
-        @Valid
         request: SignUpConfirmCodeDtoRq
     ) {
         authService.signUpCheckConfirmCode(request)
@@ -111,7 +109,6 @@ class AuthController (
     @PostMapping("/sign-up/confirm-code/new")
     fun signUpConfirmCodeNew(
         @RequestBody
-        @Valid
         request: SignUpDtoRq
     ) {
         authService.signUpSendNewConfirmCode(request)
@@ -138,7 +135,6 @@ class AuthController (
     @PostMapping("/sign-up/end")
     fun signUpEnd(
         @RequestBody
-        @Valid
         request: SignUpEndDtoRq
     ) {
         authService.signUpEnd(request)
