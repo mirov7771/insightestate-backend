@@ -81,4 +81,4 @@ springdoc:
         - "ru.nemodev.insightestate.api.client"
 
 application:
-  admin: arturmirov777@gmail.com
+  admin: arturmirov777@gmail.com, service@insightestate.com
