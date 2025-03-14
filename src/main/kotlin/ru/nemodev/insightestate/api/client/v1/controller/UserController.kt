@@ -11,6 +11,7 @@ import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
+import ru.nemodev.insightestate.api.client.v1.dto.user.HelpWithClientRq
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
 import ru.nemodev.insightestate.api.client.v1.processor.UserProcessor
@@ -83,5 +84,18 @@ class UserController (
         request: UserUpdateDtoRq
     ) {
         userProcessor.update(authBasicToken, request)
+    }
+
+    @PostMapping("/help")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun helpWithClient(
+        @Parameter(description = "Токен basic auth", required = true, hidden = true)
+        @RequestHeader("Authorization") authBasicToken: String,
+
+        @Valid
+        @RequestBody
+        request: HelpWithClientRq
+    ) {
+        userProcessor.helpWithClient(authBasicToken, request)
     }
 }

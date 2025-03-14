@@ -79,3 +79,6 @@ springdoc:
       display-name: Client API
       packages-to-scan:
         - "ru.nemodev.insightestate.api.client"
+
+application:
+  admin: arturmirov777@gmail.com

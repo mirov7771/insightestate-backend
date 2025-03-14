@@ -1,6 +1,7 @@
 package ru.nemodev.insightestate.api.client.v1.processor
 
 import org.springframework.stereotype.Component
+import ru.nemodev.insightestate.api.client.v1.dto.user.HelpWithClientRq
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
 import ru.nemodev.insightestate.service.UserService
@@ -8,6 +9,7 @@ import ru.nemodev.insightestate.service.UserService
 interface UserProcessor {
     fun getUser(authBasicToken: String): UserDtoRs
     fun update(authBasicToken: String, request: UserUpdateDtoRq)
+    fun helpWithClient(authBasicToken: String, request: HelpWithClientRq)
 }
 
 @Component
@@ -27,5 +29,9 @@ class UserProcessorImpl(
 
     override fun update(authBasicToken: String, request: UserUpdateDtoRq) {
         userService.update(authBasicToken, request)
+    }
+
+    override fun helpWithClient(authBasicToken: String, request: HelpWithClientRq) {
+        userService.helpWithClient(authBasicToken, request)
     }
 }
