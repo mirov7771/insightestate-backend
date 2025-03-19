@@ -9,13 +9,11 @@ import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
 import ru.nemodev.insightestate.service.estate.EstateWebFlowCsvExporter
-import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
 
 interface EstateProcessor {
@@ -29,6 +27,8 @@ interface EstateProcessor {
         beachTravelTimes: Set<String>?,
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
+        managementCompanyEnabled: Boolean?,
+        beachName: String?,
         pageable: Pageable
     ): CustomPageDtoRs
 
@@ -62,6 +62,8 @@ class EstateProcessorImpl(
         beachTravelTimes: Set<String>?,
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
+        managementCompanyEnabled: Boolean?,
+        beachName: String?,
         pageable: Pageable
     ): CustomPageDtoRs {
         val estates = estateService.findAll(
@@ -71,8 +73,10 @@ class EstateProcessorImpl(
             price = price,
             grades = grades,
             beachTravelTimes = beachTravelTimes,
+            beachName = beachName,
             airportTravelTimes = airportTravelTimes,
             parking = parking,
+            managementCompanyEnabled = managementCompanyEnabled,
             pageable = pageable
         )
 

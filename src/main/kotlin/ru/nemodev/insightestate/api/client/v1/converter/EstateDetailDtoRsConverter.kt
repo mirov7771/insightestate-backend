@@ -89,6 +89,9 @@ class EstateDetailDtoRsConverter(
                 entertainment = estateDetail.options.entertainment,
                 coworking = estateDetail.options.coworking,
             ),
+            managementCompany = EstateDetailDtoRs.ManagementCompany(
+                enabled = estateDetail.managementCompany.enabled
+            ),
             price = estateDetail.price.toMinMaxAvgParamDto(),
             ceilingHeight = estateDetail.ceilingHeight,
             floors = estateDetail.floors,

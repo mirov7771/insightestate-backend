@@ -17,11 +17,9 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
 import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
-import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
 
 @RestController
@@ -80,6 +78,14 @@ class EstateController (
         @RequestParam(name = "parking", required = false)
         parking: Boolean?,
 
+        @Parameter(description = "Наличие управляющей компании", required = false)
+        @RequestParam(name = "managementCompanyEnabled", required = false)
+        managementCompanyEnabled: Boolean?,
+
+        @Parameter(description = "Название пляжа, ищется без учета регистра ilike beachName%", required = false)
+        @RequestParam(name = "beachName", required = false)
+        beachName: String?,
+
         @Parameter(description = "Номер страницы", example = "0", required = false)
         @RequestParam(name = "pageNumber", required = false)
         @Valid
@@ -99,8 +105,10 @@ class EstateController (
         price = price,
         grades = grades,
         beachTravelTimes = beachTravelTimes,
+        beachName = beachName,
         airportTravelTimes = airportTravelTimes,
         parking = parking,
+        managementCompanyEnabled = managementCompanyEnabled,
         pageable = PageRequest.of(
             pageNumber ?: 0,
             pageSize ?: 25

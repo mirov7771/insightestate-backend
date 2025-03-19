@@ -23,6 +23,8 @@ interface EstateService {
         beachTravelTimes: Set<String>?,
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
+        managementCompanyEnabled: Boolean?,
+        beachName: String?,
         pageable: Pageable
     ): List<EstateEntity>
 
@@ -53,6 +55,8 @@ class EstateServiceImpl(
         beachTravelTimes: Set<String>?,
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
+        managementCompanyEnabled: Boolean?,
+        beachName: String?,
         pageable: Pageable
     ): List<EstateEntity> {
 
@@ -109,6 +113,9 @@ class EstateServiceImpl(
             maxAirportCarTravelTimeFree = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("3")) 61 else null,
 
             parking = parking,
+            managementCompanyEnabled = managementCompanyEnabled,
+
+            beachName = beachName,
 
             limit = pageable.pageSize,
             offset = pageable.offset

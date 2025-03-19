@@ -114,6 +114,9 @@ class EstateExcelParserImpl : EstateExcelParser {
                             entertainment = row.getBoolean("CH"),
                             coworking = false // TODO нет колонки?
                         ),
+                        managementCompany = ManagementCompany(
+                            enabled =  row.getBoolean("CA"),
+                        ),
                         price = MinMaxAvgParam(
                             min = getMinPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
                             max = getMaxPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
@@ -186,10 +189,18 @@ class EstateExcelParserImpl : EstateExcelParser {
     }
 
     private fun getMinMaxAvgParam(row: Row, cellNames: List<String>): MinMaxAvgParam? {
-        val min = row.getString(cellNames[0])?.replace(" ", "")?.replace("0", "")?.nullIfEmpty()?.toBigDecimal()?.scaleAndRoundAmount(0)
-        val max = row.getString(cellNames[1])?.replace(" ", "")?.replace("0", "")?.nullIfEmpty()?.toBigDecimal()?.scaleAndRoundAmount(0)
+        val min = row.getString(cellNames[0])?.replace(" ", "")?.nullIfEmpty()?.let {
+            if (it == "0") null
+            else it.toBigDecimal().scaleAndRoundAmount(0)
+        }
+        val max = row.getString(cellNames[1])?.replace(" ", "")?.nullIfEmpty()?.let {
+            if (it == "0") null
+            else it.toBigDecimal().scaleAndRoundAmount(0)
+        }
         val avg = if (cellNames.size == 3)
-            row.getString(cellNames[2])?.replace(" ", "")?.replace("0", "")?.nullIfEmpty()?.toBigDecimal()?.scaleAndRoundAmount(0)
+            row.getString(cellNames[2])?.replace(" ", "")?.nullIfEmpty()?.let {
+                if (it == "0") null else it.toBigDecimal().scaleAndRoundAmount(0)
+            }
             else null
 
         if (min == null || max == null) {

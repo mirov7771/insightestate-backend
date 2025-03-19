@@ -48,6 +48,7 @@ data class EstateDetail (
     val location: EstateLocation,               // локация
     val infrastructure: EstateInfrastructure,   // инфраструктура
     val options: EstateOptions,                 // опции
+    val managementCompany: ManagementCompany = ManagementCompany(),   // управляющая компания
 
     val price: MinMaxAvgParam,                  // стоимость
     val ceilingHeight: BigDecimal? = null,      // высота потолка
@@ -105,6 +106,11 @@ data class EstateInfrastructure(
     val mallTime: TravelTime,                       // время в пути до тц
     val schoolRadius: BigDecimal,                   // школа в радиусе в км
     val nurserySchoolRadius: BigDecimal? = null,    // детский сад в радиусе в км
+)
+
+// Управляющая компания
+data class ManagementCompany(
+    val enabled: Boolean = false
 )
 
 // Время в пути в минутах

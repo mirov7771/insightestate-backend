@@ -87,7 +87,7 @@ class UserController (
     }
 
     @PostMapping("/help")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.NO_CONTENT) // TODO отрефачить
     fun helpWithClient(
         @Parameter(description = "Токен basic auth", required = true, hidden = true)
         @RequestHeader("Authorization") authBasicToken: String,

@@ -47,6 +47,7 @@ data class EstateDetailDtoRs(
     val location: EstateLocationDto,
     val infrastructure: EstateInfrastructureDto,
     val options: EstateOptionsDto,
+    val managementCompany: ManagementCompany,
 
     val price: MinMaxAvgParamDto,
     val ceilingHeight: BigDecimal?,
@@ -118,6 +119,10 @@ data class EstateDetailDtoRs(
         val shop: Boolean,
         val entertainment: Boolean,
         val coworking: Boolean,
+    )
+
+    data class ManagementCompany(
+        val enabled: Boolean,
     )
 
     data class RoomLayoutsDto(
