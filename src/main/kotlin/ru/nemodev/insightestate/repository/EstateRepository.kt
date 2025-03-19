@@ -23,7 +23,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
                 or (:isFourRoom is null or (:isFourRoom and ((estate_detail -> 'roomLayouts' -> 'four' is not null) or (estate_detail -> 'roomLayouts' -> 'five' is not null) or (estate_detail -> 'roomLayouts' -> 'villaFour' is not null) or (estate_detail -> 'roomLayouts' -> 'villaFive' is not null))))
             )
             and (:minPrice is null or ((estate_detail -> 'price' ->> 'min')::numeric > :minPrice)
-                and :maxPrice is null or ((estate_detail -> 'price' ->> 'max')::numeric <= :maxPrice)
+                and :maxPrice is null or ((estate_detail -> 'price' ->> 'min')::numeric <= :maxPrice)
             )
             and ((:gradeInvestmentSecurity is null or ((estate_detail -> 'grade' ->> 'investmentSecurity')::numeric >= :gradeInvestmentSecurity))
                 and (:gradeInvestmentPotential is null or ((estate_detail -> 'grade' ->> 'investmentPotential')::numeric >= :gradeInvestmentPotential))
