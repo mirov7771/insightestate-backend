@@ -44,6 +44,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
             and (:parking is null or (:parking and ((estate_detail -> 'options' ->> 'parkingSize')::numeric > 0)) or (:parking = false and ((estate_detail -> 'options' -> 'parkingSize' is null))))
             and (:managementCompanyEnabled is null or (:managementCompanyEnabled and ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)) or (not :managementCompanyEnabled and not ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)))
             and (:beachName is null or (estate_detail -> 'location' ->> 'beach' ilike :beachName || '%'))
+            and (:city is null or (estate_detail -> 'location' ->> 'city' ilike :city || '%'))
         order by created_at desc
         limit :limit offset :offset
     """)
@@ -86,6 +87,8 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         managementCompanyEnabled: Boolean?,
 
         beachName: String?,
+
+        city: String?,
 
         offset: Long,
         limit: Int

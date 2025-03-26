@@ -97,6 +97,7 @@ data class EstateLocation(
     val district: String,                           // район
     val beach: String,                              // пляж
     val mapUrl: String,                             // ссылка на карту
+    val city: String = "Phuket",                    // Город
 )
 
 // Инфраструктура

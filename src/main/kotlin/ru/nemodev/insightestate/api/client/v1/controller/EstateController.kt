@@ -9,10 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
-import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.PageRequest
 import org.springframework.http.MediaType
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
@@ -86,6 +84,10 @@ class EstateController (
         @RequestParam(name = "beachName", required = false)
         beachName: String?,
 
+        @Parameter(description = "Название города, ищется без учета регистра ilike city%", required = false)
+        @RequestParam(name = "city", required = false)
+        city: String?,
+
         @Parameter(description = "Номер страницы", example = "0", required = false)
         @RequestParam(name = "pageNumber", required = false)
         @Valid
@@ -105,10 +107,11 @@ class EstateController (
         price = price,
         grades = grades,
         beachTravelTimes = beachTravelTimes,
-        beachName = beachName,
         airportTravelTimes = airportTravelTimes,
         parking = parking,
         managementCompanyEnabled = managementCompanyEnabled,
+        beachName = beachName,
+        city = city,
         pageable = PageRequest.of(
             pageNumber ?: 0,
             pageSize ?: 25
@@ -166,21 +169,4 @@ class EstateController (
     )
     @PostMapping("/load/images")
     fun loadImageFromDir() = estateProcessor.loadImagesFromDir()
-
-    @Operation(
-        summary = "Выгрузить объекты в csv формате для WebFlow",
-        responses = [
-            ApiResponse(responseCode = "200", description = "Успешный ответ"),
-            ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
-                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
-            ),
-            ApiResponse(responseCode = "500", description = "Ошибка обработки запроса",
-                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
-            )
-        ]
-    )
-    @GetMapping("/webflow/file/csv", produces = ["text/csv"])
-    fun downloadWebFlowCsvFile(): ResponseEntity<InputStreamResource> {
-        return estateProcessor.downloadWebFlowCsvFile()
-    }
 }

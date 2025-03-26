@@ -25,6 +25,7 @@ interface EstateService {
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
         beachName: String?,
+        city: String?,
         pageable: Pageable
     ): List<EstateEntity>
 
@@ -57,6 +58,7 @@ class EstateServiceImpl(
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
         beachName: String?,
+        city: String?,
         pageable: Pageable
     ): List<EstateEntity> {
 
@@ -116,6 +118,8 @@ class EstateServiceImpl(
             managementCompanyEnabled = managementCompanyEnabled,
 
             beachName = beachName,
+
+            city = city,
 
             limit = pageable.pageSize,
             offset = pageable.offset

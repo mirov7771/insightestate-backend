@@ -29,6 +29,7 @@ interface EstateProcessor {
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
         beachName: String?,
+        city: String?,
         pageable: Pageable
     ): CustomPageDtoRs
 
@@ -38,8 +39,6 @@ interface EstateProcessor {
 
     fun loadFromFile(filePart: MultipartFile)
     fun loadImagesFromDir()
-
-    fun downloadWebFlowCsvFile(): ResponseEntity<InputStreamResource>
 }
 
 @Component
@@ -64,6 +63,7 @@ class EstateProcessorImpl(
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
         beachName: String?,
+        city: String?,
         pageable: Pageable
     ): CustomPageDtoRs {
         val estates = estateService.findAll(
@@ -73,10 +73,11 @@ class EstateProcessorImpl(
             price = price,
             grades = grades,
             beachTravelTimes = beachTravelTimes,
-            beachName = beachName,
             airportTravelTimes = airportTravelTimes,
             parking = parking,
             managementCompanyEnabled = managementCompanyEnabled,
+            beachName = beachName,
+            city = city,
             pageable = pageable
         )
 
@@ -102,9 +103,4 @@ class EstateProcessorImpl(
     override fun loadImagesFromDir() {
         estateImageLoader.loadFromDir()
     }
-
-    override fun downloadWebFlowCsvFile(): ResponseEntity<InputStreamResource> {
-        return estateWebFlowCsvExporter.export().toResponseEntity()
-    }
-
 }
