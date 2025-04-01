@@ -13,7 +13,7 @@ services:
       S3_MINIO_SECRET_KEY: BLundRaiNATE
       EMAIL_USERNAME: it@insightestate.com
       EMAIL_PASSWORD: dqyynkrxicwoaqwv
-      IMAGE_BASE_URL: http://77.238.232.18:9000
+      IMAGE_BASE_URL: https://insightestate.pro
       ESTATE_IMAGE_DIR: /home/docker/estate/images
     ports:
       - "8080:8080"
