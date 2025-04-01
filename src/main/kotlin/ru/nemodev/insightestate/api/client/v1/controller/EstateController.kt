@@ -21,7 +21,7 @@ import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 import java.util.*
 
 @RestController
-@RequestMapping("/v1/estate", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api/v1/estate", "/v1/estate"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "Объекты строек")
 class EstateController (
     private val estateProcessor: EstateProcessor

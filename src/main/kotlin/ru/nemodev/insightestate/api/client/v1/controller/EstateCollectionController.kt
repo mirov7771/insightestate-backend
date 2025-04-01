@@ -23,7 +23,7 @@ import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
 
 @RestController
-@RequestMapping("/v1/estate-collections", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api/v1/estate-collections", "/v1/estate-collections"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "Коллекции объектов строек", description = "Во всех запросах требуется заголовок Authorization: Basic Auth")
 @SecurityRequirement(name = "basicAuth")
 class EstateCollectionController (

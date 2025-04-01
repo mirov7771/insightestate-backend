@@ -21,7 +21,7 @@ import ru.nemodev.insightestate.service.security.AuthService
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 
 @RestController
-@RequestMapping("/auth", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api/auth", "auth"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @SecurityScheme(
     name = "basicAuth",
     scheme = "basic",

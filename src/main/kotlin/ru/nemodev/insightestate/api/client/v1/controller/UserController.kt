@@ -18,7 +18,7 @@ import ru.nemodev.insightestate.api.client.v1.processor.UserProcessor
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 
 @RestController
-@RequestMapping("/users", produces = [MediaType.APPLICATION_JSON_VALUE])
+@RequestMapping(value = ["/api/users", "/users"], produces = [MediaType.APPLICATION_JSON_VALUE])
 @Tag(name = "Пользователи", description = "Во всех запросах требуется заголовок Authorization: Basic Auth")
 class UserController (
     private val userProcessor: UserProcessor
