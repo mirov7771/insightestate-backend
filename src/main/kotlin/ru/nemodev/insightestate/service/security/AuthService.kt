@@ -133,6 +133,9 @@ class AuthServiceImpl(
         userEntity.userDetail.location = request.location
         userEntity.userDetail.passwordHash = passwordEncoder.encode(request.password)
         userEntity.userDetail.status = UserStatus.ACTIVE
+        userEntity.userDetail.tgName = request.tgName
+        userEntity.userDetail.profileImage = request.profileImage
+        userEntity.userDetail.whatsUp = request.whatsUp
 
         userService.update(userEntity)
     }

@@ -65,6 +65,9 @@ class UserServiceImpl(
         userEntity.userDetail.fio = request.fio
         userEntity.userDetail.mobileNumber = request.mobileNumber
         userEntity.userDetail.location = request.location
+        userEntity.userDetail.whatsUp = request.whatsUp
+        userEntity.userDetail.tgName = request.tgName
+        userEntity.userDetail.profileImage = request.profileImage
         request.password?.let {
             userEntity.userDetail.passwordHash = passwordEncoder.encode(request.password)
         }

@@ -37,7 +37,10 @@ data class UserDetail(
     var fio: String? = null,
     var mobileNumber: String? = null,
     var location: String? = null,
-    var status: UserStatus
+    var status: UserStatus,
+    var whatsUp: String? = null,
+    var tgName: String? = null,
+    var profileImage: String? = null,
 )
 
 enum class UserStatus {

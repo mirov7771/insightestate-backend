@@ -23,7 +23,10 @@ class UserProcessorImpl(
             login = userEntity.userDetail.login,
             fio = userEntity.userDetail.fio!!,
             mobileNumber = userEntity.userDetail.mobileNumber!!,
-            location = userEntity.userDetail.location!!
+            location = userEntity.userDetail.location!!,
+            whatsUp = userEntity.userDetail.whatsUp,
+            tgName = userEntity.userDetail.tgName,
+            profileImage = userEntity.userDetail.profileImage,
         )
     }
 

@@ -16,7 +16,16 @@ data class UserDtoRs(
     val mobileNumber: String,
 
     @Schema(description = "Страна и город", example = "Kazahstan Astana")
-    val location: String
+    val location: String,
+
+    @Schema(description = "WhatsUp", example = "1234567890")
+    val whatsUp: String?,
+
+    @Schema(description = "Telegram", example = "1234567890")
+    val tgName: String?,
+
+    @Schema(description = "Фото профиля", example = "1234567890")
+    val profileImage: String?,
 )
 
 @Schema(description = "Запрос обновления пользователя")
@@ -38,5 +47,14 @@ data class UserUpdateDtoRq(
 
     @Schema(description = "Пароль", example = "1234567890")
     @field:Size(min = 6, max = 15, message = "Field must contains from 6 to 15 characters")
-    val password: String?
+    val password: String?,
+    
+    @Schema(description = "WhatsUp", example = "1234567890")
+    val whatsUp: String?,
+
+    @Schema(description = "Telegram", example = "1234567890")
+    val tgName: String?,
+
+    @Schema(description = "Фото профиля", example = "1234567890")
+    val profileImage: String?,
 )

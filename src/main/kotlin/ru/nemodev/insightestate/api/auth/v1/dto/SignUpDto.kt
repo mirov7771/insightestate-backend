@@ -36,4 +36,13 @@ data class SignUpEndDtoRq(
 
     @Schema(description = "Пароль", example = "1234567890")
     val password: String,
+
+    @Schema(description = "WhatsUp", example = "1234567890")
+    val whatsUp: String?,
+
+    @Schema(description = "Telegram", example = "1234567890")
+    val tgName: String?,
+
+    @Schema(description = "Фото профиля", example = "1234567890")
+    val profileImage: String?,
 )
