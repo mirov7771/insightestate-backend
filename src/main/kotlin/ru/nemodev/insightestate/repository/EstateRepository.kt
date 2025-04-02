@@ -98,4 +98,12 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         select count(*) from estate
     """)
     fun findAllEstate(): Int?
+
+    @Query("""
+        select *
+          from estate  
+      order by random()  
+         LIMIT 10
+    """)
+    fun findRandom(): List<EstateEntity>
 }

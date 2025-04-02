@@ -150,3 +150,7 @@ data class EstateDetailDtoRs(
         val avg: BigDecimal?,
     )
 }
+
+data class AiRequest (
+    val request: String
+)

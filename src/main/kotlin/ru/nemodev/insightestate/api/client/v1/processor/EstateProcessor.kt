@@ -1,13 +1,12 @@
 package ru.nemodev.insightestate.api.client.v1.processor
 
-import org.springframework.core.io.InputStreamResource
 import org.springframework.data.domain.Pageable
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDtoRsConverter
+import ru.nemodev.insightestate.api.client.v1.dto.estate.AiRequest
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
@@ -39,6 +38,7 @@ interface EstateProcessor {
 
     fun loadFromFile(filePart: MultipartFile)
     fun loadImagesFromDir()
+    fun aiRequest(rq: AiRequest): CustomPageDtoRs
 }
 
 @Component
@@ -102,5 +102,18 @@ class EstateProcessorImpl(
 
     override fun loadImagesFromDir() {
         estateImageLoader.loadFromDir()
+    }
+
+    override fun aiRequest(rq: AiRequest): CustomPageDtoRs {
+        val estates = estateService.aiRequest(
+            String(Base64.getDecoder().decode(rq.request))
+        )
+        return CustomPageDtoRs(
+            items = estates.map { estateDtoRsConverter.convert(it) },
+            pageSize = estates.size,
+            pageNumber = 1,
+            hasMore = false,
+            totalPages = 0
+        )
     }
 }

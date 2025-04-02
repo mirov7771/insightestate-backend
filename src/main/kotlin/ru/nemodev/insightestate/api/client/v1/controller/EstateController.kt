@@ -14,6 +14,7 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
+import ru.nemodev.insightestate.api.client.v1.dto.estate.AiRequest
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
 import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
 import ru.nemodev.insightestate.entity.EstateType
@@ -169,4 +170,10 @@ class EstateController (
     )
     @PostMapping("/load/images")
     fun loadImageFromDir() = estateProcessor.loadImagesFromDir()
+
+    @PostMapping("ai")
+    fun aiRequest(
+        @RequestBody
+        rq: AiRequest
+    ):CustomPageDtoRs = estateProcessor.aiRequest(rq)
 }

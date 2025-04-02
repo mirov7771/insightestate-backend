@@ -82,3 +82,12 @@ springdoc:
 
 application:
   admin: arturmirov777@gmail.com, service@insightestate.com
+
+ai:
+  integration:
+    http-client:
+      service-id: ai
+      url: http://194.60.133.56:11434/api/generate
+      timeout:
+        connection: 230s
+        read: 230s
