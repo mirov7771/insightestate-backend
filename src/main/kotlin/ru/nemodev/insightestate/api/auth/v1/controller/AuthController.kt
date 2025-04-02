@@ -10,13 +10,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.validation.Valid
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
-import ru.nemodev.insightestate.api.auth.v1.dto.SignInDtoRs
-import ru.nemodev.insightestate.api.auth.v1.dto.SignUpConfirmCodeDtoRq
-import ru.nemodev.insightestate.api.auth.v1.dto.SignUpDtoRq
-import ru.nemodev.insightestate.api.auth.v1.dto.SignUpEndDtoRq
+import org.springframework.web.multipart.MultipartFile
+import ru.nemodev.insightestate.api.auth.v1.dto.*
 import ru.nemodev.insightestate.service.security.AuthService
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 
@@ -163,4 +160,10 @@ class AuthController (
     ): SignInDtoRs {
         return authService.signIn(authBasicToken)
     }
+
+    @PostMapping("/load/image", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun loadProfileImage(
+        @RequestPart("file")
+        filePart: MultipartFile
+    ): ProfileImageRs = authService.loadProfileImage(filePart)
 }

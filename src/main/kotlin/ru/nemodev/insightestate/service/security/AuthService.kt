@@ -10,10 +10,8 @@ import org.springframework.security.oauth2.jwt.JwtClaimsSet
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters
 import org.springframework.stereotype.Service
-import ru.nemodev.insightestate.api.auth.v1.dto.SignInDtoRs
-import ru.nemodev.insightestate.api.auth.v1.dto.SignUpConfirmCodeDtoRq
-import ru.nemodev.insightestate.api.auth.v1.dto.SignUpDtoRq
-import ru.nemodev.insightestate.api.auth.v1.dto.SignUpEndDtoRq
+import org.springframework.web.multipart.MultipartFile
+import ru.nemodev.insightestate.api.auth.v1.dto.*
 import ru.nemodev.insightestate.config.property.AppProperties
 import ru.nemodev.insightestate.entity.UserEntity
 import ru.nemodev.insightestate.entity.UserStatus
@@ -24,6 +22,7 @@ import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.LogicException
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
+import ru.nemodev.platform.core.integration.s3.minio.client.MinioS3Client
 import java.time.Duration
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -34,6 +33,8 @@ interface AuthService {
     fun signUpSendNewConfirmCode(request: SignUpDtoRq)
     fun signUpEnd(request: SignUpEndDtoRq)
     fun signIn(authBasicToken: String): SignInDtoRs
+    fun loadProfileImage(filePart: MultipartFile): ProfileImageRs
+
 }
 
 @Service
@@ -44,7 +45,8 @@ class AuthServiceImpl(
     private val passwordEncoder: PasswordEncoder,
     private val confirmCodeGenerator: ConfirmCodeGenerator,
     private val authManager: AuthenticationManager,
-    private val jwtEncoder: JwtEncoder
+    private val jwtEncoder: JwtEncoder,
+    private val minioS3Client: MinioS3Client
 ) : AuthService {
 
     override fun signUp(request: SignUpDtoRq) {
@@ -171,4 +173,19 @@ class AuthServiceImpl(
         return jwtEncoder.encode(JwtEncoderParameters.from(claims))
     }
 
+    override fun loadProfileImage(
+        filePart: MultipartFile
+    ): ProfileImageRs {
+        val name = filePart.originalFilename ?: filePart.name
+        val contentType = filePart.contentType
+
+        minioS3Client.upload(
+            fileName = name,
+            fileContentType = contentType,
+            file = filePart.inputStream.readAllBytes(),
+        )
+        return ProfileImageRs(
+            "https://insightestate.pro/estate-images/$name"
+        )
+    }
 }
