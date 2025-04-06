@@ -74,7 +74,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                     "Сдан" -> EstateStatus.FINISHED
                     else -> EstateStatus.UNKNOWN
                 },
-                saleStartDate = null, // TODO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
+                saleStartDate = null, // TODO столбец AO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
                 buildEndDate = row.getLocalDate("AP"),
                 unitCount = UnitCount(
                     total = row.getInt("AQ")!!,
