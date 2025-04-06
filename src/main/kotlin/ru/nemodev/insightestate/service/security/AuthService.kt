@@ -179,11 +179,13 @@ class AuthServiceImpl(
         val name = filePart.originalFilename ?: filePart.name
         val contentType = filePart.contentType
 
+        // TODO фотки нужно хранить в отдельном бакете
         minioS3Client.upload(
             fileName = name,
             fileContentType = contentType,
             file = filePart.inputStream.readAllBytes(),
         )
+        // TODO формировать урл нужно как для фото объектов без привязки к серверу
         return ProfileImageRs(
             "https://insightestate.pro/estate-images/$name"
         )

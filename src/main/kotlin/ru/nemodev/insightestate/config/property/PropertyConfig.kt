@@ -6,9 +6,13 @@ import org.springframework.context.annotation.Configuration
 import java.time.Duration
 
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties(AppProperties::class)
+@EnableConfigurationProperties(
+    AppProperties::class,
+    GoogleProperties::class
+)
 class PropertyConfig
 
+// TODO вынести в отдельный файл
 @ConfigurationProperties("insightestate")
 data class AppProperties(
     val auth: Auth,

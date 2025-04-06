@@ -12,7 +12,6 @@ import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
-import ru.nemodev.insightestate.service.estate.EstateWebFlowCsvExporter
 import java.util.*
 
 interface EstateProcessor {
@@ -48,8 +47,7 @@ class EstateProcessorImpl(
     private val estateDetailDtoRsConverter: EstateDetailDtoRsConverter,
 
     private val estateLoader: EstateLoader,
-    private val estateImageLoader: EstateImageLoader,
-    private val estateWebFlowCsvExporter: EstateWebFlowCsvExporter
+    private val estateImageLoader: EstateImageLoader
 ) : EstateProcessor {
 
     override fun findAll(

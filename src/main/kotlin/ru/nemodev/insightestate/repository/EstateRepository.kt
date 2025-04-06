@@ -45,6 +45,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
             and (:managementCompanyEnabled is null or (:managementCompanyEnabled and ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)) or (not :managementCompanyEnabled and not ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)))
             and (:beachName is null or (estate_detail -> 'location' ->> 'beach' ilike :beachName || '%'))
             and (:city is null or (estate_detail -> 'location' ->> 'city' ilike :city || '%'))
+            and ((estate_detail ->> 'canShow')::boolean = true)
         order by created_at desc
         limit :limit offset :offset
     """)
@@ -96,14 +97,15 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
 
     @Query("""
         select count(*) from estate
+        where (estate_detail ->> 'canShow')::boolean = true
     """)
-    fun findAllEstate(): Int?
+    fun findAllForShowCount(): Int?
 
     @Query("""
-        select *
-          from estate  
-      order by random()  
-         LIMIT 10
+        select * from estate
+        where (estate_detail ->> 'canShow')::boolean = true
+        order by random()  
+        limit 10
     """)
     fun findRandom(): List<EstateEntity>
 }

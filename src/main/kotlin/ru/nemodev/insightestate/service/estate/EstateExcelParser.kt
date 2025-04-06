@@ -7,6 +7,7 @@ import ru.nemodev.insightestate.entity.*
 import ru.nemodev.insightestate.extension.*
 import ru.nemodev.platform.core.extensions.nullIfEmpty
 import ru.nemodev.platform.core.extensions.scaleAndRoundAmount
+import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.io.InputStream
 import java.math.BigDecimal
 
@@ -17,130 +18,147 @@ interface EstateExcelParser {
 @Component
 class EstateExcelParserImpl : EstateExcelParser {
 
+    companion object : Loggable
+
     override fun parse(inputStream: InputStream): List<EstateEntity> {
         val estateProjectExcelFile = inputStream.use { it.readAllBytes() }
 
         val workbook = XSSFWorkbook(estateProjectExcelFile.inputStream())
 
-        val estates = workbook.getSheetAt(0)
-            .filter { it.getString("E") == "Done" }
-            .map { row ->
-                EstateEntity(
-                    estateDetail = EstateDetail(
-                        projectId = row.getString("A")!!,
-                        name = row.getString("B")!!,
-                        shortDescriptionRu = row.getString("IR"),
-                        shortDescriptionEn = row.getString("IS"),
-
-                        landPurchased = row.getBoolean("C"),
-                        eiaEnabled = row.getBoolean("D"),
-                        developer = EstateDeveloper(
-                            name = row.getString("G")!!,
-                            country = row.getString("AI"),
-                            yearOfFoundation = row.getInt("AK"),
-                        ),
-                        grade = EstateGrade(
-                            main = row.getBigDecimal("H", 1)!!,
-                            investmentSecurity = row.getBigDecimal("I", 1)!!,
-                            investmentPotential = row.getBigDecimal("N", 1)!!,
-                            projectLocation = row.getBigDecimal("S", 1)!!,
-                            comfortOfLife = row.getBigDecimal("X", 1)!!,
-                        ),
-                        projectCount = ProjectCount(
-                            total = row.getInt("AF")!!,
-                            build = row.getInt("AG")!!,
-                            finished = row.getInt("AH")!!,
-                            deviationFromDeadline = row.getInt("AL"),
-                        ),
-                        status = when (row.getString("AM")!!) {
-                            "Строится" -> EstateStatus.BUILD
-                            "Сдан" -> EstateStatus.FINISHED
-                            else -> EstateStatus.UNKNOWN
-                        },
-                        saleStartDate = null, // TODO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
-                        buildEndDate = row.getLocalDate("AO"),
-                        unitCount = UnitCount(
-                            total = row.getInt("AP")!!,
-                            sailed = row.getInt("AQ"),
-                            available = row.getInt("AR"),
-                        ),
-                        type = row.getString("EA").let {
-                            if (it == null) EstateType.APARTMENT else EstateType.VILLA
-                        },
-                        level = when (row.getString("BD")!!) {
-                            "Премиум" -> EstateLevelType.PREMIUM
-                            "Люкс" -> EstateLevelType.LUX
-                            "Комфорт" -> EstateLevelType.COMFORT
-                            else -> EstateLevelType.UNKNOWN
-                        },
-                        product = when (row.getString("BF")!!) {
-                            "Инвест" -> EstateProductType.INVESTMENT
-                            "Резиденция" -> EstateProductType.RESIDENCE
-                            else -> EstateProductType.UNKNOWN
-                        },
-                        profitability = EstateProfitability(
-                            roi = row.getBigDecimalFromPercent("HM", 1)!!,
-                            roiSummary = row.getBigDecimalFromPercent("IQ", 0)!!,
-                            irr = row.getBigDecimalFromPercent("HL", 1)!!,
-                            capRateFirstYear = row.getBigDecimalFromPercent("HK", 1)!!,
-                        ),
-                        location = EstateLocation(
-                            name = row.getString("AT")!!,
-                            district = row.getString("AU")!!,
-                            beach = row.getString("AV")!!,
-                            mapUrl = row.getString("IP")!!
-                        ),
-                        infrastructure = EstateInfrastructure(
-                            beachTime = TravelTime(
-                                walk = row.getInt("AW")!!,
-                                car = row.getInt("AX")!!,
-                            ),
-                            airportTime = TravelTime(
-                                walk = null,
-                                car = row.getInt("AY")!!,
-                            ),
-                            mallTime = TravelTime(
-                                walk = row.getInt("BA")!!,
-                                car = row.getInt("AZ")!!,
-                            ),
-                            schoolRadius = row.getBigDecimal("BB", 1)!!,
-                            nurserySchoolRadius = row.getBigDecimal("BC", 1),
-                        ),
-                        options = EstateOptions(
-                            parkingSize = row.getInt("BG")?.let { if (it == 0) null else it },
-                            gym = row.getBoolean("CE"),
-                            childRoom = row.getBoolean("CF"),
-                            shop = row.getBoolean("CG"),
-                            entertainment = row.getBoolean("CH"),
-                            coworking = false // TODO нет колонки?
-                        ),
-                        managementCompany = ManagementCompany(
-                            enabled =  row.getBoolean("CA"),
-                        ),
-                        price = MinMaxAvgParam(
-                            min = getMinPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
-                            max = getMaxPrice(row, listOf("DH", "DK", "DN", "DQ", "DT", "DW", "IH", "IJ", "IL", "IN")),
-                            avg = row.getBigDecimal("EA", 0) // TODO средняя стоимость указана только для вилл
-                        ),
-                        ceilingHeight = row.getBigDecimal("BI", 1),
-                        floors = row.getInt("BJ"),
-                        roomLayouts = RoomLayouts(
-                            studio = getRoomParams(row, listOf("CL", "CN", "CM"), listOf("DH", "DJ", "DI"), listOf("HN", "HO")),
-                            one = getRoomParams(row, listOf("CO", "CQ", "CP"), listOf("DK", "DM", "DL"), listOf("HP", "HQ")),
-                            two = getRoomParams(row, listOf("CR", "CT", "CS"), listOf("DN", "DP", "DO"), listOf("HR", "HS")),
-                            three = getRoomParams(row, listOf("CU", "CW", "CV"), listOf("DQ", "DS", "DR"), listOf("HT", "HU")),
-                            four = getRoomParams(row, listOf("CX", "CZ", "CY"), listOf("DT", "DV", "DU"), listOf("HV", "HW")),
-                            five = getRoomParams(row, listOf("DA", "DC", "DB"), listOf("DW", "DY", "DX"), listOf("HX", "HY")),
-                            villaTwo = getRoomParams(row, listOf("DE", "DG", "DF"), listOf("IH", "II", "EA"), listOf("HZ", "IA")),
-                            villaThree = getRoomParams(row, listOf("DE", "DG", "DF"), listOf("IJ", "DK", "EA"), listOf("IB", "IC")),
-                            villaFour = getRoomParams(row, listOf("DE", "DG", "DF"), listOf("IL", "IM", "EA"), listOf("ID", "IE")),
-                            villaFive = getRoomParams(row, listOf("DE", "DG", "DF"), listOf("IN", "IO", "EA"), listOf("IF", "IG")),
-                        )
-                    )
-                )
+        val estates = workbook.getSheet("База")
+            .mapIndexedNotNull { index, row ->
+                if (row.getString("F") != "Done") {
+                    return@mapIndexedNotNull null
+                }
+                try {
+                    parseRow(row)
+                } catch (e: Exception) {
+                    logError(e) { "Ошибка парсинга объекта id = ${row.getString("B")} строка = ${index + 1}" }
+                    null
+                }
             }
 
         return estates
+    }
+
+    private fun parseRow(row: Row): EstateEntity {
+        return EstateEntity(
+            estateDetail = EstateDetail(
+                projectId = row.getString("B")!!,
+                name = row.getString("C")!!,
+                shortDescriptionRu = row.getString("IS"),
+                shortDescriptionEn = row.getString("IT"),
+
+                landPurchased = row.getBoolean("D"),
+                eiaEnabled = row.getBoolean("E"),
+                developer = EstateDeveloper(
+                    name = row.getString("H")!!,
+                    country = row.getString("AJ"),
+                    yearOfFoundation = row.getInt("AL"),
+                ),
+                grade = EstateGrade(
+                    main = row.getBigDecimal("I", 1)!!,
+                    investmentSecurity = row.getBigDecimal("J", 1)!!,
+                    investmentPotential = row.getBigDecimal("O", 1)!!,
+                    projectLocation = row.getBigDecimal("T", 1)!!,
+                    comfortOfLife = row.getBigDecimal("Y", 1)!!,
+                ),
+                projectCount = ProjectCount(
+                    total = row.getInt("AG")!!,
+                    build = row.getInt("AH")!!,
+                    finished = row.getInt("AI")!!,
+                    deviationFromDeadline = row.getInt("AM"),
+                ),
+                status = when (row.getString("AN")!!) {
+                    "Строится" -> EstateStatus.BUILD
+                    "Сдан" -> EstateStatus.FINISHED
+                    else -> EstateStatus.UNKNOWN
+                },
+                saleStartDate = null, // TODO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
+                buildEndDate = row.getLocalDate("AP"),
+                unitCount = UnitCount(
+                    total = row.getInt("AQ")!!,
+                    sailed = row.getInt("AR"),
+                    available = row.getInt("AS"),
+                ),
+                type = row.getString("EA").let {
+                    if (it == null) EstateType.APARTMENT else EstateType.VILLA
+                },
+                level = when (row.getString("BE")!!) {
+                    "Премиум" -> EstateLevelType.PREMIUM
+                    "Люкс" -> EstateLevelType.LUX
+                    "Комфорт" -> EstateLevelType.COMFORT
+                    else -> EstateLevelType.UNKNOWN
+                },
+                product = when (row.getString("BG")!!) {
+                    "Инвест" -> EstateProductType.INVESTMENT
+                    "Резиденция" -> EstateProductType.RESIDENCE
+                    else -> EstateProductType.UNKNOWN
+                },
+                profitability = EstateProfitability(
+                    roi = row.getBigDecimalFromPercent("HN", 1)!!,
+                    roiSummary = row.getBigDecimalFromPercent("IR", 0)!!,
+                    irr = row.getBigDecimalFromPercent("HM", 1)!!,
+                    capRateFirstYear = row.getBigDecimalFromPercent("HL", 1)!!,
+                ),
+                location = EstateLocation(
+                    name = row.getString("AU")!!,
+                    district = row.getString("AV")!!,
+                    beach = row.getString("AW")!!,
+                    mapUrl = row.getString("IQ")!!,
+                    city = "Phuket", // TODO нужно вынести в таблицу чтобы проставлялся в будущем для других городов
+                ),
+                infrastructure = EstateInfrastructure(
+                    beachTime = TravelTime(
+                        walk = row.getInt("AX")!!,
+                        car = row.getInt("AY")!!,
+                    ),
+                    airportTime = TravelTime(
+                        walk = null,
+                        car = row.getInt("AZ")!!,
+                    ),
+                    mallTime = TravelTime(
+                        walk = row.getInt("BB")!!,
+                        car = row.getInt("BA")!!,
+                    ),
+                    school = EstateInfrastructure.School(
+                        radius = row.getBigDecimal("BC", 1)!!,
+                        name = row.getString("BD")
+                    ),
+                ),
+                options = EstateOptions(
+                    parkingSize = row.getInt("BH")?.let { if (it == 0) null else it },
+                    gym = row.getBoolean("CF"),
+                    childRoom = row.getBoolean("CG"),
+                    shop = row.getBoolean("CH"),
+                    entertainment = row.getBoolean("CI"),
+                    coworking = row.getBoolean("CJ"), // TODO Работа это коворкинг?
+                    petFriendly = row.getBoolean("CL")
+                ),
+                managementCompany = ManagementCompany(
+                    enabled =  row.getBoolean("CB"),
+                ),
+                price = MinMaxAvgParam(
+                    min = getMinPrice(row, listOf("DI", "DL", "DO", "DR", "DU", "DX", "II", "IK", "IM", "IO")),
+                    max = getMaxPrice(row, listOf("DK", "DN", "DQ", "DT", "DW", "DZ", "IJ", "IL", "IN", "IP")),
+                    avg = row.getBigDecimal("EB", 0) // TODO средняя стоимость указана только для вилл
+                ),
+                ceilingHeight = row.getBigDecimal("BJ", 1),
+                floors = row.getInt("BK"),
+                roomLayouts = RoomLayouts(
+                    studio = getRoomParams(row, listOf("CM", "CO", "CN"), listOf("DI", "DK", "DJ"), listOf("HO", "HP")),
+                    one = getRoomParams(row, listOf("CP", "CR", "CQ"), listOf("DL", "DN", "DM"), listOf("HQ", "HR")),
+                    two = getRoomParams(row, listOf("CS", "CU", "CT"), listOf("DO", "DQ", "DP"), listOf("HS", "HT")),
+                    three = getRoomParams(row, listOf("CV", "CX", "CW"), listOf("DR", "DT", "DS"), listOf("HU", "HV")),
+                    four = getRoomParams(row, listOf("CY", "DA", "CZ"), listOf("DU", "DW", "DV"), listOf("HW", "HX")),
+                    five = getRoomParams(row, listOf("DB", "DD", "DC"), listOf("DX", "DZ", "DY"), listOf("HY", "HZ")),
+                    villaTwo = getRoomParams(row, listOf("DF", "DH", "DG"), listOf("II", "IJ", "EB"), listOf("IA", "IB")),
+                    villaThree = getRoomParams(row, listOf("DF", "DH", "DG"), listOf("IK", "IL", "EB"), listOf("IC", "ID")),
+                    villaFour = getRoomParams(row, listOf("DF", "DH", "DG"), listOf("IM", "IN", "EB"), listOf("IE", "IF")),
+                    villaFive = getRoomParams(row, listOf("DF", "DH", "DG"), listOf("IO", "IP", "EB"), listOf("IG", "IH")),
+                )
+            )
+        )
     }
 
     private fun getMinPrice(row: Row, cellNames: List<String>): BigDecimal {

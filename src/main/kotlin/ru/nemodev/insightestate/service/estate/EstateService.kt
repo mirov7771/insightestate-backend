@@ -148,7 +148,7 @@ class EstateServiceImpl(
     }
 
     override fun findPages(pageCount: Int): Int {
-        val count = repository.findAllEstate() ?: return 0
+        val count = repository.findAllForShowCount() ?: return 0
         return count / pageCount
     }
 
