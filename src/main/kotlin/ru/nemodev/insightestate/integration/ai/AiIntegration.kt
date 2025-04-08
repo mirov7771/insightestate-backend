@@ -2,8 +2,6 @@ package ru.nemodev.insightestate.integration.ai
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import ru.nemodev.insightestate.integration.ai.dto.PromptRq
