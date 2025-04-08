@@ -2,7 +2,9 @@ package ru.nemodev.insightestate.service.estate
 
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import ru.nemodev.insightestate.config.property.GoogleProperties
 import ru.nemodev.insightestate.entity.EstateEntity
+import ru.nemodev.insightestate.integration.google.GoogleSpreadsheetsIntegration
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
@@ -11,12 +13,15 @@ import java.io.InputStream
 
 interface EstateLoader {
     fun loadFromFile(filePart: MultipartFile)
+    fun loadFromGoogle()
 }
 
 @Service
 class EstateLoaderImpl(
     private val estateExcelParser: EstateExcelParser,
     private val estateService: EstateService,
+    private val googleProperties: GoogleProperties,
+    private val googleSpreadsheetsIntegration: GoogleSpreadsheetsIntegration
 ) : EstateLoader {
 
     companion object : Loggable
@@ -29,6 +34,10 @@ class EstateLoaderImpl(
         }
 
         load(filePart.inputStream)
+    }
+
+    override fun loadFromGoogle() {
+        load(googleSpreadsheetsIntegration.downloadSpreadsheets(googleProperties.spreadsheets.estateSheetId))
     }
 
     private fun load(inputStream: InputStream) {
@@ -52,8 +61,19 @@ class EstateLoaderImpl(
                 existEstate.estateDetail = parsedEstate.estateDetail
             }
         }
+
+        val existEstates = (existsEstateByProjectMap.values.toList())
+
+        // Скрываем объекты без фото
+        newEstates.forEach {
+            it.estateDetail.canShow = it.isCanShow()
+        }
+        existEstates.forEach {
+            it.estateDetail.canShow = it.isCanShow()
+        }
+
         estateService.saveAll(newEstates)
-        estateService.saveAll(existsEstateByProjectMap.values.toList())
+        estateService.saveAll(existEstates)
         logInfo { "Закончили обновление и загрузку новых объектов недвижимости" }
     }
 

@@ -4,6 +4,7 @@ import org.springframework.data.relational.core.mapping.Column
 import org.springframework.data.relational.core.mapping.Table
 import ru.nemodev.platform.core.db.annotation.StoreJson
 import ru.nemodev.platform.core.db.entity.AbstractEntity
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,7 +18,14 @@ class EstateEntity (
 
     @Column("estate_detail")
     var estateDetail: EstateDetail
-) : AbstractEntity<UUID>(id, createdAt, updatedAt)
+) : AbstractEntity<UUID>(id, createdAt, updatedAt) {
+
+    fun isCanShow(): Boolean {
+        return estateDetail.facilityImages.isNotNullOrEmpty()
+                || estateDetail.exteriorImages.isNotNullOrEmpty()
+                || estateDetail.interiorImages.isNotNullOrEmpty()
+    }
+}
 
 /**
  * Описание полей согласно таблице
@@ -36,6 +44,7 @@ data class EstateDetail (
     val grade: EstateGrade,                     // оценка проекта
     val projectCount: ProjectCount,             // количество проектов
     val status: EstateStatus,                   // статус проекта
+    var canShow: Boolean = true,                // можно ли показывать объект
     val saleStartDate: LocalDate? = null,       // дата начала продаж // TODO в таблице нужно поменять формат на дату как у даты окончания строительства
     val buildEndDate: LocalDate? = null,        // дата окончания строительства
     val unitCount: UnitCount,                   // количество юнитов
@@ -105,9 +114,13 @@ data class EstateInfrastructure(
     val beachTime: TravelTime,                      // время в пути до пляжа
     val airportTime: TravelTime,                    // время в пути до аэропорта
     val mallTime: TravelTime,                       // время в пути до тц
-    val schoolRadius: BigDecimal,                   // школа в радиусе в км
-    val nurserySchoolRadius: BigDecimal? = null,    // детский сад в радиусе в км
-)
+    val school: School = School()                   // школа
+) {
+    data class School(
+        val radius: BigDecimal = BigDecimal.ZERO,
+        val name: String? = null
+    )
+}
 
 // Управляющая компания
 data class ManagementCompany(
@@ -135,7 +148,8 @@ data class EstateOptions(
     val childRoom: Boolean,             // для детей
     val shop: Boolean,                  // магазины
     val entertainment: Boolean,         // развлекательные
-    val coworking: Boolean = false,     // co-working
+    val coworking: Boolean,             // co-working
+    val petFriendly: Boolean = false,   // животные приветствуются
 )
 
 // Планировки
@@ -165,11 +179,11 @@ data class MinMaxAvgParam (
     val avg: BigDecimal? = null,
 )
 
-enum class EstateLevelType(val csv: String) {
-    COMFORT("Комфорт"),
-    LUX("Люкс"),
-    PREMIUM("Премиум"),
-    UNKNOWN("Не указан"),
+enum class EstateLevelType {
+    COMFORT,
+    LUX,
+    PREMIUM,
+    UNKNOWN
 }
 
 enum class EstateProductType {
@@ -178,14 +192,9 @@ enum class EstateProductType {
     UNKNOWN
 }
 
-enum class EstateReadyStatus {
-    DONE,
-    SOLD_OUT
-}
-
-enum class EstateType(val csv: String) {
-    VILLA("villa"),
-    APARTMENT("kvartira")
+enum class EstateType {
+    VILLA,
+    APARTMENT
 }
 
 enum class EstateStatus {
@@ -193,5 +202,4 @@ enum class EstateStatus {
     FINISHED,
     UNKNOWN
 }
-
 

@@ -8,6 +8,10 @@ spring:
         instance:
           service-url: http://localhost:8080
         enabled: false
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/insightestate}
     username: ${DATABASE_USERNAME:insightestate_admin}
@@ -25,6 +29,10 @@ spring:
       mail.smtp.timeout: 5000
       mail.smtp.writetimeout: 5000
 
+# TODO перенести в insightestate
+application:
+  admin: arturmirov777@gmail.com, service@insightestate.com
+
 insightestate:
   auth:
     tokens:
@@ -36,6 +44,26 @@ insightestate:
   image-base-url: ${IMAGE_BASE_URL:http://127.0.0.1:9000}
   estate:
     image-dir: ${ESTATE_IMAGE_DIR:/Users/nemodev/Downloads/estate/images/estate-images-1} # TODO для локальной загрузки меняем путь на свой
+
+ai:
+  integration:
+    http-client:
+      service-id: ai
+      url: http://194.60.133.56:11434/api/generate
+      timeout:
+        connection: 230s
+        read: 230s
+
+google:
+  spreadsheets:
+    estate-sheet-id: "1JKUYrunv2WXQlj81HPD2Sk3pXX6BTyL-NLpSx_9RZIM"
+    integration:
+      http:
+        service-id: google-docs
+        url: https://docs.google.com
+        timeout:
+          connection: 30s
+          read: 120s
 
 platform:
   integration:
@@ -79,15 +107,3 @@ springdoc:
       display-name: Client API
       packages-to-scan:
         - "ru.nemodev.insightestate.api.client"
-
-application:
-  admin: arturmirov777@gmail.com, service@insightestate.com
-
-ai:
-  integration:
-    http-client:
-      service-id: ai
-      url: http://194.60.133.56:11434/api/generate
-      timeout:
-        connection: 230s
-        read: 230s

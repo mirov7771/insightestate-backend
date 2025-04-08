@@ -96,13 +96,19 @@ data class EstateDetailDtoRs(
         val beachTime: TravelTimeDto,
         val airportTime: TravelTimeDto,
         val mallTime: TravelTimeDto,
+        @Deprecated("Использовать school")
         val schoolRadius: BigDecimal,
-        val nurserySchoolRadius: BigDecimal?,
+        val school: SchoolDto
     )
 
     data class TravelTimeDto(
         val walk: Int?,
         val car: Int,
+    )
+
+    data class SchoolDto(
+        val radius: BigDecimal,
+        val name: String?,
     )
 
     data class EstateProfitabilityDto(
@@ -119,6 +125,7 @@ data class EstateDetailDtoRs(
         val shop: Boolean,
         val entertainment: Boolean,
         val coworking: Boolean,
+        val petFriendly: Boolean
     )
 
     data class ManagementCompany(

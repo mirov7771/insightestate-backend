@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration
 import ru.nemodev.platform.core.integration.http.config.RestClientProperties
 import ru.nemodev.platform.core.integration.http.factory.RestClientFactory
 
+// TODO отрефачить - сделать конфигурацию как у всех настроек
 @ConfigurationProperties("ai")
 class AiProperties (
     val integration: AiIntegration

@@ -24,6 +24,19 @@ fun Row.getString(cellName: String): String? {
 }
 
 fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
+    val cell = getCellByName(cellName) ?: return null
+    if (cell.cellType == CellType.NUMERIC) {
+        if (getString(cellName).isNullOrEmpty()) {
+            return null
+        }
+
+        val value = cell.numericCellValue.toBigDecimal()
+        if (scale != null) {
+            return value.scaleAndRoundAmount(scale)
+        }
+        return value
+    }
+
     val value = this.getString(cellName)
         ?.replace(" ", "")
         ?.replace(",", ".")
@@ -43,6 +56,11 @@ fun Row.getBigDecimalFromPercent(cellName: String, scale: Int): BigDecimal? {
 }
 
 fun Row.getInt(cellName: String): Int? {
+    val cell = getCellByName(cellName) ?: return null
+    if (cell.cellType == CellType.NUMERIC) {
+        return cell.numericCellValue.toInt()
+    }
+
     return this.getString(cellName)
         ?.filter { it.isDigit() }
         ?.nullIfEmpty()

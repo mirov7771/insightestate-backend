@@ -78,8 +78,11 @@ class EstateDetailDtoRsConverter(
                 beachTime = estateDetail.infrastructure.beachTime.toTravelTimeDto(),
                 airportTime = estateDetail.infrastructure.airportTime.toTravelTimeDto(),
                 mallTime = estateDetail.infrastructure.mallTime.toTravelTimeDto(),
-                schoolRadius = estateDetail.infrastructure.schoolRadius,
-                nurserySchoolRadius = estateDetail.infrastructure.nurserySchoolRadius,
+                schoolRadius = estateDetail.infrastructure.school.radius,
+                school = EstateDetailDtoRs.SchoolDto(
+                    radius = estateDetail.infrastructure.school.radius,
+                    name = estateDetail.infrastructure.school.name
+                )
             ),
             options = EstateDetailDtoRs.EstateOptionsDto(
                 parkingSize = estateDetail.options.parkingSize,
@@ -88,6 +91,7 @@ class EstateDetailDtoRsConverter(
                 shop = estateDetail.options.shop,
                 entertainment = estateDetail.options.entertainment,
                 coworking = estateDetail.options.coworking,
+                petFriendly = estateDetail.options.petFriendly
             ),
             managementCompany = EstateDetailDtoRs.ManagementCompany(
                 enabled = estateDetail.managementCompany.enabled

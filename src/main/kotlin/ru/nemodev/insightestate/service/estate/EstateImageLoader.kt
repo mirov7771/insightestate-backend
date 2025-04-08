@@ -108,9 +108,9 @@ class EstateImageLoaderImpl(
                     )
                 }
             }
+            estate.estateDetail.canShow = estate.isCanShow()
         }
 
-        // TODO скрывать объекты без картинок ввести статус и фильтровать по нему в запросах
         estateService.saveAll(estates)
 
         logInfo { "Закончили загрузку фото объектов недвижимости" }

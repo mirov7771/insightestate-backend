@@ -49,8 +49,10 @@ dependencies {
     implementation("org.apache.poi:poi:$apachePoiVersion")
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
 
-    val fastcsvVersion = "3.4.0"
-    implementation("de.siegmar:fastcsv:$fastcsvVersion")
+    // google
+    implementation("com.google.api-client:google-api-client:2.0.0")
+    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
+    implementation("com.google.apis:google-api-services-sheets:v4-rev612-1.25.0")
 }
 
 jacoco {
