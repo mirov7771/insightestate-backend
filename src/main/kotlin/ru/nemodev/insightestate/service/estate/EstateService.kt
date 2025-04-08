@@ -2,9 +2,11 @@ package ru.nemodev.insightestate.service.estate
 
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import ru.nemodev.insightestate.entity.AiRequestEntity
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.integration.ai.AiIntegration
+import ru.nemodev.insightestate.repository.AiRequestRepository
 import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
@@ -44,7 +46,8 @@ interface EstateService {
 @Service
 class EstateServiceImpl(
     private val repository: EstateRepository,
-    private val aiIntegration: AiIntegration
+    private val aiIntegration: AiIntegration,
+    private val aiRequestRepository: AiRequestRepository
 ) : EstateService {
 
     override fun findAll(): List<EstateEntity> {
@@ -153,6 +156,12 @@ class EstateServiceImpl(
     }
 
     override fun aiRequest(rq: String): List<EstateEntity> {
+        aiRequestRepository.save(
+            AiRequestEntity(
+                id = UUID.randomUUID(),
+                request = rq
+            ).apply { isNew = true }
+        )
         val rs = aiIntegration.generate(rq = rq)
         if (rs == null) {
             println("Empty list")
