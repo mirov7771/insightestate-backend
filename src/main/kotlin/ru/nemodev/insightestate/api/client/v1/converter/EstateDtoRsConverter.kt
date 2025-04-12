@@ -22,6 +22,11 @@ class EstateDtoRsConverter(
 
     override fun convert(source: EstateEntity): EstateDtoRs {
         val estateDetail = source.estateDetail
+        val beachTravelTimeWalk = estateDetail.infrastructure.beachTime.walk ?: 0
+        val beachTravelTimeCar = estateDetail.infrastructure.beachTime.car
+        var beachTravelTime = beachTravelTimeCar
+        if (beachTravelTimeWalk in 1..<beachTravelTimeCar)
+            beachTravelTime = beachTravelTimeWalk
         return EstateDtoRs(
             id = source.id,
             projectId = estateDetail.projectId,
@@ -31,7 +36,7 @@ class EstateDtoRsConverter(
             roi = estateDetail.profitability.roi,
             buildEndDate = estateDetail.buildEndDate?.format(dateTimeFormatter) ?: "-",
             level = estateDetail.level,
-            beachTravelTime = estateDetail.infrastructure.beachTime.walk ?: 0,
+            beachTravelTime = beachTravelTime,
             facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
