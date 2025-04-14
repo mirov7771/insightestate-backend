@@ -75,7 +75,11 @@ class AiIntegrationImpl (
         var type: String? = null
         if (rq.contains("Вилла", ignoreCase = true))
             type = "VILLA"
-        if (rq.contains("Квартира", ignoreCase = true))
+        else if (rq.contains("Квартира", ignoreCase = true))
+            type = "APARTMENT"
+        else if (rq.contains("Виллу", ignoreCase = true))
+            type = "VILLA"
+        else if (rq.contains("Квартиру", ignoreCase = true))
             type = "APARTMENT"
 
         //Город
@@ -195,17 +199,19 @@ class AiIntegrationImpl (
     }
 
     private fun getPriceFrom(value: String): String? {
-        val searchString = value.replace("от пляжа", "")
+        var searchString = value.replace("от пляжа", "")
             .replace("от аэропорта", "")
             .replace("от ТЦ", "")
             .replace("от торгового центра", "")
             .replace("от магазина", "")
-        val split = searchString.split(" от ")
-        if (split.isEmpty())
-            return null
-        if (split.size < 2)
-            return null
-        val spaces = split[1].split(" ")
+        var split = searchString.split(" от ")
+        if (split.isEmpty() || split.size < 2) {
+            searchString = searchString.replace("бюджет", "")
+            split = searchString.split(" минимальный ")
+            if (split.isEmpty() || split.size < 2)
+                return null
+        }
+        val spaces = split[1].trim().split(" ")
         val price = spaces[0].trim()
         if (isNumeric(price)) {
             return if (value.contains("миллион"))
@@ -217,16 +223,18 @@ class AiIntegrationImpl (
     }
 
     private fun getPriceTo(value: String): String? {
-        val searchString = value.replace("до пляжа", "")
+        var searchString = value.replace("до пляжа", "")
             .replace("до аэропорта", "")
             .replace("до ТЦ", "")
             .replace("до торгового центра", "")
             .replace("до магазина", "")
-        val split = searchString.split(" до ")
-        if (split.isEmpty())
-            return null
-        if (split.size < 2)
-            return null
+        var split = searchString.split(" до ")
+        if (split.isEmpty() || split.size < 2) {
+            searchString = searchString.replace("бюджет", "")
+            split = searchString.split(" максимальный ")
+            if (split.isEmpty() || split.size < 2)
+                return null
+        }
         val spaces = split[1].split(" ")
         val price = spaces[0].trim()
         if (isNumeric(price)) {
