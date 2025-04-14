@@ -235,7 +235,7 @@ class AiIntegrationImpl (
             if (split.isEmpty() || split.size < 2)
                 return null
         }
-        val spaces = split[1].split(" ")
+        val spaces = split[1].trim().split(" ")
         val price = spaces[0].trim()
         if (isNumeric(price)) {
             return if (value.contains("миллион"))
