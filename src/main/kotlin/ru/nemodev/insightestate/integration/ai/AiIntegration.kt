@@ -155,6 +155,8 @@ class AiIntegrationImpl (
             beachTravelTimesWalk = getNumberFromString(rq, " минутах до пляжа")
         } else if (rq.contains(" минутах пешком до пляжа")) {
             beachTravelTimesWalk = getNumberFromString(rq, " минутах пешком до пляжа")
+        } else if (rq.contains(" минутах ")) {
+            beachTravelTimesWalk = getNumberFromString(rq, " минутах ")
         }
 
         //Спортзал
@@ -231,6 +233,8 @@ class AiIntegrationImpl (
             return if (value.contains("миллион"))
                 "${price}000000"
             else if (value.contains(" млн "))
+                "${price}000000"
+            else if (value.contains(" млн."))
                 "${price}000000"
             else
                 "${price}000"
