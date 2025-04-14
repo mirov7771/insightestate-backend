@@ -224,10 +224,10 @@ class EstateServiceImpl(
         if (beachWalkTime < 6) {
             maxBeachWalkTravelTimeOne = 5
         } else if (beachWalkTime <= 10) {
-            minBeachWalkTravelTimeTwo = 6
+            minBeachWalkTravelTimeTwo = 0
             maxBeachWalkTravelTimeTwo = 10
         } else if (beachWalkTime <= 30) {
-            minBeachWalkTravelTimeFree = 11
+            minBeachWalkTravelTimeFree = 0
             maxBeachWalkTravelTimeFree = 30
         }
 
@@ -280,11 +280,11 @@ class EstateServiceImpl(
             gradeInvestmentPotential = null,
             gradeProjectLocation = null,
             gradeComfortOfLife = null,
-            maxBeachWalkTravelTimeOne = null,
-            minBeachWalkTravelTimeTwo = null,
-            maxBeachWalkTravelTimeTwo = null,
-            minBeachWalkTravelTimeFree = null,
-            maxBeachWalkTravelTimeFree = null,
+            maxBeachWalkTravelTimeOne = maxBeachWalkTravelTimeOne,
+            minBeachWalkTravelTimeTwo = minBeachWalkTravelTimeTwo,
+            maxBeachWalkTravelTimeTwo = maxBeachWalkTravelTimeTwo,
+            minBeachWalkTravelTimeFree = minBeachWalkTravelTimeFree,
+            maxBeachWalkTravelTimeFree = maxBeachWalkTravelTimeFree,
             maxBeachCarTravelTimeOne = null,
             minBeachCarTravelTimeTwo = null,
             maxBeachCarTravelTimeTwo = null,
@@ -296,10 +296,10 @@ class EstateServiceImpl(
             maxAirportCarTravelTimeFree = null,
             parking = parking,
             managementCompanyEnabled = null,
-            beachName = null,
-            city = null,
+            beachName = rs.beach,
+            city = rs.city,
             offset = 0,
-            limit = 25,
+            limit = 150,
         )
         if (list.isEmpty())
             list = repository.findRandom()

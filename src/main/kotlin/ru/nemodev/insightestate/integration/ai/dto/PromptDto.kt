@@ -33,5 +33,14 @@ data class ResultDto (
     val priceFrom: String? = null,
     val priceTo: String? = null,
     val currency: String? = null,
-    val buildEndYears: String? = null
+    val buildEndYears: String? = null,
+    val city: String? = null,
 )
+
+fun ResultDto.isEmpty() = this.type == null &&
+        this.beach == null &&
+        this.city == null &&
+        this.priceFrom == null &&
+        this.priceTo == null &&
+        this.beachTravelTimesWalk == null &&
+        this.beachTravelTimesCar == null
