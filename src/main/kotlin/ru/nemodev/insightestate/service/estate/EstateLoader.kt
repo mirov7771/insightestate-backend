@@ -35,10 +35,9 @@ class EstateLoaderImpl(
         logInfo { "Начало парсинга объектов недвижимости из файла ${filePart.originalFilename}" }
 
         val parsedEstates = estateExcelParser.parse(filePart.inputStream)
-
-        logInfo { "Закончили парсинг объектов недвижимости из файла ${filePart.originalFilename}, всего объектов - ${parsedEstates.size}" }
-
         load(parsedEstates)
+
+        logInfo { "Закончили парсинг и загрузку объектов недвижимости из файла ${filePart.originalFilename}, всего объектов - ${parsedEstates.size}" }
     }
 
     override fun loadFromGoogleSpreadsheets() {
@@ -47,14 +46,12 @@ class EstateLoaderImpl(
         val driveExcelFile = googleDriveIntegration.downloadExcelFile(googleProperties.spreadsheets.estateSpreadsheetId)
         val parsedEstates = estateExcelParser.parse(driveExcelFile)
 
-        logInfo { "Закончили парсинг объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}, всего объектов - ${parsedEstates.size}" }
-
         load(parsedEstates)
+
+        logInfo { "Закончили парсинг и загрузку объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}, всего объектов - ${parsedEstates.size}" }
     }
 
     private fun load(parsedEstates: List<EstateEntity>) {
-        logInfo { "Начало обновления и загрузки новых объектов недвижимости" }
-
         val existsEstateByProjectMap = estateService.findAll().associateBy { it.estateDetail.projectId }.toMutableMap()
         val newEstates = mutableListOf<EstateEntity>()
         parsedEstates.forEach { parsedEstate ->
@@ -83,8 +80,6 @@ class EstateLoaderImpl(
 
         estateService.saveAll(newEstates)
         estateService.saveAll(existEstates)
-
-        logInfo { "Закончили обновление и загрузку новых объектов недвижимости" }
     }
 
 }
