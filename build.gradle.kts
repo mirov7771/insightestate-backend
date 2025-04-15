@@ -50,9 +50,8 @@ dependencies {
     implementation("org.apache.poi:poi-ooxml:$apachePoiVersion")
 
     // google
-    implementation("com.google.api-client:google-api-client:2.0.0")
-    implementation("com.google.oauth-client:google-oauth-client-jetty:1.34.1")
     implementation("com.google.apis:google-api-services-sheets:v4-rev612-1.25.0")
+    implementation("com.google.apis:google-api-services-drive:v3-rev197-1.25.0")
 }
 
 jacoco {

@@ -4,16 +4,15 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.config.property.GoogleProperties
 import ru.nemodev.insightestate.entity.EstateEntity
-import ru.nemodev.insightestate.integration.google.GoogleSpreadsheetsIntegration
+import ru.nemodev.insightestate.integration.google.GoogleDriveIntegration
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
 import ru.nemodev.platform.core.logging.sl4j.Loggable
-import java.io.InputStream
 
 interface EstateLoader {
     fun loadFromFile(filePart: MultipartFile)
-    fun loadFromGoogle()
+    fun loadFromGoogleSpreadsheets()
 }
 
 @Service
@@ -21,7 +20,7 @@ class EstateLoaderImpl(
     private val estateExcelParser: EstateExcelParser,
     private val estateService: EstateService,
     private val googleProperties: GoogleProperties,
-    private val googleSpreadsheetsIntegration: GoogleSpreadsheetsIntegration
+    private val googleDriveIntegration: GoogleDriveIntegration
 ) : EstateLoader {
 
     companion object : Loggable
@@ -33,19 +32,29 @@ class EstateLoaderImpl(
             )
         }
 
-        load(filePart.inputStream)
+        logInfo { "Начало парсинга объектов недвижимости из файла ${filePart.originalFilename}" }
+
+        val parsedEstates = estateExcelParser.parse(filePart.inputStream)
+
+        logInfo { "Закончили парсинг объектов недвижимости из файла ${filePart.originalFilename}, всего объектов - ${parsedEstates.size}" }
+
+        load(parsedEstates)
     }
 
-    override fun loadFromGoogle() {
-        load(googleSpreadsheetsIntegration.downloadSpreadsheets(googleProperties.spreadsheets.estateSheetId))
+    override fun loadFromGoogleSpreadsheets() {
+        logInfo { "Начало парсинга объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}" }
+
+        val driveExcelFile = googleDriveIntegration.downloadExcelFile(googleProperties.spreadsheets.estateSpreadsheetId)
+        val parsedEstates = estateExcelParser.parse(driveExcelFile)
+
+        logInfo { "Закончили парсинг объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}, всего объектов - ${parsedEstates.size}" }
+
+        load(parsedEstates)
     }
 
-    private fun load(inputStream: InputStream) {
-        logInfo { "Начало парсинга объектов недвижимости" }
-        val parsedEstates = estateExcelParser.parse(inputStream)
-        logInfo { "Закончили парсинг объектов недвижимости всего - ${parsedEstates.size}" }
-
+    private fun load(parsedEstates: List<EstateEntity>) {
         logInfo { "Начало обновления и загрузки новых объектов недвижимости" }
+
         val existsEstateByProjectMap = estateService.findAll().associateBy { it.estateDetail.projectId }.toMutableMap()
         val newEstates = mutableListOf<EstateEntity>()
         parsedEstates.forEach { parsedEstate ->
@@ -74,6 +83,7 @@ class EstateLoaderImpl(
 
         estateService.saveAll(newEstates)
         estateService.saveAll(existEstates)
+
         logInfo { "Закончили обновление и загрузку новых объектов недвижимости" }
     }
 

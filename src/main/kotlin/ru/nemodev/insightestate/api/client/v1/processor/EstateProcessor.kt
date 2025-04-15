@@ -36,6 +36,7 @@ interface EstateProcessor {
     ): EstateDetailDtoRs
 
     fun loadFromFile(filePart: MultipartFile)
+    fun loadFromGoogle()
     fun loadImagesFromDir()
     fun aiRequest(rq: AiRequest): CustomPageDtoRs
 }
@@ -96,6 +97,10 @@ class EstateProcessorImpl(
 
     override fun loadFromFile(filePart: MultipartFile) {
         estateLoader.loadFromFile(filePart)
+    }
+
+    override fun loadFromGoogle() {
+        estateLoader.loadFromGoogleSpreadsheets()
     }
 
     override fun loadImagesFromDir() {

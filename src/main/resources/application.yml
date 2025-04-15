@@ -56,14 +56,9 @@ ai:
 
 google:
   spreadsheets:
-    estate-sheet-id: "1JKUYrunv2WXQlj81HPD2Sk3pXX6BTyL-NLpSx_9RZIM"
-    integration:
-      http:
-        service-id: google-docs
-        url: https://docs.google.com
-        timeout:
-          connection: 30s
-          read: 120s
+    estate-load-cron: 0 0 0 * * *
+    estate-spreadsheet-id: "1JKUYrunv2WXQlj81HPD2Sk3pXX6BTyL-NLpSx_9RZIM"
+    estate-sheet-id: 1080049623
 
 platform:
   integration:
