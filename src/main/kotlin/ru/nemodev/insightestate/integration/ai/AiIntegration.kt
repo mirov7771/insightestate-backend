@@ -189,6 +189,19 @@ class AiIntegrationImpl (
         //Цена до
         val priceTo = getPriceTo(rq)
 
+        val rooms = if (rq.contains("студи", ignoreCase = true))
+            "0"
+        else if (rq.contains("1 комнат", ignoreCase = true))
+            "1"
+        else if (rq.contains("2 комнат", ignoreCase = true))
+            "2"
+        else if (rq.contains("3 комнат", ignoreCase = true))
+            "3"
+        else if (rq.contains("4 комнат", ignoreCase = true))
+            "4"
+        else
+            null
+
         return ResultDto(
             type = type,
             city = city,
@@ -199,6 +212,7 @@ class AiIntegrationImpl (
             parking = parking,
             priceFrom = priceFrom,
             priceTo = priceTo,
+            rooms = rooms
         )
     }
 
