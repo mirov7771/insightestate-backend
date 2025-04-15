@@ -81,6 +81,10 @@ class AiIntegrationImpl (
             type = "VILLA"
         else if (rq.contains("Квартиру", ignoreCase = true))
             type = "APARTMENT"
+        else if (rq.contains("Вилл", ignoreCase = true))
+            type = "VILLA"
+        else if (rq.contains("Квартир", ignoreCase = true))
+            type = "APARTMENT"
 
         //Город
         var city: String? = null
@@ -136,6 +140,8 @@ class AiIntegrationImpl (
         if (rq.contains("БангТао", ignoreCase = true))
             beach = "Bang Tao"
         if (rq.contains("БангхТао", ignoreCase = true))
+            beach = "Bang Tao"
+        if (rq.contains("Банг-Тао", ignoreCase = true))
             beach = "Bang Tao"
 
         //Валюта
