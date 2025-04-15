@@ -221,7 +221,9 @@ class EstateServiceImpl(
         var minBeachWalkTravelTimeFree: Int? = null
         var maxBeachWalkTravelTimeFree: Int? = null
 
-        if (beachWalkTime < 6) {
+        if (beachWalkTime == 0) {
+            maxBeachWalkTravelTimeOne = null
+        } else if (beachWalkTime < 6) {
             maxBeachWalkTravelTimeOne = 5
         } else if (beachWalkTime <= 10) {
             minBeachWalkTravelTimeTwo = 0
@@ -237,7 +239,9 @@ class EstateServiceImpl(
         var minBeachCarTravelTimeFree: Int? = null
         var maxBeachCarTravelTimeFree: Int? = null
 
-        if (beachCarTime < 6) {
+        if (beachCarTime == 0) {
+            maxBeachCarTravelTimeOne = null
+        } else if (beachCarTime < 6) {
             maxBeachCarTravelTimeOne = 5
         } else if (beachCarTime <= 10) {
             minBeachCarTravelTimeTwo = 6
