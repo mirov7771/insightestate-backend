@@ -109,6 +109,8 @@ class AiIntegrationImpl (
             beach = "Rawai"
         if (rq.contains("Равай", ignoreCase = true))
             beach = "Rawai"
+        if (rq.contains("Рава", ignoreCase = true))
+            beach = "Rawai"
         if (rq.contains("Най харн", ignoreCase = true))
             beach = "Nai Harn"
         if (rq.contains("Найхарн", ignoreCase = true))
@@ -161,6 +163,8 @@ class AiIntegrationImpl (
             beachTravelTimesWalk = getNumberFromString(rq, " минутах пешком до пляжа")
         } else if (rq.contains(" минутах ")) {
             beachTravelTimesWalk = getNumberFromString(rq, " минутах ")
+        } else if (rq.contains(" минуте ")) {
+            beachTravelTimesWalk = getNumberFromString(rq, " минуте ")
         }
 
         //Спортзал
