@@ -157,6 +157,21 @@ class EstateController (
     ) = estateProcessor.loadFromFile(filePart)
 
     @Operation(
+        summary = "Загрузить объекты из google spreadsheets, существующие объекты обновляются с сохранением картинок",
+        responses = [
+            ApiResponse(responseCode = "200", description = "Успешный ответ"),
+            ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            ),
+            ApiResponse(responseCode = "500", description = "Ошибка обработки запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            )
+        ]
+    )
+    @PostMapping("/load/google-spreadsheets")
+    fun loadFromGoogleSpreadsheets() = estateProcessor.loadFromGoogle()
+
+    @Operation(
         summary = "Загрузить фото объектов из директории, все фото обновляются, процесс загрузки не быстрый т.к фото много",
         responses = [
             ApiResponse(responseCode = "200", description = "Успешный ответ"),

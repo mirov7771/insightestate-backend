@@ -21,11 +21,9 @@ class EstateExcelParserImpl : EstateExcelParser {
     companion object : Loggable
 
     override fun parse(inputStream: InputStream): List<EstateEntity> {
-        val estateProjectExcelFile = inputStream.use { it.readAllBytes() }
+        val workbook = XSSFWorkbook(inputStream)
 
-        val workbook = XSSFWorkbook(estateProjectExcelFile.inputStream())
-
-        val estates = workbook.getSheet("База")
+        return workbook.getSheet("База")
             .mapIndexedNotNull { index, row ->
                 if (row.getString("F") != "Done") {
                     return@mapIndexedNotNull null
@@ -37,8 +35,6 @@ class EstateExcelParserImpl : EstateExcelParser {
                     null
                 }
             }
-
-        return estates
     }
 
     private fun parseRow(row: Row): EstateEntity {
@@ -106,7 +102,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                     district = row.getString("AV")!!,
                     beach = row.getString("AW")!!,
                     mapUrl = row.getString("IQ")!!,
-                    city = "Phuket", // TODO нужно вынести в таблицу чтобы проставлялся в будущем для других городов
+                    city = row.getString("AK")!!
                 ),
                 infrastructure = EstateInfrastructure(
                     beachTime = TravelTime(
