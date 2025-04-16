@@ -162,6 +162,7 @@ class EstateServiceImpl(
                 request = rq
             ).apply { isNew = true }
         )
+
         val rs = aiIntegration.generate(rq = rq)
         if (rs == null) {
             println("Empty list")
@@ -255,10 +256,12 @@ class EstateServiceImpl(
         var minAirportCarTravelTimeTwo: Int? = null
         var maxAirportCarTravelTimeTwo: Int? = null
         var maxAirportCarTravelTimeFree: Int? = null
-        if (airportCarTime <= 30) {
+        if (airportCarTime == 0) {
+            maxAirportCarTravelTimeOne = null
+        } else if (airportCarTime <= 30) {
             maxAirportCarTravelTimeOne = 30
         } else if (airportCarTime <= 60) {
-            minAirportCarTravelTimeTwo = 31
+            minAirportCarTravelTimeTwo = 0
             maxAirportCarTravelTimeTwo = 60
         } else if (airportCarTime <= 61) {
             maxAirportCarTravelTimeFree = 61
@@ -269,6 +272,10 @@ class EstateServiceImpl(
         }
 
         val parking =  if (rs.parking != null && rs.parking.equals("true", ignoreCase = true)) true else null
+        var managementCompanyEnabled: Boolean? = null
+        if (rs.isUk != null) {
+            managementCompanyEnabled = rs.isUk.equals("true", ignoreCase = true)
+        }
         var list = repository.findByParams(
             types = type,
             buildEndYears = buildEndYears,
@@ -293,12 +300,12 @@ class EstateServiceImpl(
             maxBeachCarTravelTimeTwo = null,
             minBeachCarTravelTimeFree = null,
             maxBeachCarTravelTimeFree = null,
-            maxAirportCarTravelTimeOne = null,
-            minAirportCarTravelTimeTwo = null,
-            maxAirportCarTravelTimeTwo = null,
-            maxAirportCarTravelTimeFree = null,
+            maxAirportCarTravelTimeOne = maxAirportCarTravelTimeOne,
+            minAirportCarTravelTimeTwo = minAirportCarTravelTimeTwo,
+            maxAirportCarTravelTimeTwo = maxAirportCarTravelTimeTwo,
+            maxAirportCarTravelTimeFree = maxAirportCarTravelTimeFree,
             parking = parking,
-            managementCompanyEnabled = null,
+            managementCompanyEnabled = managementCompanyEnabled,
             beachName = rs.beach,
             city = rs.city,
             offset = 0,
@@ -306,6 +313,19 @@ class EstateServiceImpl(
         )
         if (list.isEmpty())
             list = repository.findRandom()
+        if (rs.rating != null) {
+            try {
+                val rating = BigDecimal(rs.rating)
+                list = list.filter {
+                    it.estateDetail.grade.main >= rating
+                }
+            } catch (_: Exception) {}
+        }
+        if (rs.roi != null && rs.roi.equals("true", ignoreCase = true)) {
+            try {
+                list = list.sortedByDescending { it.estateDetail.profitability.roi }.take(10)
+            } catch (_: Exception) {}
+        }
         return list
     }
 }

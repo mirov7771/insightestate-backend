@@ -215,6 +215,22 @@ class AiIntegrationImpl (
             beachTravelTimesWalk = getNumberFromString(rq, " минуте ")
         }
 
+        //Время до аэропорта
+        var airportTravelTimes: String? = null
+        if (rq.contains(" минутах от аэропорта", ignoreCase = true)) {
+            airportTravelTimes = getNumberFromString(rq, " минутах от аэропорта")
+        } else if (rq.contains(" минутах езды от аэропорта")) {
+            airportTravelTimes = getNumberFromString(rq, " минутах езды от аэропорта")
+        } else if (rq.contains(" минут до аэропорта")) {
+            airportTravelTimes = getNumberFromString(rq, " минут до аэропорта")
+        } else if (rq.contains(" минутах до аэропорта")) {
+            airportTravelTimes = getNumberFromString(rq, " минутах до аэропорта")
+        } else if (rq.contains(" минутах езды до аэропорта")) {
+            airportTravelTimes = getNumberFromString(rq, " минутах езды до аэропорта")
+        } else if (rq.contains(" минут езды ")) {
+            airportTravelTimes = getNumberFromString(rq, " минут езды ")
+        }
+
         //Спортзал
         var gym: String? = null
         if (rq.contains("спортзал", ignoreCase = true))
@@ -226,11 +242,12 @@ class AiIntegrationImpl (
             parking = "true"
 
         //Цена от
-        val priceFrom = getPriceFrom(rq)
+        var priceFrom = getPriceFrom(rq)
 
         //Цена до
-        val priceTo = getPriceTo(rq)
+        var priceTo = getPriceTo(rq)
 
+        //Кол-во комнат
         val rooms = if (rq.contains("студи", ignoreCase = true))
             "0"
         else if (rq.contains("1 комнат", ignoreCase = true))
@@ -244,6 +261,7 @@ class AiIntegrationImpl (
         else
             null
 
+        //Дата окончания строительства
         val buildEndYears = if (rq.contains("2025"))
             "2025"
         else if (rq.contains("2026"))
@@ -258,6 +276,47 @@ class AiIntegrationImpl (
             "2030"
         else
             null
+
+        //Наличие УК
+        var isUk: String? = null
+        if (rq.contains("с наличием УК", ignoreCase = true) ||
+            rq.contains("с УК", ignoreCase = true) ||
+            rq.contains("с управляющей компанией", ignoreCase = true) ||
+            rq.contains("с наличием управляющей компанией", ignoreCase = true)) {
+            isUk = "true"
+        } else if (rq.contains("без наличия УК", ignoreCase = true) ||
+            rq.contains("без УК", ignoreCase = true) ||
+            rq.contains("без управляющей компанией", ignoreCase = true) ||
+            rq.contains("без наличия управляющей компанией", ignoreCase = true)) {
+            isUk = "false"
+        }
+
+        //Общая оценка
+        var rating: String? = null
+        if (rq.contains("9 бал", ignoreCase = true))
+            rating = "9"
+        else if (rq.contains("8 бал", ignoreCase = true))
+            rating = "8"
+        else if (rq.contains("7 бал", ignoreCase = true))
+            rating = "7"
+
+        //ROI
+        val roi = if (rq.contains("ROI", ignoreCase = true)) "true" else null
+
+        if (airportTravelTimes != null) {
+            if ("${airportTravelTimes}000" == priceFrom)
+                priceFrom = null
+            if ("${airportTravelTimes}000" == priceTo)
+                priceTo = null
+        }
+
+        if (beachTravelTimesWalk != null) {
+            if ("${beachTravelTimesWalk}000" == priceFrom)
+                priceFrom = null
+            if ("${beachTravelTimesWalk}000" == priceTo)
+                priceTo = null
+        }
+
         return ResultDto(
             type = type,
             city = city,
@@ -270,6 +329,10 @@ class AiIntegrationImpl (
             priceTo = priceTo,
             rooms = rooms,
             buildEndYears = buildEndYears,
+            airportTravelTimes = airportTravelTimes,
+            isUk = isUk,
+            rating = rating,
+            roi = roi
         )
     }
 
