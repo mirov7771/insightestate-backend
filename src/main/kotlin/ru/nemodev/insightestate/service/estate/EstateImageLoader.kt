@@ -170,7 +170,7 @@ class EstateImageLoaderImpl(
                     // Одновременная загрузка всех картинок объекта
                     runBlocking { listOf(facilityImagesTask, exteriorImagesTask, interiorImagesTask).awaitAll() }
 
-                    // Обновляем фото объекта убирая ошибочные фото
+                    // Обновляем фото объекта
                     estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
                     estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
                     estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
@@ -194,6 +194,8 @@ class EstateImageLoaderImpl(
             } finally {
                 updatePhotoLock.unlock()
             }
+        } else {
+            logInfo { "Загрузка фото объектов уже запущена, дождитесь окончания текущей загрузки" }
         }
     }
 
