@@ -1,6 +1,7 @@
 package ru.nemodev.insightestate.service.estate
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.config.property.GoogleProperties
 import ru.nemodev.insightestate.entity.EstateEntity
@@ -20,7 +21,8 @@ class EstateLoaderImpl(
     private val estateExcelParser: EstateExcelParser,
     private val estateService: EstateService,
     private val googleProperties: GoogleProperties,
-    private val googleDriveIntegration: GoogleDriveIntegration
+    private val googleDriveIntegration: GoogleDriveIntegration,
+    private val transactionTemplate: TransactionTemplate,
 ) : EstateLoader {
 
     companion object : Loggable
@@ -78,8 +80,10 @@ class EstateLoaderImpl(
             it.estateDetail.canShow = it.isCanShow()
         }
 
-        estateService.saveAll(newEstates)
-        estateService.saveAll(existEstates)
+        transactionTemplate.executeWithoutResult {
+            estateService.saveAll(newEstates)
+            estateService.saveAll(existEstates)
+        }
     }
 
 }

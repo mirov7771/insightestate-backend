@@ -1,8 +1,10 @@
 package ru.nemodev.insightestate.service.estate
 
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import org.springframework.stereotype.Component
+import org.springframework.transaction.support.TransactionTemplate
 import ru.nemodev.insightestate.config.property.AppProperties
 import ru.nemodev.insightestate.integration.google.GoogleDriveIntegration
 import ru.nemodev.platform.core.async.executor.CoroutineExecutor
@@ -24,6 +26,7 @@ class EstateImageLoaderImpl(
     private val estateService: EstateService,
     private val googleDriveIntegration: GoogleDriveIntegration,
     private val ioCoroutineExecutor: CoroutineExecutor,
+    private val transactionTemplate: TransactionTemplate
 ) : EstateImageLoader {
 
     companion object : Loggable
@@ -150,41 +153,32 @@ class EstateImageLoaderImpl(
             return
         }
 
-        val estateTasks = estates.map { estate ->
-            ioCoroutineExecutor.async {
-                val estateImages = estateImageMap[estate.estateDetail.projectId]
-                if (estateImages != null) {
+        estates.forEachIndexed { index, estate ->
+            logInfo { "${index + 1}/${estates.size} - старт загрузки фото объекта ${estate.estateDetail.projectId}" }
 
-                    val facilityImagesTask = ioCoroutineExecutor.async {
-                        loadImageToMinio(estateImages.facilityImages)
-                    }
+            estateImageMap[estate.estateDetail.projectId]?.also { estateImages ->
 
-                    val exteriorImagesTask = ioCoroutineExecutor.async {
-                        loadImageToMinio(estateImages.exteriorImages)
-                    }
+                val imageLoadTasks = mutableListOf<Deferred<*>>()
+                imageLoadTasks.addAll(loadImageToMinio(estateImages.facilityImages))
+                imageLoadTasks.addAll(loadImageToMinio(estateImages.exteriorImages))
+                imageLoadTasks.addAll(loadImageToMinio(estateImages.interiorImages))
 
-                    val interiorImagesTask = ioCoroutineExecutor.async {
-                        loadImageToMinio(estateImages.interiorImages)
-                    }
+                // Одновременная загрузка всех картинок объекта
+                runBlocking { imageLoadTasks.awaitAll() }
 
-                    // Одновременная загрузка всех картинок объекта
-                    runBlocking { listOf(facilityImagesTask, exteriorImagesTask, interiorImagesTask).awaitAll() }
-
-                    // Обновляем фото объекта
-                    estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
-                    estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
-                    estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
-                }
-
-                // Обновляем признак можно ли показывать объект
-                estate.estateDetail.canShow = estate.isCanShow()
+                // Обновляем фото объекта
+                estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
+                estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
+                estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
             }
+
+            // Обновляем признак можно ли показывать объект
+            estate.estateDetail.canShow = estate.isCanShow()
         }
 
-        // Одновременная загрузка фото всех объектов
-        runBlocking { estateTasks.awaitAll() }
-
-        estateService.saveAll(estates)
+        transactionTemplate.executeWithoutResult {
+            estateService.saveAll(estates)
+        }
     }
 
     private fun withUpdatePhotoLock(action: () -> Unit) {
@@ -199,18 +193,20 @@ class EstateImageLoaderImpl(
         }
     }
 
-    private fun loadImageToMinio(estateImages: List<EstateImage>) {
-        estateImages.forEach { imageFile ->
-            try {
-                val imageSource = imageFile.file?.readBytes()
-                    ?: googleDriveIntegration.downloadImageFile(imageFile.googleDriveFileId!!).readAllBytes()
-                minioS3Client.upload(
-                    fileName = imageFile.name,
-                    fileContentType = "image/${imageFile.extension}",
-                    file = imageSource,
-                )
-            } catch (e: Exception) {
-                logError(e) { "Ошибка загрузки фото объекта - ${imageFile.name}" }
+    private fun loadImageToMinio(estateImages: List<EstateImage>): List<Deferred<*>> {
+        return estateImages.map { imageFile ->
+            ioCoroutineExecutor.async {
+                try {
+                    val imageSource = imageFile.file?.readBytes()
+                        ?: googleDriveIntegration.downloadImageFile(imageFile.googleDriveFileId!!).readAllBytes()
+                    minioS3Client.upload(
+                        fileName = imageFile.name,
+                        fileContentType = "image/${imageFile.extension}",
+                        file = imageSource,
+                    )
+                } catch (e: Exception) {
+                    logError(e) { "Ошибка загрузки фото объекта - ${imageFile.name}" }
+                }
             }
         }
     }

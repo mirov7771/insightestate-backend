@@ -29,7 +29,7 @@ class GoogleIntegrationConfig {
             JacksonFactory.getDefaultInstance()
         ) { request ->
             credential.initialize(request)
-            request.readTimeout = Duration.ofMinutes(3).toMillis().toInt()
+            request.readTimeout = Duration.ofMinutes(1).toMillis().toInt()
         }.setApplicationName("EstateBackend")
             .build()
     }
