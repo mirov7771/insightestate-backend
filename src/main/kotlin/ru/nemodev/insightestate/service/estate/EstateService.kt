@@ -187,7 +187,7 @@ class EstateServiceImpl(
             BigDecimal("1000000000000")
         }
 
-        val currency = rs.currency ?: "THB"
+        val currency = rs.currency ?: "USD"
         if (currency === "RUB") {
             minPrice = minPrice.multiply(BigDecimal(85))
             maxPrice = maxPrice.multiply(BigDecimal(85))

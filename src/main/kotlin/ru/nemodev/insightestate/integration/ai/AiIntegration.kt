@@ -185,7 +185,7 @@ class AiIntegrationImpl (
             beach = "Bang Tao"
 
         //Валюта
-        var currency: String? = "THB"
+        var currency: String? = "USD"
         if (rq.contains(" руб", ignoreCase = true))
             currency = "RUB"
         if (rq.contains(" RUB", ignoreCase = true))
@@ -194,6 +194,8 @@ class AiIntegrationImpl (
             currency = "USD"
         if (rq.contains(" USD", ignoreCase = true))
             currency = "USD"
+        if (rq.contains(" батт", ignoreCase = true))
+            currency = "THB"
 
         //Время до пляжа пешком
         var beachTravelTimesWalk: String? = null
@@ -242,6 +244,20 @@ class AiIntegrationImpl (
         else
             null
 
+        val buildEndYears = if (rq.contains("2025"))
+            "2025"
+        else if (rq.contains("2026"))
+            "2026"
+        else if (rq.contains("2027"))
+            "2027"
+        else if (rq.contains("2028"))
+            "2028"
+        else if (rq.contains("2029"))
+            "2029"
+        else if (rq.contains("2030"))
+            "2030"
+        else
+            null
         return ResultDto(
             type = type,
             city = city,
@@ -252,7 +268,8 @@ class AiIntegrationImpl (
             parking = parking,
             priceFrom = priceFrom,
             priceTo = priceTo,
-            rooms = rooms
+            rooms = rooms,
+            buildEndYears = buildEndYears,
         )
     }
 

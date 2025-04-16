@@ -43,4 +43,5 @@ fun ResultDto.isEmpty() = this.type == null &&
         this.priceFrom == null &&
         this.priceTo == null &&
         this.beachTravelTimesWalk == null &&
-        this.beachTravelTimesCar == null
+        this.beachTravelTimesCar == null &&
+        this.buildEndYears == null
