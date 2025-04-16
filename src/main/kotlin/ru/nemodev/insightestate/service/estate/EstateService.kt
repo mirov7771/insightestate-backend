@@ -189,12 +189,12 @@ class EstateServiceImpl(
 
         val currency = rs.currency ?: "THB"
         if (currency === "RUB") {
-            minPrice = minPrice.multiply(BigDecimal(0.3))
-            maxPrice = maxPrice.multiply(BigDecimal(0.3))
+            minPrice = minPrice.multiply(BigDecimal(85))
+            maxPrice = maxPrice.multiply(BigDecimal(85))
         }
-        if (currency === "USD") {
-            minPrice = minPrice.multiply(BigDecimal(34))
-            maxPrice = maxPrice.multiply(BigDecimal(34))
+        if (currency === "THB") {
+            minPrice = minPrice.multiply(BigDecimal(0.03))
+            maxPrice = maxPrice.multiply(BigDecimal(0.03))
         }
 
         val beachWalkTime = try {
@@ -269,7 +269,6 @@ class EstateServiceImpl(
         }
 
         val parking =  if (rs.parking != null && rs.parking.equals("true", ignoreCase = true)) true else null
-
         var list = repository.findByParams(
             types = type,
             buildEndYears = buildEndYears,
