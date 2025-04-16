@@ -58,7 +58,8 @@ google:
   spreadsheets:
     estate-load-cron: 0 0 0 * * *
     estate-spreadsheet-id: "1JKUYrunv2WXQlj81HPD2Sk3pXX6BTyL-NLpSx_9RZIM"
-    estate-sheet-id: 1080049623
+  drive:
+    estate-image-load-cron: 0 0 0 * * Mon
 
 platform:
   integration:

@@ -184,7 +184,22 @@ class EstateController (
         ]
     )
     @PostMapping("/load/images")
-    fun loadImageFromDir() = estateProcessor.loadImagesFromDir()
+    fun loadImageFromGoogleDrive() = estateProcessor.loadImagesFromDir()
+
+    @Operation(
+        summary = "Загрузить фото объектов из google drive, все фото обновляются, процесс загрузки не быстрый т.к фото много",
+        responses = [
+            ApiResponse(responseCode = "200", description = "Успешный ответ"),
+            ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            ),
+            ApiResponse(responseCode = "500", description = "Ошибка обработки запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            )
+        ]
+    )
+    @PostMapping("/load/images/google-drive")
+    fun loadImagesFromGoogleDrive() = estateProcessor.loadImagesFromGoogleDrive()
 
     @PostMapping("ai")
     fun aiRequest(

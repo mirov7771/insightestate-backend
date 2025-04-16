@@ -19,6 +19,7 @@ class GoogleIntegrationConfig {
             .createScoped(
                 listOf(
                     SheetsScopes.DRIVE_READONLY,
+                    DriveScopes.DRIVE,
                     DriveScopes.DRIVE_READONLY,
                 )
             )

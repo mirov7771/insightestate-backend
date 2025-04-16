@@ -38,6 +38,8 @@ interface EstateProcessor {
     fun loadFromFile(filePart: MultipartFile)
     fun loadFromGoogle()
     fun loadImagesFromDir()
+    fun loadImagesFromGoogleDrive()
+
     fun aiRequest(rq: AiRequest): CustomPageDtoRs
 }
 
@@ -105,6 +107,10 @@ class EstateProcessorImpl(
 
     override fun loadImagesFromDir() {
         estateImageLoader.loadFromDir()
+    }
+
+    override fun loadImagesFromGoogleDrive() {
+        estateImageLoader.loadFromGoogleDrive()
     }
 
     override fun aiRequest(rq: AiRequest): CustomPageDtoRs {
