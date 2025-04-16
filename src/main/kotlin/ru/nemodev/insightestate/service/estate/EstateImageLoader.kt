@@ -108,8 +108,9 @@ class EstateImageLoaderImpl(
                     val order = originalName.substringAfterLast("_").substringBefore(".").filter { it.isDigit() }.toInt()
                     val extension = when (originalExtension) {
                         "jpg", "JPG" -> "jpeg"
+                        "PNG" -> "png"
                         else -> originalExtension
-                    }
+                    }.lowercase()
                     val estateImages = estateImageMap.computeIfAbsent(projectId) {
                         EstateImages(
                             projectId = projectId,
@@ -154,28 +155,25 @@ class EstateImageLoaderImpl(
                 val estateImages = estateImageMap[estate.estateDetail.projectId]
                 if (estateImages != null) {
 
-                    val facilityErrorImageNames = mutableSetOf<String>()
                     val facilityImagesTask = ioCoroutineExecutor.async {
-                        loadImageToMinio(estateImages.facilityImages, facilityErrorImageNames)
+                        loadImageToMinio(estateImages.facilityImages)
                     }
 
-                    val exteriorErrorImageNames = mutableSetOf<String>()
                     val exteriorImagesTask = ioCoroutineExecutor.async {
-                        loadImageToMinio(estateImages.exteriorImages, exteriorErrorImageNames)
+                        loadImageToMinio(estateImages.exteriorImages)
                     }
 
-                    val interiorErrorImageNames = mutableSetOf<String>()
                     val interiorImagesTask = ioCoroutineExecutor.async {
-                        loadImageToMinio(estateImages.interiorImages, interiorErrorImageNames)
+                        loadImageToMinio(estateImages.interiorImages)
                     }
 
                     // Одновременная загрузка всех картинок объекта
                     runBlocking { listOf(facilityImagesTask, exteriorImagesTask, interiorImagesTask).awaitAll() }
 
                     // Обновляем фото объекта убирая ошибочные фото
-                    estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.minus(facilityErrorImageNames).toMutableList()
-                    estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.minus(exteriorErrorImageNames).toMutableList()
-                    estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.minus(interiorErrorImageNames).toMutableList()
+                    estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
+                    estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
+                    estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
                 }
 
                 // Обновляем признак можно ли показывать объект
@@ -199,7 +197,7 @@ class EstateImageLoaderImpl(
         }
     }
 
-    private fun loadImageToMinio(estateImages: List<EstateImage>, errorImageNames: MutableSet<String>) {
+    private fun loadImageToMinio(estateImages: List<EstateImage>) {
         estateImages.forEach { imageFile ->
             try {
                 val imageSource = imageFile.file?.readBytes()
@@ -211,7 +209,6 @@ class EstateImageLoaderImpl(
                 )
             } catch (e: Exception) {
                 logError(e) { "Ошибка загрузки фото объекта - ${imageFile.name}" }
-                errorImageNames.add(imageFile.name)
             }
         }
     }

@@ -37,7 +37,7 @@ class GoogleDriveIntegrationImpl(
                 .files()
                 .list()
                 .setSpaces("drive")
-                .setQ("mimeType='image/jpeg' or mimeType='image/png'")
+                .setQ("mimeType='image/jpeg' or mimeType='image/png' or mimeType='image/webp'")
                 .setPageToken(pageToken)
                 .setSupportsAllDrives(true)
                 .setIncludeItemsFromAllDrives(true)
