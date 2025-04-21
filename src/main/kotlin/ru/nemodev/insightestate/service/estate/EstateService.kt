@@ -204,14 +204,14 @@ class EstateServiceImpl(
             0
         }
 
-        val beachCarTime = try {
-            (rs.beachTravelTimesCar ?: "0").toInt()
+        val airportCarTime = try {
+            (rs.airportTravelTimes ?: "0").toInt()
         } catch (_: Exception) {
             0
         }
 
-        val airportCarTime = try {
-            (rs.airportTravelTimes ?: "0").toInt()
+        val mallTravelTimes = try {
+            (rs.mallTravelTimes ?: "0").toInt()
         } catch (_: Exception) {
             0
         }
@@ -232,24 +232,6 @@ class EstateServiceImpl(
         } else if (beachWalkTime <= 30) {
             minBeachWalkTravelTimeFree = 0
             maxBeachWalkTravelTimeFree = 30
-        }
-
-        var maxBeachCarTravelTimeOne: Int? = null
-        var minBeachCarTravelTimeTwo: Int? = null
-        var maxBeachCarTravelTimeTwo: Int? = null
-        var minBeachCarTravelTimeFree: Int? = null
-        var maxBeachCarTravelTimeFree: Int? = null
-
-        if (beachCarTime == 0) {
-            maxBeachCarTravelTimeOne = null
-        } else if (beachCarTime < 6) {
-            maxBeachCarTravelTimeOne = 5
-        } else if (beachCarTime <= 10) {
-            minBeachCarTravelTimeTwo = 6
-            maxBeachCarTravelTimeTwo = 10
-        } else if (beachCarTime <= 30) {
-            minBeachCarTravelTimeFree = 11
-            maxBeachCarTravelTimeFree = 30
         }
 
         var maxAirportCarTravelTimeOne: Int? = null
@@ -279,11 +261,11 @@ class EstateServiceImpl(
         var list = repository.findByParams(
             types = type,
             buildEndYears = buildEndYears,
-            isStudioRoom = isStudioRoom,
-            isOneRoom = isOneRoom,
-            isTwoRoom = isTwoRoom,
-            isFreeRoom = isFreeRoom,
-            isFourRoom = isFourRoom,
+            isStudioRoom = null,
+            isOneRoom = null,
+            isTwoRoom = null,
+            isFreeRoom = null,
+            isFourRoom = null,
             minPrice = minPrice,
             maxPrice = maxPrice,
             gradeInvestmentSecurity = null,
@@ -325,6 +307,28 @@ class EstateServiceImpl(
             try {
                 list = list.sortedByDescending { it.estateDetail.profitability.roi }.take(10)
             } catch (_: Exception) {}
+        }
+        if (isFourRoom != null && isFourRoom) {
+            list = list.filter { it.estateDetail.roomLayouts.four != null }
+        }
+        if (isOneRoom != null && isOneRoom) {
+            list = list.filter { it.estateDetail.roomLayouts.one != null }
+        }
+        if (isTwoRoom != null && isTwoRoom) {
+            list = list.filter { it.estateDetail.roomLayouts.two != null }
+        }
+        if (isFreeRoom != null && isFreeRoom) {
+            list = list.filter { it.estateDetail.roomLayouts.three != null }
+        }
+        if (isStudioRoom != null && isStudioRoom) {
+            list = list.filter { it.estateDetail.roomLayouts.studio != null }
+        }
+        if (mallTravelTimes > 0) {
+            list = list.filter {
+                it.estateDetail.infrastructure.mallTime.car < mallTravelTimes ||
+                        (it.estateDetail.infrastructure.mallTime.walk != null
+                                && it.estateDetail.infrastructure.mallTime.walk!! < mallTravelTimes)
+            }
         }
         return list
     }

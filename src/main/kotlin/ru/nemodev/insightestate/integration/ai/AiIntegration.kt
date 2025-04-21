@@ -231,6 +231,20 @@ class AiIntegrationImpl (
             airportTravelTimes = getNumberFromString(rq, " минут езды ")
         }
 
+        //Время до ТЦ
+        var mallTravelTimes: String? = null
+        if (rq.contains(" минутах от ТЦ", ignoreCase = true)) {
+            mallTravelTimes = getNumberFromString(rq, " минутах от ТЦ")
+        } else if (rq.contains(" минутах пешком от ТЦ")) {
+            mallTravelTimes = getNumberFromString(rq, " минутах пешком от ТЦ")
+        } else if (rq.contains(" минут до ТЦ")) {
+            mallTravelTimes = getNumberFromString(rq, " минут до ТЦ")
+        } else if (rq.contains(" минутах до ТЦ")) {
+            mallTravelTimes = getNumberFromString(rq, " минутах до ТЦ")
+        } else if (rq.contains(" минутах пешком до ТЦ")) {
+            mallTravelTimes = getNumberFromString(rq, " минутах пешком до ТЦ")
+        }
+
         //Спортзал
         var gym: String? = null
         if (rq.contains("спортзал", ignoreCase = true))
@@ -317,6 +331,13 @@ class AiIntegrationImpl (
                 priceTo = null
         }
 
+        if (mallTravelTimes != null) {
+            if ("${mallTravelTimes}000" == priceFrom)
+                priceFrom = null
+            if ("${mallTravelTimes}000" == priceTo)
+                priceTo = null
+        }
+
         return ResultDto(
             type = type,
             city = city,
@@ -332,7 +353,8 @@ class AiIntegrationImpl (
             airportTravelTimes = airportTravelTimes,
             isUk = isUk,
             rating = rating,
-            roi = roi
+            roi = roi,
+            mallTravelTimes = mallTravelTimes
         )
     }
 

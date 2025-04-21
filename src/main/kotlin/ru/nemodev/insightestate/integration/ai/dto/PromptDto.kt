@@ -38,6 +38,7 @@ data class ResultDto (
     val isUk: String? = null,
     val rating: String? = null,
     val roi: String? = null,
+    val mallTravelTimes: String? = null,
 )
 
 fun ResultDto.isEmpty() = this.type == null &&
@@ -52,4 +53,5 @@ fun ResultDto.isEmpty() = this.type == null &&
         this.isUk == null &&
         this.rooms == null &&
         this.rating == null &&
-        this.roi == null
+        this.roi == null &&
+        this.mallTravelTimes == null
