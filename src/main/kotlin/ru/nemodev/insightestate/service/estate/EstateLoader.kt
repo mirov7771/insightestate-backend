@@ -1,6 +1,7 @@
 package ru.nemodev.insightestate.service.estate
 
 import org.springframework.stereotype.Service
+import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.config.property.GoogleProperties
 import ru.nemodev.insightestate.entity.EstateEntity
@@ -9,6 +10,7 @@ import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
 import ru.nemodev.platform.core.logging.sl4j.Loggable
+import java.util.concurrent.locks.ReentrantLock
 
 interface EstateLoader {
     fun loadFromFile(filePart: MultipartFile)
@@ -20,35 +22,42 @@ class EstateLoaderImpl(
     private val estateExcelParser: EstateExcelParser,
     private val estateService: EstateService,
     private val googleProperties: GoogleProperties,
-    private val googleDriveIntegration: GoogleDriveIntegration
+    private val googleDriveIntegration: GoogleDriveIntegration,
+    private val transactionTemplate: TransactionTemplate,
 ) : EstateLoader {
 
     companion object : Loggable
 
+    private val updateLock = ReentrantLock()
+
     override fun loadFromFile(filePart: MultipartFile) {
-        if (filePart.originalFilename?.getFileExtension() != "xlsx") {
-            throw ValidationLogicException(
-                errorCode = ErrorCode.createValidation("Файл объектов должен быть в формате xlsx")
-            )
+        withUpdateLock {
+            if (filePart.originalFilename?.getFileExtension() != "xlsx") {
+                throw ValidationLogicException(
+                    errorCode = ErrorCode.createValidation("Файл объектов должен быть в формате xlsx")
+                )
+            }
+
+            logInfo { "Начало парсинга объектов недвижимости из файла ${filePart.originalFilename}" }
+
+            val parsedEstates = estateExcelParser.parse(filePart.inputStream)
+            load(parsedEstates)
+
+            logInfo { "Закончили парсинг и загрузку объектов недвижимости из файла ${filePart.originalFilename}, всего объектов - ${parsedEstates.size}" }
         }
-
-        logInfo { "Начало парсинга объектов недвижимости из файла ${filePart.originalFilename}" }
-
-        val parsedEstates = estateExcelParser.parse(filePart.inputStream)
-        load(parsedEstates)
-
-        logInfo { "Закончили парсинг и загрузку объектов недвижимости из файла ${filePart.originalFilename}, всего объектов - ${parsedEstates.size}" }
     }
 
     override fun loadFromGoogleSpreadsheets() {
-        logInfo { "Начало парсинга объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}" }
+        withUpdateLock {
+            logInfo { "Начало парсинга объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}" }
 
-        val driveExcelFile = googleDriveIntegration.downloadExcelFile(googleProperties.spreadsheets.estateSpreadsheetId)
-        val parsedEstates = estateExcelParser.parse(driveExcelFile)
+            val driveExcelFile = googleDriveIntegration.downloadExcelFile(googleProperties.spreadsheets.estateSpreadsheetId)
+            val parsedEstates = estateExcelParser.parse(driveExcelFile)
 
-        load(parsedEstates)
+            load(parsedEstates)
 
-        logInfo { "Закончили парсинг и загрузку объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}, всего объектов - ${parsedEstates.size}" }
+            logInfo { "Закончили парсинг и загрузку объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}, всего объектов - ${parsedEstates.size}" }
+        }
     }
 
     private fun load(parsedEstates: List<EstateEntity>) {
@@ -78,8 +87,22 @@ class EstateLoaderImpl(
             it.estateDetail.canShow = it.isCanShow()
         }
 
-        estateService.saveAll(newEstates)
-        estateService.saveAll(existEstates)
+        transactionTemplate.executeWithoutResult {
+            estateService.saveAll(newEstates)
+            estateService.saveAll(existEstates)
+        }
+    }
+
+    private fun withUpdateLock(action: () -> Unit) {
+        if (updateLock.tryLock()) {
+            try {
+                action()
+            } finally {
+                updateLock.unlock()
+            }
+        } else {
+            logWarn { "Загрузка объектов уже запущена, дождитесь окончания текущей загрузки" }
+        }
     }
 
 }

@@ -8,6 +8,5 @@ data class GoogleProperties(
 ) {
     data class Spreadsheets(
         val estateSpreadsheetId: String,
-        val estateSheetId: Int
     )
 }
