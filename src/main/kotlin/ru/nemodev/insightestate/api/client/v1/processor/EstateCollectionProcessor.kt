@@ -6,6 +6,7 @@ import ru.nemodev.insightestate.api.client.v1.converter.EstateCollectionDtoRsCon
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRq
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionDtoRs
+import ru.nemodev.insightestate.domen.EstateCollection
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
@@ -16,6 +17,7 @@ interface EstateCollectionProcessor {
     fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteById(authBasicToken: String, id: UUID)
+    fun getById(id: UUID): EstateCollectionDtoRs
 }
 
 @Component
@@ -60,5 +62,15 @@ class EstateCollectionProcessorImpl(
 
     override fun deleteById(authBasicToken: String, id: UUID) {
         estateCollectionService.deleteById(authBasicToken, id)
+    }
+
+    override fun getById(id: UUID): EstateCollectionDtoRs {
+        val entity = estateCollectionService.findById(id)
+        return estateCollectionDtoRsConverter.convert(
+            EstateCollection(
+                estateCollection = entity,
+                estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toList())
+            )
+        )
     }
 }

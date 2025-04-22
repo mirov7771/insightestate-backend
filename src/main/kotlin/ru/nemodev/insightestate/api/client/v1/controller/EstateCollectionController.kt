@@ -219,4 +219,8 @@ class EstateCollectionController (
         )
     }
 
+    @GetMapping("/{id}")
+    fun getById(
+        @PathVariable("id") id: UUID
+    ): EstateCollectionDtoRs = estateCollectionProcessor.getById(id)
 }

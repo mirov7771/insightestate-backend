@@ -6,6 +6,7 @@ import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateD
 import ru.nemodev.insightestate.domen.EstateCollection
 import ru.nemodev.insightestate.entity.EstateCollectionDetail
 import ru.nemodev.insightestate.entity.EstateCollectionEntity
+import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.repository.EstateCollectionRepository
 import ru.nemodev.insightestate.service.UserService
 import ru.nemodev.platform.core.exception.error.ErrorCode
@@ -21,6 +22,8 @@ interface EstateCollectionService {
     fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteById(authBasicToken: String, id: UUID)
+    fun findById(id: UUID): EstateCollectionEntity
+    fun findEstates(ids: List<UUID>): List<EstateEntity>
 }
 
 @Service
@@ -113,11 +116,15 @@ class EstateCollectionServiceImpl(
         return estateCollectionEntity
     }
 
-    private fun findById(id: UUID): EstateCollectionEntity {
+    override fun findById(id: UUID): EstateCollectionEntity {
         return estateCollectionRepository.findById(id).getOrNull()
             ?: throw NotFoundLogicalException(
                 errorCode = ErrorCode.createNotFound("Estate collection not found")
             )
     }
 
+    override fun findEstates(ids: List<UUID>): List<EstateEntity> {
+        val estates = estateService.findByIds(ids)
+        return estates
+    }
 }
