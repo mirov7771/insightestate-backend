@@ -69,7 +69,7 @@ class EstateCollectionProcessorImpl(
         return estateCollectionDtoRsConverter.convert(
             EstateCollection(
                 estateCollection = entity,
-                estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toList())
+                estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toSet())
             )
         )
     }

@@ -38,7 +38,7 @@ interface EstateService {
     ): EstateEntity
 
     fun saveAll(estates: List<EstateEntity>)
-    fun findByIds(ids: List<UUID>): List<EstateEntity>
+    fun findByIds(ids: Set<UUID>): List<EstateEntity>
     fun findPages(pageCount: Int): Int
     fun aiRequest(rq: String): List<EstateEntity>
 }
@@ -146,7 +146,7 @@ class EstateServiceImpl(
         repository.saveAll(estates)
     }
 
-    override fun findByIds(ids: List<UUID>): List<EstateEntity> {
+    override fun findByIds(ids: Set<UUID>): List<EstateEntity> {
         return repository.findAllById(ids)
     }
 

@@ -23,7 +23,7 @@ interface EstateCollectionService {
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteById(authBasicToken: String, id: UUID)
     fun findById(id: UUID): EstateCollectionEntity
-    fun findEstates(ids: List<UUID>): List<EstateEntity>
+    fun findEstates(ids: Set<UUID>): List<EstateEntity>
 }
 
 @Service
@@ -43,7 +43,7 @@ class EstateCollectionServiceImpl(
         )
 
         val estateMap = estateService.findByIds(
-            estateCollections.flatMap { it.collectionDetail.estateIds }
+            estateCollections.flatMap { it.collectionDetail.estateIds }.toSet()
         ).associateBy { it.id }
 
         return estateCollections.map { estateCollection ->
@@ -123,7 +123,7 @@ class EstateCollectionServiceImpl(
             )
     }
 
-    override fun findEstates(ids: List<UUID>): List<EstateEntity> {
+    override fun findEstates(ids: Set<UUID>): List<EstateEntity> {
         val estates = estateService.findByIds(ids)
         return estates
     }
