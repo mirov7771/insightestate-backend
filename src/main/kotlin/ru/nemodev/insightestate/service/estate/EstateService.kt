@@ -330,6 +330,8 @@ class EstateServiceImpl(
                                 && it.estateDetail.infrastructure.mallTime.walk!! < mallTravelTimes)
             }
         }
+        if (list.isEmpty())
+            list = repository.findRandom()
         return list
     }
 }

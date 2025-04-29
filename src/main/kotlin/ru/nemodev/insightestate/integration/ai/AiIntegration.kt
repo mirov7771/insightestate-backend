@@ -249,6 +249,10 @@ class AiIntegrationImpl (
         var gym: String? = null
         if (rq.contains("спортзал", ignoreCase = true))
             gym = "true"
+        else if (rq.contains(" зал", ignoreCase = true))
+            gym = "true"
+        else if (rq.contains(" тренажер", ignoreCase = true))
+            gym = "true"
 
         //Парковка
         var parking: String? = null
@@ -262,6 +266,14 @@ class AiIntegrationImpl (
         var priceTo = getPriceTo(rq)
 
         //Кол-во комнат
+        val searchRooms = rq.replace("одной", "1")
+            .replace("одна", "1")
+            .replace("двумя", "2")
+            .replace("две", "2")
+            .replace("тремя", "3")
+            .replace("три", "3")
+            .replace("четырьмя", "4")
+            .replace("четыре", "4")
         val rooms = if (rq.contains("студи", ignoreCase = true))
             "0"
         else if (rq.contains("1 комнат", ignoreCase = true))
@@ -271,6 +283,14 @@ class AiIntegrationImpl (
         else if (rq.contains("3 комнат", ignoreCase = true))
             "3"
         else if (rq.contains("4 комнат", ignoreCase = true))
+            "4"
+        else if (rq.contains("1 спал", ignoreCase = true))
+            "1"
+        else if (rq.contains("2 спал", ignoreCase = true))
+            "2"
+        else if (rq.contains("3 спал", ignoreCase = true))
+            "3"
+        else if (rq.contains("4 спал", ignoreCase = true))
             "4"
         else
             null
@@ -370,7 +390,43 @@ class AiIntegrationImpl (
             .replace("от ТЦ", "")
             .replace("от торгового центра", "")
             .replace("от магазина", "")
-        var split = searchString.split(" от ")
+            .replace("до моря", "")
+            .replace(".", "")
+
+        searchString = searchString.replace(" ста ", " 100 ")
+            .replace(" сто ", " 100 ")
+            .replace("двухсот", "200")
+            .replace("двести", "200")
+            .replace("трехсот", "300")
+            .replace("трехста", "300")
+            .replace("триста", "300")
+            .replace("четыреста", "400")
+            .replace("четырехсот", "400")
+            .replace("пятисот", "500")
+            .replace("пятиста", "500")
+            .replace("шестисот", "600")
+            .replace("шестиста", "600")
+            .replace("семисот", "700")
+            .replace("семьсот", "700")
+            .replace("семиста", "700")
+            .replace("восьмисот", "800")
+            .replace("восемьсот", "800")
+            .replace("восьмиста", "800")
+            .replace("девятьсот", "900")
+            .replace("девятисот", "900")
+            .replace("девятиста", "900")
+            .replace("одного", "1")
+            .replace("двух", "2")
+            .replace("трех", "3")
+            .replace("четырех", "4")
+            .replace("пяти", "5")
+            .replace("шести", "6")
+            .replace("семи", "7")
+            .replace("восьми", "8")
+            .replace("девяти", "9")
+
+        var split = searchString.split(" от ", ignoreCase = true)
+
         if (split.isEmpty() || split.size < 2) {
             searchString = searchString.replace("бюджет", "")
             split = searchString.split(" минимальный ")
@@ -382,6 +438,12 @@ class AiIntegrationImpl (
         if (isNumeric(price)) {
             return if (value.contains("миллион"))
                 "${price}000000"
+            else if (value.contains(" млн "))
+                "${price}000000"
+            else if (value.contains(" млн."))
+                "${price}000000"
+            else if (price.length > 3)
+                price
             else
                 "${price}000"
         }
@@ -394,7 +456,40 @@ class AiIntegrationImpl (
             .replace("до ТЦ", "")
             .replace("до торгового центра", "")
             .replace("до магазина", "")
-        var split = searchString.split(" до ")
+            .replace("до моря", "")
+            .replace(".", "")
+        searchString = searchString.replace(" ста ", " 100 ")
+            .replace(" сто ", " 100 ")
+            .replace("двухсот", "200")
+            .replace("двести", "200")
+            .replace("трехсот", "300")
+            .replace("трехста", "300")
+            .replace("триста", "300")
+            .replace("четыреста", "400")
+            .replace("четырехсот", "400")
+            .replace("пятисот", "500")
+            .replace("пятиста", "500")
+            .replace("шестисот", "600")
+            .replace("шестиста", "600")
+            .replace("семисот", "700")
+            .replace("семьсот", "700")
+            .replace("семиста", "700")
+            .replace("восьмисот", "800")
+            .replace("восемьсот", "800")
+            .replace("восьмиста", "800")
+            .replace("девятьсот", "900")
+            .replace("девятисот", "900")
+            .replace("девятиста", "900")
+            .replace("одного", "1")
+            .replace("двух", "2")
+            .replace("трех", "3")
+            .replace("четырех", "4")
+            .replace("пяти", "5")
+            .replace("шести", "6")
+            .replace("семи", "7")
+            .replace("восьми", "8")
+            .replace("девяти", "9")
+        var split = searchString.split(" до ", ignoreCase = true)
         if (split.isEmpty() || split.size < 2) {
             searchString = searchString.replace("бюджет", "")
             split = searchString.split(" максимальный ")
@@ -410,6 +505,8 @@ class AiIntegrationImpl (
                 "${price}000000"
             else if (value.contains(" млн."))
                 "${price}000000"
+            else if (price.length > 3)
+                price
             else
                 "${price}000"
         }
