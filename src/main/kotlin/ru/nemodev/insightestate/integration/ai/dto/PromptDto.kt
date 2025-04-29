@@ -54,4 +54,5 @@ fun ResultDto.isEmpty() = this.type == null &&
         this.rooms == null &&
         this.rating == null &&
         this.roi == null &&
-        this.mallTravelTimes == null
+        this.mallTravelTimes == null &&
+        this.childRoom == null

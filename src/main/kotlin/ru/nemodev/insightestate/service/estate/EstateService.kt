@@ -330,8 +330,20 @@ class EstateServiceImpl(
                                 && it.estateDetail.infrastructure.mallTime.walk!! < mallTravelTimes)
             }
         }
+        if (rs.gym != null && rs.gym == "true") {
+            list = list.filter {
+                it.estateDetail.options.gym
+            }
+        }
+        if (rs.childRoom != null && rs.childRoom == "true") {
+            list = list.filter {
+                it.estateDetail.options.childRoom
+            }
+        }
         if (list.isEmpty())
             list = repository.findRandom()
+        if (list.size > 50)
+            return list.take(20)
         return list
     }
 }

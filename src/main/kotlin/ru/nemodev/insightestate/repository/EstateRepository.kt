@@ -105,7 +105,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         select * from estate
         where (estate_detail ->> 'canShow')::boolean = true
         order by random()  
-        limit 10
+        limit 250
     """)
     fun findRandom(): List<EstateEntity>
 }

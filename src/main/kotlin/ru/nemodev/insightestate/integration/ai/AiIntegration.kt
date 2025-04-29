@@ -337,6 +337,13 @@ class AiIntegrationImpl (
         //ROI
         val roi = if (rq.contains("ROI", ignoreCase = true)) "true" else null
 
+        val childRoom = if (rq.contains("детск", ignoreCase = true))
+            "true"
+        else if (rq.contains("детей", ignoreCase = true))
+            "true"
+        else
+            null
+
         if (airportTravelTimes != null) {
             if ("${airportTravelTimes}000" == priceFrom)
                 priceFrom = null
@@ -374,7 +381,8 @@ class AiIntegrationImpl (
             isUk = isUk,
             rating = rating,
             roi = roi,
-            mallTravelTimes = mallTravelTimes
+            mallTravelTimes = mallTravelTimes,
+            childRoom = childRoom
         )
     }
 
@@ -424,6 +432,8 @@ class AiIntegrationImpl (
             .replace("семи", "7")
             .replace("восьми", "8")
             .replace("девяти", "9")
+            .replace("0к", "0")
+            .replace("0k", "0")
 
         var split = searchString.split(" от ", ignoreCase = true)
 
@@ -489,6 +499,8 @@ class AiIntegrationImpl (
             .replace("семи", "7")
             .replace("восьми", "8")
             .replace("девяти", "9")
+            .replace("0к", "0")
+            .replace("0k", "0")
         var split = searchString.split(" до ", ignoreCase = true)
         if (split.isEmpty() || split.size < 2) {
             searchString = searchString.replace("бюджет", "")
