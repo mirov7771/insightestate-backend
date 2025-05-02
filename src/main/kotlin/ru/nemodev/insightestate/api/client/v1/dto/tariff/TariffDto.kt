@@ -6,7 +6,7 @@ import java.util.UUID
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class TariffRs (
-    val main: List<TariffDto>,
+    val main: List<TariffDto>?,
     val extra: List<TariffDto>?
 )
 

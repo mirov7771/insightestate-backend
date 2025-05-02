@@ -3,9 +3,11 @@ package ru.nemodev.insightestate.api.client.v1.dto.user
 import io.swagger.v3.oas.annotations.media.Schema
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import java.util.*
 
 @Schema(description = "Ответ информация по пользователю")
 data class UserDtoRs(
+    val id: UUID,
     @Schema(description = "Email", example = "test@gmail.com")
     val login: String,
 
