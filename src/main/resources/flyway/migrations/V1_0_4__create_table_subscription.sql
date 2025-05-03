@@ -6,6 +6,8 @@ create table subscription
     user_id                 uuid,
     main_id                 uuid null,
     main_pay_date           timestamp null,
+    main_pay_amount         decimal null,
     extra_id                uuid null,
-    extra_pay_date          timestamp null
+    extra_pay_date          timestamp null,
+    extra_pay_amount        decimal null
 );

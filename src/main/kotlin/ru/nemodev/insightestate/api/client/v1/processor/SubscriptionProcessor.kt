@@ -2,7 +2,10 @@ package ru.nemodev.insightestate.api.client.v1.processor
 
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.api.client.v1.converter.TariffConverter
+import ru.nemodev.insightestate.api.client.v1.dto.subscription.SubscriptionDto
+import ru.nemodev.insightestate.api.client.v1.dto.subscription.SubscriptionInfo
 import ru.nemodev.insightestate.api.client.v1.dto.subscription.SubscriptionRq
+import ru.nemodev.insightestate.api.client.v1.dto.subscription.SubscriptionRs
 import ru.nemodev.insightestate.api.client.v1.dto.tariff.TariffRs
 import ru.nemodev.insightestate.service.subscription.SubscriptionService
 import java.util.*
@@ -14,7 +17,7 @@ interface SubscriptionProcessor {
 
     fun getTariff(
         userId: UUID
-    ): TariffRs
+    ): SubscriptionRs
 
     fun removeTariff(
         rq: SubscriptionRq
@@ -32,14 +35,28 @@ class SubscriptionProcessorImpl (
         subscriptionService.saveTariff(rq.userId, rq.tariffId)
     }
 
-    override fun getTariff(userId: UUID): TariffRs {
+    override fun getTariff(userId: UUID): SubscriptionRs {
         val tariffs = subscriptionService.getTariff(userId)
         if (tariffs.isEmpty())
-            return TariffRs(null, null)
-        return TariffRs(
-            main = tariffs.filter { it.type == 0 }.map { converter.convert(it) },
-            extra = tariffs.filter { it.type == 1 }.map { converter.convert(it) }
-        )
+            return SubscriptionRs()
+        val subscription = subscriptionService.getSubscription(userId) ?: return SubscriptionRs()
+        return SubscriptionRs(
+            subscription = SubscriptionDto(
+                main = SubscriptionInfo(
+                    id = subscription.mainId,
+                    payDate = subscription.mainPayDate,
+                    payAmount = subscription.mainPayAmount,
+                ),
+                extra = SubscriptionInfo(
+                    id = subscription.extraId,
+                    payDate = subscription.extraPayDate,
+                    payAmount = subscription.extraPayAmount,
+                )
+            ),
+            tariffs = TariffRs(
+                main = tariffs.filter { it.type == 0 }.map { converter.convert(it) },
+                extra = tariffs.filter { it.type == 1 }.map { converter.convert(it) }
+            ))
     }
 
     override fun removeTariff(

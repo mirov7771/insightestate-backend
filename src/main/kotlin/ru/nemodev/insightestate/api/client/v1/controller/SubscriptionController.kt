@@ -4,9 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import ru.nemodev.insightestate.api.client.v1.dto.subscription.SubscriptionRq
-import ru.nemodev.insightestate.api.client.v1.dto.tariff.TariffRs
 import ru.nemodev.insightestate.api.client.v1.processor.SubscriptionProcessor
-import ru.nemodev.insightestate.api.client.v1.processor.TariffProcessor
 import java.util.*
 
 @RestController
@@ -25,7 +23,7 @@ class SubscriptionController (
     fun getTariff(
         @RequestParam
         userId: UUID
-    ): TariffRs = processor.getTariff(userId)
+    ) = processor.getTariff(userId)
 
     @DeleteMapping
     fun removeTariff(

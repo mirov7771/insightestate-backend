@@ -18,6 +18,10 @@ interface SubscriptionService {
         userId: UUID
     ): List<TariffEntity>
 
+    fun getSubscription(
+        userId: UUID
+    ): SubscriptionEntity?
+
     fun removeTariff(
         userId: UUID,
         tariffId: UUID
@@ -57,6 +61,12 @@ class SubscriptionServiceImpl (
         return list.toList()
     }
 
+    override fun getSubscription(
+        userId: UUID
+    ): SubscriptionEntity? {
+        return subscriptionRepository.findByUserId(userId)
+    }
+
     override fun removeTariff(
         userId: UUID,
         tariffId: UUID
@@ -90,8 +100,10 @@ class SubscriptionServiceImpl (
                 userId = userId,
                 mainId = if (type == 0) tariff.id else null,
                 mainPayDate = if (type == 0) LocalDateTime.now().plusMonths(1) else null,
+                mainPayAmount = if (type == 0) tariff.price else null,
                 extraId = if (type == 1) tariff.id else null,
                 extraPayDate = if (type == 1) LocalDateTime.now().plusMonths(1) else null,
+                extraPayAmount = if (type == 1) tariff.price else null,
             ).apply { isNew = true })
             return
         }
@@ -100,11 +112,13 @@ class SubscriptionServiceImpl (
                 return
             subscription.mainId = tariff.id
             subscription.mainPayDate = LocalDateTime.now().plusMonths(1)
+            subscription.mainPayAmount = tariff.price
         } else if (type == 1) {
             if (subscription.extraId == tariff.id)
                 return
             subscription.extraId = tariff.id
             subscription.extraPayDate = LocalDateTime.now().plusMonths(1)
+            subscription.extraPayAmount = tariff.price
         }
         subscriptionRepository.save(subscription.apply { isNew = false })
     }
