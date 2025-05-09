@@ -52,6 +52,9 @@ dependencies {
     // google
     implementation("com.google.apis:google-api-services-sheets:v4-rev612-1.25.0")
     implementation("com.google.apis:google-api-services-drive:v3-rev197-1.25.0")
+
+    //stripe
+    implementation("com.stripe:stripe-java:29.1.0")
 }
 
 jacoco {
