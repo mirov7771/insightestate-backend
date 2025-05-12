@@ -1,6 +1,7 @@
 package ru.nemodev.insightestate.api.client.v1.dto.stripe
 
-import java.math.BigDecimal
+import java.util.UUID
+
 
 data class StripeRs (
     val clientSecret: String
@@ -9,4 +10,5 @@ data class StripeRs (
 data class StripeRq (
     val amount: Long,
     val currency: String = "usd",
+    val userId: UUID
 )
