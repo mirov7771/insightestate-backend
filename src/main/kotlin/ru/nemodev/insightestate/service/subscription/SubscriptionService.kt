@@ -29,6 +29,8 @@ interface SubscriptionService {
     )
 
     fun getPayments(): List<SubscriptionEntity>
+
+    fun updatePaymentDate(payment: SubscriptionEntity)
 }
 
 @Service
@@ -94,6 +96,14 @@ class SubscriptionServiceImpl (
             dateStart = LocalDate.now().atStartOfDay(),
             dateEnd = LocalDate.now().plusDays(1).atStartOfDay()
         )
+    }
+
+    override fun updatePaymentDate(payment: SubscriptionEntity) {
+        if (payment.mainPayDate != null)
+            payment.mainPayDate = payment.mainPayDate?.plusMonths(1)
+        if (payment.extraPayDate != null)
+            payment.extraPayDate = payment.extraPayDate?.plusMonths(1)
+        subscriptionRepository.save(payment.apply { isNew = false })
     }
 
     private fun createOrUpdateTariff(
