@@ -93,10 +93,20 @@ class AiIntegrationImpl (
 
         //Город
         var city: String? = null
+        if (rq.contains("Phuket", ignoreCase = true))
+            city = "Phuket"
         if (rq.contains("Пхукет", ignoreCase = true))
             city = "Phuket"
+        if (rq.contains("Bangkok", ignoreCase = true))
+            city = "Bangkok"
         if (rq.contains("Бангкок", ignoreCase = true))
             city = "Bangkok"
+        if (rq.contains("Патая", ignoreCase = true))
+            city = "Pattaya"
+        if (rq.contains("Паттая", ignoreCase = true))
+            city = "Pattaya"
+        if (rq.contains("Pattaya", ignoreCase = true))
+            city = "Pattaya"
 
         //Пляж
         var beach: String? = null
