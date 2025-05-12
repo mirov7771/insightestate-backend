@@ -54,6 +54,18 @@ ai:
         connection: 230s
         read: 230s
 
+gpt:
+  integration:
+    http-client:
+      service-id: gpt
+      url: https://api.pawan.krd/cosmosrp/v1/chat/completions
+      timeout:
+        connection: 230s
+        read: 230s
+      headers:
+        - name: Authorization
+          value: "Bearer pk-blVeWGKfLYXDAIhQJabwrjqqhsTgeJyZTKXjaypZpORSMQHV"
+
 google:
   spreadsheets:
     estate-load-cron: 0 0 0 * * *

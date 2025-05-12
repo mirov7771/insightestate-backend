@@ -5,6 +5,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import ru.nemodev.insightestate.integration.ai.dto.*
+import ru.nemodev.insightestate.integration.gpt.GptIntegration
 import ru.nemodev.platform.core.logging.sl4j.Loggable
 
 interface AiIntegration {
@@ -13,7 +14,8 @@ interface AiIntegration {
 
 @Component
 class AiIntegrationImpl (
-    private val aiRestClient: RestClient
+    private val aiRestClient: RestClient,
+    private val gptIntegration: GptIntegration
 ) : AiIntegration {
 
     companion object: Loggable {
@@ -21,11 +23,14 @@ class AiIntegrationImpl (
     }
 
     override fun generate(rq: String): ResultDto? {
-        val rs = innerAi(rq)
+        var rs = innerAi(rq)
         if (rs.isEmpty()) {
-            return prepareDto(
-                callAi(rq)
-            )
+            rs = gptIntegration.generate(rq)
+            if (rs.isEmpty()) {
+                return prepareDto(
+                    callAi(rq)
+                )
+            }
         }
         return rs
     }

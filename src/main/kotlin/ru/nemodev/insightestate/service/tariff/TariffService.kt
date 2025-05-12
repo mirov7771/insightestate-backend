@@ -15,7 +15,7 @@ class TariffServiceImpl (
     private val tariffRepository: TariffRepository
 ) : TariffService {
     override fun findAll(): List<TariffEntity> {
-        return tariffRepository.findAll()
+        return tariffRepository.findAll().sortedBy { it.price }
     }
 
     override fun findById(id: UUID): TariffEntity {
