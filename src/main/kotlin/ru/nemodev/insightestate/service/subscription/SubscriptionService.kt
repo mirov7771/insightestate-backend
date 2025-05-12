@@ -5,6 +5,7 @@ import ru.nemodev.insightestate.entity.SubscriptionEntity
 import ru.nemodev.insightestate.entity.TariffEntity
 import ru.nemodev.insightestate.repository.SubscriptionRepository
 import ru.nemodev.insightestate.service.tariff.TariffService
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
@@ -26,6 +27,8 @@ interface SubscriptionService {
         userId: UUID,
         tariffId: UUID
     )
+
+    fun getPayments(): List<SubscriptionEntity>
 }
 
 @Service
@@ -84,6 +87,13 @@ class SubscriptionServiceImpl (
             }
         }
         subscriptionRepository.save(subscription.apply { isNew = false })
+    }
+
+    override fun getPayments(): List<SubscriptionEntity> {
+        return subscriptionRepository.findPaymentsToPay(
+            dateStart = LocalDate.now().atStartOfDay(),
+            dateEnd = LocalDate.now().plusDays(1).atStartOfDay()
+        )
     }
 
     private fun createOrUpdateTariff(

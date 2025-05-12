@@ -15,4 +15,6 @@ data class TariffDto (
     val title: String,
     val description: List<String>,
     val price: BigDecimal,
+    val priceId: String? = null,
+    val extraPriceId: String? = null,
 )

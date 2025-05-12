@@ -20,4 +20,12 @@ class TariffEntity (
     val description: String,
     @Column("price")
     val price: BigDecimal,
+    @Column("stripe_id")
+    val stripeId: String? = null,
+    @Column("stripe_extra_id")
+    val stripeExtraId: String? = null,
+    @Column("stripe_product_id")
+    val stripeProductId: String? = null,
+    @Column("stripe_product_extra_id")
+    val stripeProductExtraId: String? = null,
 ) : AbstractEntity<UUID>(id, createdAt, updatedAt)

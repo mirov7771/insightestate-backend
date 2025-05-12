@@ -15,7 +15,9 @@ class TariffConverter: Converter<TariffEntity, TariffDto> {
             description = if (source.description.contains(";"))
                 source.description.split(";")
             else
-                listOf(source.description)
+                listOf(source.description),
+            priceId = source.stripeId,
+            extraPriceId = source.stripeExtraId
         )
     }
 }

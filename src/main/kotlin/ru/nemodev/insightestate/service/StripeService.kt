@@ -1,26 +1,39 @@
 package ru.nemodev.insightestate.service
 
 import com.stripe.StripeClient
+import com.stripe.exception.CardException
 import com.stripe.param.CustomerCreateParams
 import com.stripe.param.PaymentIntentCreateParams
+import com.stripe.param.PaymentMethodListParams
+import com.stripe.param.SubscriptionCreateParams
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
+import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeRecurrentRq
 import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeRq
 import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeRs
+import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeSubscriptionRq
 import ru.nemodev.insightestate.entity.StripeUserEntity
 import ru.nemodev.insightestate.repository.StripeUserRepository
-import java.util.UUID
+import ru.nemodev.insightestate.service.subscription.SubscriptionService
+import ru.nemodev.platform.core.logging.sl4j.Loggable
+import java.math.BigDecimal
+import java.time.LocalDateTime
+import java.util.*
 
 
 interface StripeService {
     fun session(rq: StripeRq): StripeRs
+    fun subscription(rq: StripeSubscriptionRq)
+    fun recurrent(rq: StripeRecurrentRq)
 }
 
 @Service
 class StripeServiceImpl (
-    private val stripeUserRepository: StripeUserRepository
+    private val stripeUserRepository: StripeUserRepository,
+    private val subscriptionService: SubscriptionService
 ) : StripeService {
 
-    companion object {
+    companion object: Loggable {
         var client: StripeClient = StripeClient("sk_test_51RHea2C7cCHxCxhsgW936lT7lNCfUVtradcYJ21ttFTaMcBc8tWn8qx4yPIZoeIWNeFPNsymy6j3G5dx2LBNjMw4000lp7RWwP")
     }
 
@@ -37,7 +50,66 @@ class StripeServiceImpl (
         return StripeRs(paymentIntent.clientSecret)
     }
 
-    fun findOrCreate(userId: UUID): String {
+    override fun subscription(rq: StripeSubscriptionRq) {
+        val stripeUser = findOrCreate(rq.userId)
+        val params = SubscriptionCreateParams.builder()
+            .setCustomer(stripeUser)
+            .addItem(
+                SubscriptionCreateParams.Item.builder()
+                    .setPrice(rq.tariffId)
+                    .build()
+            )
+            .build()
+        client.subscriptions().create(params)
+    }
+
+    override fun recurrent(rq: StripeRecurrentRq) {
+        val stripeUser = findOrCreate(rq.userId)
+        val params =
+            PaymentMethodListParams.builder()
+                .setCustomer(stripeUser)
+                .setType(PaymentMethodListParams.Type.CARD)
+                .build()
+        val list = client.paymentMethods().list(params)
+        val payment = list.data.sortedByDescending { it.created }.firstOrNull()
+        if (payment != null) {
+            startRecurrent(rq.userId, stripeUser, payment.id)
+        }
+    }
+
+    private fun startRecurrent(
+        userId: UUID,
+        customerId: String,
+        paymentId: String
+    ) {
+        val amount = getAmount(userId)
+        if (amount == 0L) {
+            return
+        }
+        val tariffId = getTariff(userId)
+        val params =
+            PaymentIntentCreateParams.builder()
+                .setCurrency("usd")
+                .setAmount(amount)
+                .setAutomaticPaymentMethods(
+                    PaymentIntentCreateParams.AutomaticPaymentMethods.builder().setEnabled(true).build()
+                )
+                .setCustomer(customerId)
+                .setPaymentMethod(paymentId)
+                .setReturnUrl("https://insightestate.pro/tariffs?tariffId=$tariffId")
+                .setConfirm(true)
+                .setOffSession(true)
+                .build()
+        try {
+            val payment = client.paymentIntents().create(params)
+            logger.info("Recurrent Success = ${payment.id}")
+        } catch (e: CardException) {
+            logger.error("Recurrent Error =", e)
+            client.paymentIntents().retrieve(e.stripeError.paymentIntent.id)
+        }
+    }
+
+    private fun findOrCreate(userId: UUID): String {
         var user = stripeUserRepository.findByUserId(userId)
         if (user == null) {
             val paramsCustomer =
@@ -53,5 +125,34 @@ class StripeServiceImpl (
             stripeUserRepository.save(user)
         }
         return user.customerId
+    }
+
+    private fun getAmount(
+        userId: UUID
+    ): Long {
+        val subscription = subscriptionService.getSubscription(userId) ?: return 0L
+        val price = subscription.mainPayAmount?.toLong()?.plus(
+            (subscription.extraPayAmount ?: BigDecimal.ZERO).toLong()
+        )
+        return (price ?: 0L) * 100
+    }
+
+    private fun getTariff(
+        userId: UUID
+    ): UUID? {
+        return subscriptionService.getSubscription(userId)?.mainId
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    fun startPayment() {
+        logger.info("Starting recurring payment at {}", LocalDateTime.now())
+        subscriptionService.getPayments().forEach {
+            logger.info("Starting recurring payment for userId = {}, mainAmount = {}, extraAmount = {}"
+                , it.userId, it.mainPayAmount, it.extraPayAmount)
+            recurrent(
+                rq = StripeRecurrentRq(it.userId)
+            )
+        }
+        logger.info("End recurring payment at {}", LocalDateTime.now())
     }
 }
