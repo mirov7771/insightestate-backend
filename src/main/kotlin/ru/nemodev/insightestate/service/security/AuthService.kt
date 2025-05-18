@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.*
 import ru.nemodev.insightestate.config.property.AppProperties
+import ru.nemodev.insightestate.entity.UserDetail
 import ru.nemodev.insightestate.entity.UserEntity
 import ru.nemodev.insightestate.entity.UserStatus
 import ru.nemodev.insightestate.extension.toAuthenticationToken
@@ -25,6 +26,7 @@ import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.integration.s3.minio.client.MinioS3Client
 import java.time.Duration
 import java.time.Instant
+import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
 interface AuthService {
@@ -34,6 +36,8 @@ interface AuthService {
     fun signUpEnd(request: SignUpEndDtoRq)
     fun signIn(authBasicToken: String): SignInDtoRs
     fun loadProfileImage(filePart: MultipartFile): ProfileImageRs
+    fun resetPassword(request: UserPasswordResetDtoRq)
+    fun confirmResetPassword(request: UserPasswordResetConfirmDtoRq)
 
 }
 
@@ -189,5 +193,39 @@ class AuthServiceImpl(
         return ProfileImageRs(
             "https://insightestate.pro/estate-images/$name"
         )
+    }
+
+    override fun resetPassword(request: UserPasswordResetDtoRq) {
+        val userEntity = userService.findByLogin(request.login) ?: return
+
+        // TODO что делать если ранее уже был отправлен код?
+        //  Ждать пару минут и только потом новый код отправлять?
+
+        val resetPasswordConfirmCode = confirmCodeGenerator.generateDigits()
+
+        emailService.sendResetPasswordCode(
+            email = request.login,
+            resetPasswordCode = resetPasswordConfirmCode
+        )
+
+        userEntity.userDetail.resetPassword = UserDetail.ResetPassword(
+            createdAt = LocalDateTime.now(),
+            confirmCode = resetPasswordConfirmCode,
+            status = UserDetail.ResetPassword.Status.SEND
+        )
+
+        userService.update(userEntity)
+    }
+
+    override fun confirmResetPassword(request: UserPasswordResetConfirmDtoRq) {
+        val userEntity = userService.findByLogin(request.login) ?: return
+        val userResetPassword = userEntity.userDetail.resetPassword ?: return
+
+        if (userResetPassword.status.isSend() && userResetPassword.confirmCode == request.confirmCode) {
+            userResetPassword.confirmedAt = LocalDateTime.now()
+            userResetPassword.status = UserDetail.ResetPassword.Status.CONFIRMED
+            userEntity.userDetail.passwordHash = passwordEncoder.encode(request.newPassword)
+            userService.update(userEntity)
+        }
     }
 }
