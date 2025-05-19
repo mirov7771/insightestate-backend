@@ -41,7 +41,23 @@ data class UserDetail(
     var whatsUp: String? = null,
     var tgName: String? = null,
     var profileImage: String? = null,
-)
+    var resetPassword: ResetPassword? = null,
+) {
+    data class ResetPassword(
+        val createdAt: LocalDateTime,
+        var confirmedAt: LocalDateTime? = null,
+        val confirmCode: String,
+        var status: Status
+    ) {
+        enum class Status {
+            SEND,
+            CONFIRMED;
+
+            fun isSend() = this == SEND
+            fun isConfirm() = this == CONFIRMED
+        }
+    }
+}
 
 enum class UserStatus {
     SIGN_UP_CONFIRM_CODE,

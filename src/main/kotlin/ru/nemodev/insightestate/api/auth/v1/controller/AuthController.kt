@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.security.SecurityScheme
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
@@ -166,4 +167,23 @@ class AuthController (
         @RequestPart("file")
         filePart: MultipartFile
     ): ProfileImageRs = authService.loadProfileImage(filePart)
+
+    @PostMapping("/password/reset")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun resetPassword(
+        @RequestBody
+        request: UserPasswordResetDtoRq
+    ) {
+        authService.resetPassword(request)
+    }
+
+    @PostMapping("/password/reset/confirm")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun resetPasswordConfirm(
+        @RequestBody
+        request: UserPasswordResetConfirmDtoRq
+    ) {
+        authService.confirmResetPassword(request)
+    }
+
 }

@@ -8,6 +8,7 @@ import ru.nemodev.platform.core.logging.sl4j.Loggable
 
 interface EmailService {
     fun signUpSendConfirmCode(email: String, confirmCode: String)
+    fun sendResetPasswordCode(email: String, resetPasswordCode: String)
     fun sendToAdmin(subject: String, message: String)
 }
 
@@ -27,6 +28,14 @@ class EmailServiceImpl(
         )
     }
 
+    override fun sendResetPasswordCode(email: String, resetPasswordCode: String) {
+        send(
+            email = email,
+            subject = "Confirmation code for reset password on https://www.insightestate.com",
+            message = "Your reset code - $resetPasswordCode"
+        )
+    }
+
     private fun send(email: String, subject: String, message: String) {
         val emailMessage = emailSender.createMimeMessage()
         MimeMessageHelper(emailMessage, false).apply {
@@ -38,7 +47,7 @@ class EmailServiceImpl(
 
         emailSender.send(emailMessage)
 
-        logInfo { "Email sent to $email\n subject - $subject\n message -$message" }
+        logInfo { "Email sent to $email\n subject - $subject\n message - $message" }
     }
 
     override fun sendToAdmin(subject: String, message: String) {

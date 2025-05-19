@@ -133,7 +133,7 @@ tasks.test {
 
 tasks.check {
     finalizedBy(tasks.jacocoTestCoverageVerification)
-    finalizedBy(tasks.dependencyUpdates)
+//    finalizedBy(tasks.dependencyUpdates)
 }
 
 tasks.jar {
