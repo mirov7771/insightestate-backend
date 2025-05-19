@@ -133,9 +133,11 @@ class SubscriptionServiceImpl (
             subscription.mainId = tariff.id
             subscription.mainPayDate = LocalDateTime.now().plusMonths(1)
             subscription.mainPayAmount = tariff.price
-            subscription.extraId = null
-            subscription.extraPayDate = null
-            subscription.extraPayAmount = null
+            if (subscription.mainId != UUID.fromString("8acf9e68-c4d0-43b1-9c22-b7f712f101a4")) {
+                subscription.extraId = null
+                subscription.extraPayDate = null
+                subscription.extraPayAmount = null
+            }
         } else if (type == 1) {
             if (subscription.extraId == tariff.id)
                 return
