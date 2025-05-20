@@ -8,6 +8,7 @@ import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.MinMaxAvgParam
 import ru.nemodev.insightestate.entity.RoomParams
 import ru.nemodev.insightestate.entity.TravelTime
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.integration.s3.minio.config.S3MinioProperties
 import java.time.format.DateTimeFormatter
 
@@ -115,6 +116,10 @@ class EstateDetailDtoRsConverter(
             exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             paymentPlan = estateDetail.paymentPlan,
+            paymentPlanList = if (estateDetail.paymentPlan.isNotNullOrEmpty() && estateDetail.paymentPlan!!.contains(","))
+                estateDetail.paymentPlan.split(",")
+            else
+                null
         )
     }
 }
