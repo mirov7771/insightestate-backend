@@ -66,6 +66,15 @@ gpt:
         - name: Authorization
           value: "Bearer pk-blVeWGKfLYXDAIhQJabwrjqqhsTgeJyZTKXjaypZpORSMQHV"
 
+cutt:
+  integration:
+    http-client:
+      service-id: cutt
+      url: http://tinyurl.com
+      timeout:
+        connection: 230s
+        read: 230s
+
 google:
   spreadsheets:
     estate-load-cron: 0 0 0 * * *

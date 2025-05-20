@@ -33,3 +33,7 @@ data class EstateCollectionDtoRs(
 data class EstateCollectionUpdateDto (
     val name: String
 )
+
+data class ShortDto (
+    val url: String,
+)

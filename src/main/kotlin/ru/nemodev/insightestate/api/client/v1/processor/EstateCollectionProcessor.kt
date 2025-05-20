@@ -3,11 +3,9 @@ package ru.nemodev.insightestate.api.client.v1.processor
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.api.client.v1.converter.EstateCollectionDtoRsConverter
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRq
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionUpdateDto
+import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.domen.EstateCollection
+import ru.nemodev.insightestate.integration.cutt.CuttIntegration
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
@@ -20,12 +18,14 @@ interface EstateCollectionProcessor {
     fun deleteById(authBasicToken: String, id: UUID)
     fun getById(id: UUID): EstateCollectionDtoRs
     fun update(id: UUID, rq: EstateCollectionUpdateDto)
+    fun short(rq: ShortDto): ShortDto
 }
 
 @Component
 class EstateCollectionProcessorImpl(
     private val estateCollectionService: EstateCollectionService,
-    private val estateCollectionDtoRsConverter: EstateCollectionDtoRsConverter
+    private val estateCollectionDtoRsConverter: EstateCollectionDtoRsConverter,
+    private val cuttIntegration: CuttIntegration
 ) : EstateCollectionProcessor {
 
     override fun findAll(authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs> {
@@ -80,5 +80,11 @@ class EstateCollectionProcessorImpl(
         val entity = estateCollectionService.findById(id)
         entity.collectionDetail.name = rq.name
         estateCollectionService.update(entity)
+    }
+
+    override fun short(rq: ShortDto): ShortDto {
+        return ShortDto(
+            url = cuttIntegration.short(rq.url) ?: rq.url,
+        )
     }
 }

@@ -14,10 +14,7 @@ import org.springframework.data.domain.PageRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRq
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionUpdateDto
+import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.api.client.v1.processor.EstateCollectionProcessor
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
@@ -230,4 +227,10 @@ class EstateCollectionController (
         @PathVariable("id") id: UUID,
         @RequestBody rq: EstateCollectionUpdateDto
     ) = estateCollectionProcessor.update(id, rq)
+
+    @PostMapping("short")
+    fun shortUrl(
+        @RequestBody
+        rq: ShortDto
+    ): ShortDto = estateCollectionProcessor.short(rq)
 }
