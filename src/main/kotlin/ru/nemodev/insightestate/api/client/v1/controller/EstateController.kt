@@ -83,11 +83,11 @@ class EstateController (
 
         @Parameter(description = "Название пляжа, ищется без учета регистра ilike beachName%", required = false)
         @RequestParam(name = "beachName", required = false)
-        beachName: String?,
+        beachName: Set<String>?,
 
         @Parameter(description = "Название города, ищется без учета регистра ilike city%", required = false)
         @RequestParam(name = "city", required = false)
-        city: String?,
+        city: Set<String>?,
 
         @Parameter(description = "Номер страницы", example = "0", required = false)
         @RequestParam(name = "pageNumber", required = false)

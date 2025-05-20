@@ -26,8 +26,8 @@ interface EstateProcessor {
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
-        beachName: String?,
-        city: String?,
+        beachName: Set<String>?,
+        city: Set<String>?,
         pageable: Pageable
     ): CustomPageDtoRs
 
@@ -63,8 +63,8 @@ class EstateProcessorImpl(
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
-        beachName: String?,
-        city: String?,
+        beachName: Set<String>?,
+        city: Set<String>?,
         pageable: Pageable
     ): CustomPageDtoRs {
         val estates = estateService.findAll(

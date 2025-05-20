@@ -28,8 +28,8 @@ interface EstateService {
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
-        beachName: String?,
-        city: String?,
+        beachName: Set<String>?,
+        city: Set<String>?,
         pageable: Pageable
     ): List<EstateEntity>
 
@@ -64,8 +64,8 @@ class EstateServiceImpl(
         airportTravelTimes: Set<String>?,
         parking: Boolean?,
         managementCompanyEnabled: Boolean?,
-        beachName: String?,
-        city: String?,
+        beachName: Set<String>?,
+        city: Set<String>?,
         pageable: Pageable
     ): List<EstateEntity> {
 
@@ -124,9 +124,9 @@ class EstateServiceImpl(
             parking = parking,
             managementCompanyEnabled = managementCompanyEnabled,
 
-            beachName = beachName,
+            beachName = beachName?.map { it }?.toTypedArray(),
 
-            city = city,
+            city = city?.map { it }?.toTypedArray(),
 
             limit = pageable.pageSize,
             offset = pageable.offset
@@ -288,8 +288,8 @@ class EstateServiceImpl(
             maxAirportCarTravelTimeFree = maxAirportCarTravelTimeFree,
             parking = parking,
             managementCompanyEnabled = managementCompanyEnabled,
-            beachName = rs.beach,
-            city = rs.city,
+            beachName = if (rs.beach != null) arrayOf(rs.beach) else null,
+            city = if (rs.city != null) arrayOf(rs.city) else null,
             offset = 0,
             limit = 150,
         )
