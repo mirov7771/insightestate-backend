@@ -29,3 +29,7 @@ data class EstateCollectionDtoRs(
     @Schema(description = "Детальная информация по объекту")
     val estates: List<EstateDetailDtoRs>?
 )
+
+data class EstateCollectionUpdateDto (
+    val name: String
+)
