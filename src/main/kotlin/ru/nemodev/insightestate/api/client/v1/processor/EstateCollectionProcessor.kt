@@ -6,6 +6,7 @@ import ru.nemodev.insightestate.api.client.v1.converter.EstateCollectionDtoRsCon
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRq
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionDtoRs
+import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionUpdateDto
 import ru.nemodev.insightestate.domen.EstateCollection
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
@@ -18,6 +19,7 @@ interface EstateCollectionProcessor {
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteById(authBasicToken: String, id: UUID)
     fun getById(id: UUID): EstateCollectionDtoRs
+    fun update(id: UUID, rq: EstateCollectionUpdateDto)
 }
 
 @Component
@@ -72,5 +74,11 @@ class EstateCollectionProcessorImpl(
                 estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toSet())
             )
         )
+    }
+
+    override fun update(id: UUID, rq: EstateCollectionUpdateDto) {
+        val entity = estateCollectionService.findById(id)
+        entity.collectionDetail.name = rq.name
+        estateCollectionService.update(entity)
     }
 }

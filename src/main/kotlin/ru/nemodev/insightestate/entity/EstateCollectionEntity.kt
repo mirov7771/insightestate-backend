@@ -20,6 +20,6 @@ class EstateCollectionEntity(
 @StoreJson
 data class EstateCollectionDetail(
     val userId: UUID,
-    val name: String,
+    var name: String,
     val estateIds: MutableList<UUID>
 )

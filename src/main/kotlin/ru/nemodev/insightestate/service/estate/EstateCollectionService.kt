@@ -24,6 +24,7 @@ interface EstateCollectionService {
     fun deleteById(authBasicToken: String, id: UUID)
     fun findById(id: UUID): EstateCollectionEntity
     fun findEstates(ids: Set<UUID>): List<EstateEntity>
+    fun update(collection: EstateCollectionEntity)
 }
 
 @Service
@@ -126,5 +127,9 @@ class EstateCollectionServiceImpl(
     override fun findEstates(ids: Set<UUID>): List<EstateEntity> {
         val estates = estateService.findByIds(ids)
         return estates
+    }
+
+    override fun update(collection: EstateCollectionEntity) {
+        estateCollectionRepository.save(collection.apply { isNew = false })
     }
 }
