@@ -152,7 +152,8 @@ class EstateExcelParserImpl : EstateExcelParser {
                     villaThree = getRoomParams(row, listOf("DF", "DH", "DG"), listOf("IK", "IL", "EB"), listOf("IC", "ID")),
                     villaFour = getRoomParams(row, listOf("DF", "DH", "DG"), listOf("IM", "IN", "EB"), listOf("IE", "IF")),
                     villaFive = getRoomParams(row, listOf("DF", "DH", "DG"), listOf("IO", "IP", "EB"), listOf("IG", "IH")),
-                )
+                ),
+                paymentPlan = row.getString("EN")
             )
         )
     }

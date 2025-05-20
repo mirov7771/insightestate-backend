@@ -114,6 +114,7 @@ class EstateDetailDtoRsConverter(
             facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
+            paymentPlan = estateDetail.paymentPlan,
         )
     }
 }
