@@ -9,7 +9,7 @@ interface CuttIntegration {
 }
 
 @Component
-class GptIntegrationImpl (
+class CuttIntegrationImpl (
     private val cuttRestClient: RestClient
 ) : CuttIntegration {
 
