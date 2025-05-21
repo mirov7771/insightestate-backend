@@ -101,6 +101,8 @@ class EstateServiceImpl(
             }
         }
 
+        val cityArray = city?.map { it }?.toTypedArray()
+        val beachArray = beachName?.map { it }?.toTypedArray()
         val estates = repository.findByParams(
             types = types?.map { it.name }?.toTypedArray(),
             buildEndYears = buildEndYears?.map { it.toString() }?.toTypedArray(),
@@ -139,9 +141,9 @@ class EstateServiceImpl(
             parking = parking,
             managementCompanyEnabled = managementCompanyEnabled,
 
-            beachName = beachName?.map { it }?.toTypedArray(),
+            beachName = beachArray,
 
-            city = city?.map { it }?.toTypedArray(),
+            city = cityArray,
 
             limit = pageable.pageSize,
             offset = pageable.offset
