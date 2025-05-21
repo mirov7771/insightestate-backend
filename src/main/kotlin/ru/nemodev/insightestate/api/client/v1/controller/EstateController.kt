@@ -19,6 +19,7 @@ import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
 import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
+import java.math.BigDecimal
 import java.util.*
 
 @RestController
@@ -89,6 +90,12 @@ class EstateController (
         @RequestParam(name = "city", required = false)
         city: Set<String>?,
 
+        @RequestParam(name = "minPrice", required = false)
+        minPrice: BigDecimal? = null,
+
+        @RequestParam(name = "maxPrice", required = false)
+        maxPrice: BigDecimal? = null,
+
         @Parameter(description = "Номер страницы", example = "0", required = false)
         @RequestParam(name = "pageNumber", required = false)
         @Valid
@@ -113,6 +120,8 @@ class EstateController (
         managementCompanyEnabled = managementCompanyEnabled,
         beachName = beachName,
         city = city,
+        minPrice = minPrice,
+        maxPrice = maxPrice,
         pageable = PageRequest.of(
             pageNumber ?: 0,
             pageSize ?: 25

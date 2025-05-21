@@ -12,6 +12,7 @@ import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
+import java.math.BigDecimal
 import java.util.*
 
 interface EstateProcessor {
@@ -28,6 +29,8 @@ interface EstateProcessor {
         managementCompanyEnabled: Boolean?,
         beachName: Set<String>?,
         city: Set<String>?,
+        minPrice: BigDecimal? = null,
+        maxPrice: BigDecimal? = null,
         pageable: Pageable
     ): CustomPageDtoRs
 
@@ -65,6 +68,8 @@ class EstateProcessorImpl(
         managementCompanyEnabled: Boolean?,
         beachName: Set<String>?,
         city: Set<String>?,
+        minPrice: BigDecimal?,
+        maxPrice: BigDecimal?,
         pageable: Pageable
     ): CustomPageDtoRs {
         val estates = estateService.findAll(
@@ -79,6 +84,8 @@ class EstateProcessorImpl(
             managementCompanyEnabled = managementCompanyEnabled,
             beachName = beachName,
             city = city,
+            minPrice = minPrice,
+            maxPrice = maxPrice,
             pageable = pageable
         )
 
