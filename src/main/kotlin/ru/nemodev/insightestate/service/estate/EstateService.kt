@@ -73,7 +73,7 @@ class EstateServiceImpl(
         pageable: Pageable
     ): List<EstateEntity> {
 
-        val minTotalPrice =  minPrice ?:
+        var minTotalPrice =  minPrice ?:
             when (price) {
             "1" -> BigDecimal.ZERO
             "2" -> BigDecimal.valueOf(100_000)
@@ -82,13 +82,23 @@ class EstateServiceImpl(
             "5" -> BigDecimal.valueOf(1_000_000)
             else -> null
         }
-        val maxTotalPrice = maxPrice ?: when (price) {
+        var maxTotalPrice = maxPrice ?: when (price) {
             "1" -> BigDecimal.valueOf(100_000)
             "2" -> BigDecimal.valueOf(200_000)
             "3" -> BigDecimal.valueOf(500_000)
             "4" -> BigDecimal.valueOf(1_000_000)
             "5" -> BigDecimal.valueOf(100_000_000_000) // =)
             else -> null
+        }
+
+        if (minTotalPrice == null && maxTotalPrice != null) {
+            minTotalPrice = BigDecimal.ZERO
+        }
+
+        if (minTotalPrice != null && maxTotalPrice != null) {
+            if (minTotalPrice > maxTotalPrice) {
+                maxTotalPrice = BigDecimal(1000000)
+            }
         }
 
         val estates = repository.findByParams(
