@@ -15,6 +15,8 @@ import ru.nemodev.insightestate.extension.toAuthenticationToken
 import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.insightestate.repository.UserRepository
 import ru.nemodev.insightestate.service.security.UserAuthenticationManager
+import ru.nemodev.platform.core.extensions.isNotNullOrBlank
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -69,8 +71,10 @@ class UserServiceImpl(
         userEntity.userDetail.whatsUp = request.whatsUp
         userEntity.userDetail.tgName = request.tgName
         userEntity.userDetail.profileImage = request.profileImage
-        request.password?.let {
-            userEntity.userDetail.passwordHash = passwordEncoder.encode(request.password)
+        if (request.password.isNotNullOrEmpty() && request.password.isNotNullOrBlank()) {
+            request.password?.let {
+                userEntity.userDetail.passwordHash = passwordEncoder.encode(request.password)
+            }
         }
 
         update(userEntity)
