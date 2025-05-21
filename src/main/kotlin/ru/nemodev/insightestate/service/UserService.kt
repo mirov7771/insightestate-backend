@@ -28,6 +28,7 @@ interface UserService : UserDetailsService {
     // TODO удалить? Временно на мвп
     fun createWithoutConfirm(login: String): UserEntity
     fun helpWithClient(authBasicToken: String, request: HelpWithClientRq)
+    fun deleteUser(authBasicToken: String)
 }
 
 @Service
@@ -113,5 +114,10 @@ class UserServiceImpl(
                     "- Телефон клиента: ${request.phone}\n" +
                     "- Страна и город клиента: ${request.location}\n"
         )
+    }
+
+    override fun deleteUser(authBasicToken: String) {
+        val userEntity = getUser(authBasicToken)
+        userRepository.delete(userEntity)
     }
 }

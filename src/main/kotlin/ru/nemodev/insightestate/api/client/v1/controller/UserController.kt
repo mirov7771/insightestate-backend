@@ -98,4 +98,11 @@ class UserController (
     ) {
         userProcessor.helpWithClient(authBasicToken, request)
     }
+
+    @DeleteMapping
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteUser(
+        @Parameter(description = "Токен basic auth", required = true, hidden = true)
+        @RequestHeader("Authorization") authBasicToken: String
+    ) = userProcessor.deleteUser(authBasicToken)
 }

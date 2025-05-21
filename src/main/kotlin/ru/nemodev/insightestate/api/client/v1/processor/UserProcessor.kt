@@ -10,6 +10,7 @@ interface UserProcessor {
     fun getUser(authBasicToken: String): UserDtoRs
     fun update(authBasicToken: String, request: UserUpdateDtoRq)
     fun helpWithClient(authBasicToken: String, request: HelpWithClientRq)
+    fun deleteUser(authBasicToken: String)
 }
 
 @Component
@@ -37,5 +38,9 @@ class UserProcessorImpl(
 
     override fun helpWithClient(authBasicToken: String, request: HelpWithClientRq) {
         userService.helpWithClient(authBasicToken, request)
+    }
+
+    override fun deleteUser(authBasicToken: String) {
+        userService.deleteUser(authBasicToken)
     }
 }
