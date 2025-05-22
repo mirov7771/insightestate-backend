@@ -1,6 +1,7 @@
 package ru.nemodev.insightestate.api.client.v1.dto.estate
 
 import io.swagger.v3.oas.annotations.media.Schema
+import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import java.util.*
 
 @Schema(description = "Запрос создания коллекции объектов")
@@ -27,7 +28,9 @@ data class EstateCollectionDtoRs(
     val name: String,
 
     @Schema(description = "Детальная информация по объекту")
-    val estates: List<EstateDetailDtoRs>?
+    val estates: List<EstateDetailDtoRs>?,
+
+    var agentInfo: UserDtoRs? = null
 )
 
 data class EstateCollectionUpdateDto (

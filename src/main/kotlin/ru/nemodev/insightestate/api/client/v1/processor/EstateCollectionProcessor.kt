@@ -9,6 +9,7 @@ import ru.nemodev.insightestate.entity.LikesEntity
 import ru.nemodev.insightestate.integration.cutt.CuttIntegration
 import ru.nemodev.insightestate.repository.LikesRepository
 import ru.nemodev.insightestate.service.EmailService
+import ru.nemodev.insightestate.service.UserService
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
@@ -32,6 +33,7 @@ class EstateCollectionProcessorImpl(
     private val cuttIntegration: CuttIntegration,
     private val likesRepository: LikesRepository,
     private val emailService: EmailService,
+    private val userService: UserService,
 ) : EstateCollectionProcessor {
 
     override fun findAll(authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs> {
@@ -79,12 +81,14 @@ class EstateCollectionProcessorImpl(
             estate.estateDetail.likesCount =
                 likesRepository.findByCollectionIdAndEstateId(id, estate.id).firstOrNull()?.likeCount
         }
-        return estateCollectionDtoRsConverter.convert(
+        val rs = estateCollectionDtoRsConverter.convert(
             EstateCollection(
                 estateCollection = entity,
                 estates = estates
             )
         )
+        rs.agentInfo = userService.getUserById(entity.collectionDetail.userId)
+        return rs
     }
 
     override fun update(id: UUID, rq: EstateCollectionUpdateDto) {

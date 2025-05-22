@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.api.client.v1.dto.user.HelpWithClientRq
+import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
 import ru.nemodev.insightestate.entity.UserDetail
 import ru.nemodev.insightestate.entity.UserEntity
@@ -31,6 +32,7 @@ interface UserService : UserDetailsService {
     fun createWithoutConfirm(login: String): UserEntity
     fun helpWithClient(authBasicToken: String, request: HelpWithClientRq)
     fun deleteUser(authBasicToken: String)
+    fun getUserById(userId: UUID): UserDtoRs
 }
 
 @Service
@@ -123,5 +125,19 @@ class UserServiceImpl(
     override fun deleteUser(authBasicToken: String) {
         val userEntity = getUser(authBasicToken)
         userRepository.delete(userEntity)
+    }
+
+    override fun getUserById(userId: UUID): UserDtoRs {
+        val userEntity = userRepository.findById(userId).get()
+        return UserDtoRs(
+            login = userEntity.userDetail.login,
+            fio = userEntity.userDetail.fio!!,
+            mobileNumber = userEntity.userDetail.mobileNumber!!,
+            location = userEntity.userDetail.location!!,
+            whatsUp = userEntity.userDetail.whatsUp,
+            tgName = userEntity.userDetail.tgName,
+            profileImage = userEntity.userDetail.profileImage,
+            id = userEntity.id
+        )
     }
 }

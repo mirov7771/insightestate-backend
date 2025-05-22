@@ -13,9 +13,9 @@ spring:
       max-file-size: 5MB
       max-request-size: 6MB
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/insightestate}
+    url: ${DATABASE_URL:jdbc:postgresql://77.238.232.18:5432/insightestate}
     username: ${DATABASE_USERNAME:insightestate_admin}
-    password: ${DATABASE_PASSWORD:insightestate_admin}
+    password: ${DATABASE_PASSWORD:ROucKPoLoNgu}
   mail:
     host: smtp.gmail.com
     port: 587
