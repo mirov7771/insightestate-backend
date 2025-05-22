@@ -10,6 +10,7 @@ interface EmailService {
     fun signUpSendConfirmCode(email: String, confirmCode: String)
     fun sendResetPasswordCode(email: String, resetPasswordCode: String)
     fun sendToAdmin(subject: String, message: String)
+    fun sendMessage(email: String, subject: String, message: String)
 }
 
 @Service
@@ -54,5 +55,9 @@ class EmailServiceImpl(
         adminEmail.forEach {
             send(it, subject, message)
         }
+    }
+
+    override fun sendMessage(email: String, subject: String, message: String) {
+        send(email, subject, message)
     }
 }
