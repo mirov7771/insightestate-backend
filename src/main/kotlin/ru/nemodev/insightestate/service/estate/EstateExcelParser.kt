@@ -167,7 +167,7 @@ class EstateExcelParserImpl : EstateExcelParser {
             }
         }
 
-        return min.scaleAndRoundAmount()
+        return min.scaleAndRoundAmount(0)
     }
 
     private fun getMaxPrice(row: Row, cellNames: List<String>): BigDecimal {
@@ -179,7 +179,7 @@ class EstateExcelParserImpl : EstateExcelParser {
             }
         }
 
-        return max.scaleAndRoundAmount()
+        return max.scaleAndRoundAmount(0)
     }
 
     private fun getRoomParams(
@@ -206,15 +206,15 @@ class EstateExcelParserImpl : EstateExcelParser {
     private fun getMinMaxAvgParam(row: Row, cellNames: List<String>): MinMaxAvgParam? {
         val min = row.getString(cellNames[0])?.replace(" ", "")?.nullIfEmpty()?.let {
             if (it == "0") null
-            else it.toBigDecimal().scaleAndRoundAmount()
+            else it.toBigDecimal().scaleAndRoundAmount(0)
         }
         val max = row.getString(cellNames[1])?.replace(" ", "")?.nullIfEmpty()?.let {
             if (it == "0") null
-            else it.toBigDecimal().scaleAndRoundAmount()
+            else it.toBigDecimal().scaleAndRoundAmount(0)
         }
         val avg = if (cellNames.size == 3)
             row.getString(cellNames[2])?.replace(" ", "")?.nullIfEmpty()?.let {
-                if (it == "0") null else it.toBigDecimal().scaleAndRoundAmount()
+                if (it == "0") null else it.toBigDecimal().scaleAndRoundAmount(0)
             }
             else null
 
