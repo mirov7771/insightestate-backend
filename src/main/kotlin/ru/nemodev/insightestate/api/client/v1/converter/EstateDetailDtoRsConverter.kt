@@ -119,7 +119,8 @@ class EstateDetailDtoRsConverter(
             paymentPlanList = if (estateDetail.paymentPlan.isNotNullOrEmpty() && estateDetail.paymentPlan!!.contains(","))
                 estateDetail.paymentPlan.split(",")
             else
-                null
+                null,
+            likes = estateDetail.likesCount
         )
     }
 }

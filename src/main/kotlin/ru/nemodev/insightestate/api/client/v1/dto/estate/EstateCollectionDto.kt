@@ -37,3 +37,12 @@ data class EstateCollectionUpdateDto (
 data class ShortDto (
     val url: String,
 )
+
+data class LikeDto (
+    val estateId: UUID,
+    val collectionId: UUID,
+    val title: String,
+    val email: String,
+    val collection: String,
+    val url: String,
+)

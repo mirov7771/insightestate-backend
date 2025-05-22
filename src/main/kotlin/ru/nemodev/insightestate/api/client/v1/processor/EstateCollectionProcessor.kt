@@ -5,7 +5,10 @@ import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.api.client.v1.converter.EstateCollectionDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.domen.EstateCollection
+import ru.nemodev.insightestate.entity.LikesEntity
 import ru.nemodev.insightestate.integration.cutt.CuttIntegration
+import ru.nemodev.insightestate.repository.LikesRepository
+import ru.nemodev.insightestate.service.EmailService
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import java.util.*
@@ -19,13 +22,16 @@ interface EstateCollectionProcessor {
     fun getById(id: UUID): EstateCollectionDtoRs
     fun update(id: UUID, rq: EstateCollectionUpdateDto)
     fun short(rq: ShortDto): ShortDto
+    fun saveLike(rq: LikeDto)
 }
 
 @Component
 class EstateCollectionProcessorImpl(
     private val estateCollectionService: EstateCollectionService,
     private val estateCollectionDtoRsConverter: EstateCollectionDtoRsConverter,
-    private val cuttIntegration: CuttIntegration
+    private val cuttIntegration: CuttIntegration,
+    private val likesRepository: LikesRepository,
+    private val emailService: EmailService,
 ) : EstateCollectionProcessor {
 
     override fun findAll(authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs> {
@@ -68,10 +74,15 @@ class EstateCollectionProcessorImpl(
 
     override fun getById(id: UUID): EstateCollectionDtoRs {
         val entity = estateCollectionService.findById(id)
+        val estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toSet())
+        estates.forEach { estate ->
+            estate.estateDetail.likesCount =
+                likesRepository.findByCollectionIdAndEstateId(id, estate.id).firstOrNull()?.likeCount
+        }
         return estateCollectionDtoRsConverter.convert(
             EstateCollection(
                 estateCollection = entity,
-                estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toSet())
+                estates = estates
             )
         )
     }
@@ -85,6 +96,27 @@ class EstateCollectionProcessorImpl(
     override fun short(rq: ShortDto): ShortDto {
         return ShortDto(
             url = cuttIntegration.short(rq.url) ?: rq.url,
+        )
+    }
+
+    override fun saveLike(rq: LikeDto) {
+        var likeDao = likesRepository.findByCollectionIdAndEstateId(rq.collectionId, rq.estateId).firstOrNull()
+        if (likeDao != null) {
+            likeDao.likeCount += 1L
+            likesRepository.save(likeDao.apply { isNew = false })
+        } else {
+            likeDao = LikesEntity(
+                id = UUID.randomUUID(),
+                collectionId = rq.collectionId,
+                estateId = rq.estateId,
+                likeCount = 1L
+            )
+            likesRepository.save(likeDao.apply { isNew = true })
+        }
+        emailService.sendMessage(
+            email = rq.email,
+            subject = "Вашему клиенту понравился объект из подборки",
+            message = "Объект: ${rq.title}\nПодборка: ${rq.collection}\n${rq.url}"
         )
     }
 }

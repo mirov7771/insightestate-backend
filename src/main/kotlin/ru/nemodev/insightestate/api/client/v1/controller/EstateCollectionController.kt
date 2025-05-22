@@ -233,4 +233,10 @@ class EstateCollectionController (
         @RequestBody
         rq: ShortDto
     ): ShortDto = estateCollectionProcessor.short(rq)
+
+    @PostMapping("like")
+    fun saveLike(
+        @RequestBody
+        rq: LikeDto
+    ) = estateCollectionProcessor.saveLike(rq)
 }

@@ -68,7 +68,8 @@ data class EstateDetail (
     var exteriorImages: MutableList<String>? = null,   // фото экстерьера
     var interiorImages: MutableList<String>? = null,   // фото интерьера
 
-    val paymentPlan: String? = null
+    val paymentPlan: String? = null,
+    var likesCount: Long? = null,
 )
 
 // Оценка проекта
