@@ -144,7 +144,6 @@ class StripeServiceImpl (
         return subscriptionService.getSubscription(userId)?.mainId
     }
 
-    @PostConstruct
     @Scheduled(cron = "0 0 0 * * *")
     fun startPayment() {
         logger.info("Starting recurring payment at {}", LocalDateTime.now())
