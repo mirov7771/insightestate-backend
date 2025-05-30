@@ -119,8 +119,8 @@ class EstateCollectionProcessorImpl(
         }
         emailService.sendMessage(
             email = rq.email,
-            subject = "Вашему клиенту понравился объект из подборки",
-            message = "Объект: ${rq.title}\nПодборка: ${rq.collection}\n${rq.url}"
+            subject = "Your client liked a property from your collection!",
+            message = "Property: ${rq.title}\nCollection: ${rq.collection}\n${rq.url}"
         )
     }
 }
