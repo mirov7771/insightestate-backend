@@ -12,7 +12,7 @@ interface UserRepository : ListCrudRepository<UserEntity, UUID> {
 
     @Query("""
         select * from users
-        where user_detail ->> 'login' = :login
+        where lower(user_detail ->> 'login') = lower(:login)
             and (:status is null or user_detail ->> 'status' = :status)
     """)
     fun findByLogin(

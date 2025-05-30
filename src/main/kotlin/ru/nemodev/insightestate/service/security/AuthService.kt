@@ -54,7 +54,7 @@ class AuthServiceImpl(
 ) : AuthService {
 
     override fun signUp(request: SignUpDtoRq) {
-        val userEntity = userService.findByLogin(request.login)
+        val userEntity = userService.findByLogin(request.login.lowercase())
 
         if (userEntity != null) {
             throw LogicException(
@@ -65,18 +65,18 @@ class AuthServiceImpl(
             val signUpConfirmCode = confirmCodeGenerator.generateDigits()
 
             emailService.signUpSendConfirmCode(
-                email = request.login,
+                email = request.login.lowercase(),
                 confirmCode = signUpConfirmCode
             )
             userService.create(
-                login = request.login,
+                login = request.login.lowercase(),
                 signUpConfirmCode = signUpConfirmCode,
             )
         }
     }
 
     override fun signUpCheckConfirmCode(request: SignUpConfirmCodeDtoRq) {
-        val userEntity = userService.findByLogin(request.login)
+        val userEntity = userService.findByLogin(request.login.lowercase())
             ?: throw NotFoundLogicalException(
                 errorCode = ErrorCode.createNotFound("User with email ${request.login} not found")
             )
@@ -98,7 +98,7 @@ class AuthServiceImpl(
     }
 
     override fun signUpSendNewConfirmCode(request: SignUpDtoRq) {
-        val userEntity = userService.findByLogin(request.login)
+        val userEntity = userService.findByLogin(request.login.lowercase())
             ?: throw NotFoundLogicalException(
                 errorCode = ErrorCode.createNotFound("User with email ${request.login} not found")
             )
