@@ -10,6 +10,8 @@ import ru.nemodev.platform.core.extensions.scaleAndRoundAmount
 import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.io.InputStream
 import java.math.BigDecimal
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 interface EstateExcelParser {
     fun parse(inputStream: InputStream): List<EstateEntity>
@@ -18,7 +20,10 @@ interface EstateExcelParser {
 @Component
 class EstateExcelParserImpl : EstateExcelParser {
 
-    companion object : Loggable
+    companion object : Loggable {
+        private val buildEndDateParseFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        private val buildEndDateSaveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+    }
 
     override fun parse(inputStream: InputStream): List<EstateEntity> {
         val workbook = XSSFWorkbook(inputStream)
@@ -74,7 +79,8 @@ class EstateExcelParserImpl : EstateExcelParser {
                     else -> EstateStatus.UNKNOWN
                 },
                 saleStartDate = null, // TODO столбец AO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
-                buildEndDate = row.getString("AP"),
+                buildEndDate = row.getLocalDate("AP")
+                    ?: row.getString("AP")?.nullIfEmpty()?.let { LocalDate.parse(it, buildEndDateParseFormatter) },
                 unitCount = UnitCount(
                     total = row.getInt("AQ")!!,
                     sailed = row.getInt("AR"),

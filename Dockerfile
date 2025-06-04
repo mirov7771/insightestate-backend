@@ -2,7 +2,7 @@ FROM --platform=linux/amd64 amazoncorretto:21-alpine-jdk
 WORKDIR /home/app
 RUN addgroup --gid 10001 javauser && adduser -s /bin/ash -G javauser -D -H -u 10001 javauser
 COPY /build/libs/*.jar /home/app/application.jar
-ENV JVM_OPTS="-Xmx768m"
+ENV JVM_OPTS="-Xmx1024m"
 ENV JAR_ARGS=""
 RUN chown -R javauser:javauser /home/app/application.jar
 USER javauser
