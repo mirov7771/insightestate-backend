@@ -158,13 +158,10 @@ class EstateImageLoaderImpl(
 
             estateImageMap[estate.estateDetail.projectId]?.also { estateImages ->
 
-                val imageLoadTasks = mutableListOf<Deferred<*>>()
-                imageLoadTasks.addAll(loadImageToMinio(estateImages.facilityImages))
-                imageLoadTasks.addAll(loadImageToMinio(estateImages.exteriorImages))
-                imageLoadTasks.addAll(loadImageToMinio(estateImages.interiorImages))
-
-                // Одновременная загрузка всех картинок объекта
-                runBlocking { imageLoadTasks.awaitAll() }
+                // Загружаем каждую пачку фото последовательно иначе на сервере не хватает памяти
+                runBlocking { loadImageToMinio(estateImages.facilityImages).awaitAll() }
+                runBlocking { loadImageToMinio(estateImages.exteriorImages).awaitAll() }
+                runBlocking { loadImageToMinio(estateImages.interiorImages).awaitAll() }
 
                 // Обновляем фото объекта
                 estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
@@ -198,7 +195,7 @@ class EstateImageLoaderImpl(
             ioCoroutineExecutor.async {
                 try {
                     val imageSource = imageFile.file?.readBytes()
-                        ?: googleDriveIntegration.downloadImageFile(imageFile.googleDriveFileId!!).readAllBytes()
+                        ?: googleDriveIntegration.downloadImageFile(imageFile.googleDriveFileId!!).use { it.readAllBytes() }
                     minioS3Client.upload(
                         fileName = imageFile.name,
                         fileContentType = "image/${imageFile.extension}",
