@@ -29,7 +29,7 @@ class EstateDtoRsConverter(
             grade = estateDetail.grade.main,
             priceMin = estateDetail.price.min,
             roi = estateDetail.profitability.roi,
-            buildEndDate = estateDetail.buildEndDate ?: "",
+            buildEndDate = formatDate(estateDetail.buildEndDate),
             level = estateDetail.level,
             beachTravelTime = beachTravelTime,
             facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
@@ -43,5 +43,22 @@ class EstateDtoRsConverter(
             toolTip2 = if (estateDetail.toolTip2.isNullOrEmpty()) "false" else "true",
             toolTip3 = if (estateDetail.toolTip3.isNullOrEmpty()) "false" else "true",
         )
+    }
+
+    private fun formatDate(date: String?): String {
+        if (date == null)
+            return ""
+        val dates = date.split("-")
+        if (dates.size < 3)
+            return ""
+        val year = dates[0]
+        val month = dates[1]
+        val quarter = when (month) {
+            "01", "02", "03" -> "Q1"
+            "04", "05", "06" -> "Q2"
+            "07", "08", "09" -> "Q3"
+            else -> "Q4"
+        }
+        return "$quarter $year"
     }
 }
