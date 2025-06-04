@@ -43,6 +43,21 @@ interface EstateService {
     fun findByIds(ids: Set<UUID>): List<EstateEntity>
     fun findPages(pageCount: Int): Int
     fun aiRequest(rq: String): List<EstateEntity>
+    fun findCount(
+        types: Set<EstateType>?,
+        buildEndYears: Set<Int>?,
+        rooms: Set<String>?,
+        price: String?,
+        grades: Set<String>?,
+        beachTravelTimes: Set<String>?,
+        airportTravelTimes: Set<String>?,
+        parking: Boolean?,
+        managementCompanyEnabled: Boolean?,
+        beachName: Set<String>?,
+        city: Set<String>?,
+        minPrice: BigDecimal?,
+        maxPrice: BigDecimal?,
+    ): Int
 }
 
 @Service
@@ -150,6 +165,98 @@ class EstateServiceImpl(
         )
 
         return estates
+    }
+
+    override fun findCount(
+        types: Set<EstateType>?,
+        buildEndYears: Set<Int>?,
+        rooms: Set<String>?,
+        price: String?,
+        grades: Set<String>?,
+        beachTravelTimes: Set<String>?,
+        airportTravelTimes: Set<String>?,
+        parking: Boolean?,
+        managementCompanyEnabled: Boolean?,
+        beachName: Set<String>?,
+        city: Set<String>?,
+        minPrice: BigDecimal?,
+        maxPrice: BigDecimal?
+    ): Int {
+        var minTotalPrice =  minPrice ?:
+        when (price) {
+            "1" -> BigDecimal.ZERO
+            "2" -> BigDecimal.valueOf(100_000)
+            "3" -> BigDecimal.valueOf(200_000)
+            "4" -> BigDecimal.valueOf(500_000)
+            "5" -> BigDecimal.valueOf(1_000_000)
+            else -> null
+        }
+        var maxTotalPrice = maxPrice ?: when (price) {
+            "1" -> BigDecimal.valueOf(100_000)
+            "2" -> BigDecimal.valueOf(200_000)
+            "3" -> BigDecimal.valueOf(500_000)
+            "4" -> BigDecimal.valueOf(1_000_000)
+            "5" -> BigDecimal.valueOf(100_000_000_000) // =)
+            else -> null
+        }
+
+        if (minTotalPrice == null && maxTotalPrice != null) {
+            minTotalPrice = BigDecimal.ZERO
+        }
+
+        if (minTotalPrice != null && maxTotalPrice != null) {
+            if (minTotalPrice > maxTotalPrice) {
+                maxTotalPrice = BigDecimal(1000000)
+            }
+        }
+
+        val cityArray = city?.map { it }?.toTypedArray()
+        val beachArray = beachName?.map { it }?.toTypedArray()
+        return repository.findByParams(
+            types = types?.map { it.name }?.toTypedArray(),
+            buildEndYears = buildEndYears?.map { it.toString() }?.toTypedArray(),
+
+            isStudioRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("0"),
+            isOneRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("1"),
+            isTwoRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("2"),
+            isFreeRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("3"),
+            isFourRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("4"),
+
+            minPrice = minTotalPrice,
+            maxPrice = maxTotalPrice,
+
+            gradeInvestmentSecurity = if (grades.isNullOrEmpty()) null else if (grades.contains("1")) BigDecimal.valueOf(9) else null,
+            gradeInvestmentPotential = if (grades.isNullOrEmpty()) null else if (grades.contains("2")) BigDecimal.valueOf(9) else null,
+            gradeProjectLocation = if (grades.isNullOrEmpty()) null else if (grades.contains("3")) BigDecimal.valueOf(9) else null,
+            gradeComfortOfLife = if (grades.isNullOrEmpty()) null else if (grades.contains("4")) BigDecimal.valueOf(9) else null,
+
+            maxBeachWalkTravelTimeOne = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("1")) 5 else null,
+            minBeachWalkTravelTimeTwo = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("2")) 6 else null,
+            maxBeachWalkTravelTimeTwo = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("2")) 10 else null,
+            minBeachWalkTravelTimeFree = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("3")) 11 else null,
+            maxBeachWalkTravelTimeFree = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("3")) 30 else null,
+
+            maxBeachCarTravelTimeOne = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("11")) 5 else null,
+            minBeachCarTravelTimeTwo = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("12")) 6 else null,
+            maxBeachCarTravelTimeTwo = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("12")) 10 else null,
+            minBeachCarTravelTimeFree = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("13")) 11 else null,
+            maxBeachCarTravelTimeFree = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("13")) 30 else null,
+
+            maxAirportCarTravelTimeOne = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("1")) 30 else null,
+            minAirportCarTravelTimeTwo = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("2")) 31 else null,
+            maxAirportCarTravelTimeTwo = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("2")) 60 else null,
+            maxAirportCarTravelTimeFree = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("3")) 61 else null,
+
+            parking = parking,
+            managementCompanyEnabled = managementCompanyEnabled,
+
+            beachName = beachArray,
+
+            city = cityArray,
+
+            limit = 500,
+            offset = 0
+        ).size
     }
 
     override fun findById(id: UUID): EstateEntity {

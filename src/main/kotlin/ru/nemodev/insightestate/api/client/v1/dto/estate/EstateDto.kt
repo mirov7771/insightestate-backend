@@ -20,6 +20,13 @@ data class EstateDtoRs(
     var facilityImages: List<String>?,
     var exteriorImages: List<String>?,
     var interiorImages: List<String>?,
+    var roiSummary: BigDecimal?,
+    var city: String,
+    var beachTravelTimeCar: Int?,
+    var beachTravelTimeWalk: Int?,
+    var toolTip1: String?,
+    var toolTip2: String?,
+    var toolTip3: String?,
 )
 
 data class EstateDetailDtoRs(

@@ -16,7 +16,9 @@ data class CustomPageDtoRs(
     val pageSize: Int = items.size,
 
     @Schema(description = "Признак наличия оставшихся страниц")
-    val hasMore: Boolean = items.size >= pageSize
+    val hasMore: Boolean = items.size >= pageSize,
+
+    val totalCount: Int = 0
 ) {
 
     companion object {

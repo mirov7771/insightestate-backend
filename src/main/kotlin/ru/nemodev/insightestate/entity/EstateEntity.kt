@@ -46,7 +46,7 @@ data class EstateDetail (
     val status: EstateStatus,                   // статус проекта
     var canShow: Boolean = true,                // можно ли показывать объект
     val saleStartDate: LocalDate? = null,       // дата начала продаж // TODO в таблице нужно поменять формат на дату как у даты окончания строительства
-    val buildEndDate: LocalDate? = null,        // дата окончания строительства
+    val buildEndDate: String? = null,        // дата окончания строительства
     val unitCount: UnitCount,                   // количество юнитов
 
     var type: EstateType,                       // тип проекта
@@ -70,6 +70,9 @@ data class EstateDetail (
 
     val paymentPlan: String? = null,
     var likesCount: Long? = null,
+    var toolTip1: String? = null,
+    var toolTip2: String? = null,
+    var toolTip3: String? = null,
 )
 
 // Оценка проекта

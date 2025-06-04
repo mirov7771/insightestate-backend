@@ -34,12 +34,19 @@ class EstateDtoRsConverter(
             grade = estateDetail.grade.main,
             priceMin = estateDetail.price.min,
             roi = estateDetail.profitability.roi,
-            buildEndDate = estateDetail.buildEndDate?.format(dateTimeFormatter) ?: "-",
+            buildEndDate = estateDetail.buildEndDate ?: "",
             level = estateDetail.level,
             beachTravelTime = beachTravelTime,
             facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             exteriorImages = estateDetail.exteriorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
+            roiSummary = estateDetail.profitability.roiSummary,
+            city = estateDetail.location.city,
+            beachTravelTimeCar = beachTravelTimeCar,
+            beachTravelTimeWalk = beachTravelTimeWalk,
+            toolTip1 = estateDetail.toolTip1,
+            toolTip2 = estateDetail.toolTip2,
+            toolTip3 = estateDetail.toolTip3,
         )
     }
 }

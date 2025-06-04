@@ -89,12 +89,29 @@ class EstateProcessorImpl(
             pageable = pageable
         )
 
+        val count = estateService.findCount(
+            types = types,
+            buildEndYears = buildEndYears,
+            rooms = rooms,
+            price = price,
+            grades = grades,
+            beachTravelTimes = beachTravelTimes,
+            airportTravelTimes = airportTravelTimes,
+            parking = parking,
+            managementCompanyEnabled = managementCompanyEnabled,
+            beachName = beachName,
+            city = city,
+            minPrice = minPrice,
+            maxPrice = maxPrice
+        )
+
         return CustomPageDtoRs(
             items = estates.map { estateDtoRsConverter.convert(it) },
             pageSize = estates.size,
             pageNumber = pageable.pageNumber,
             hasMore = estates.size >= pageable.pageSize,
-            totalPages = estateService.findPages(pageable.pageSize)
+            totalPages = estateService.findPages(pageable.pageSize),
+            totalCount = count
         )
     }
 
