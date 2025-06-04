@@ -37,6 +37,7 @@ class EstateDtoRsConverter(
             interiorImages = estateDetail.interiorImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
             roiSummary = estateDetail.profitability.roiSummary,
             city = estateDetail.location.city,
+            beach = estateDetail.location.beach,
             beachTravelTimeCar = beachTravelTimeCar,
             beachTravelTimeWalk = beachTravelTimeWalk,
             toolTip1 = if (estateDetail.toolTip1.isNullOrEmpty()) "false" else "true",

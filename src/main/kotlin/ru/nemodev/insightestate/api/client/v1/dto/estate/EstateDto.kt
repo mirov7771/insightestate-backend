@@ -22,6 +22,7 @@ data class EstateDtoRs(
     var interiorImages: List<String>?,
     var roiSummary: BigDecimal?,
     var city: String,
+    var beach: String?,
     var beachTravelTimeCar: Int?,
     var beachTravelTimeWalk: Int?,
     var toolTip1: String?,
