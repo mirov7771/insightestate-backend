@@ -31,7 +31,8 @@ interface EstateProcessor {
         city: Set<String>?,
         minPrice: BigDecimal? = null,
         maxPrice: BigDecimal? = null,
-        pageable: Pageable
+        pageable: Pageable,
+        userId: UUID? = null,
     ): CustomPageDtoRs
 
     fun findById(
@@ -70,7 +71,8 @@ class EstateProcessorImpl(
         city: Set<String>?,
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
-        pageable: Pageable
+        pageable: Pageable,
+        userId: UUID?
     ): CustomPageDtoRs {
         val estates = estateService.findAll(
             types = types,
@@ -86,7 +88,8 @@ class EstateProcessorImpl(
             city = city,
             minPrice = minPrice,
             maxPrice = maxPrice,
-            pageable = pageable
+            pageable = pageable,
+            userId = userId
         )
 
         val count = estateService.findCount(

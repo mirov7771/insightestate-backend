@@ -107,7 +107,10 @@ class EstateController (
         @Valid
         @Min(1, message = "Минимальное значение 1")
         @Max(100, message = "Максимальное значение 100")
-        pageSize: Int? = 25
+        pageSize: Int? = 25,
+
+        @RequestHeader(name = "x-user-id", required = false)
+        userId: UUID? = null,
     ): CustomPageDtoRs = estateProcessor.findAll(
         types = types,
         buildEndYears = buildEndYears,
@@ -125,7 +128,8 @@ class EstateController (
         pageable = PageRequest.of(
             pageNumber ?: 0,
             pageSize ?: 25
-        )
+        ),
+        userId = userId
     )
 
     @Operation(

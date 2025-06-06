@@ -48,6 +48,7 @@ class EstateDtoRsConverter(
             toolTip1 = if (estateDetail.toolTip1.isNullOrEmpty()) "false" else "true",
             toolTip2 = if (estateDetail.toolTip2.isNullOrEmpty()) "false" else "true",
             toolTip3 = if (estateDetail.toolTip3.isNullOrEmpty()) "false" else "true",
+            collectionCount = estateDetail.collectionCount ?: 0,
         )
     }
 

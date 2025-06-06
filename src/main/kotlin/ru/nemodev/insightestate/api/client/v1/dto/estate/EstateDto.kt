@@ -28,6 +28,7 @@ data class EstateDtoRs(
     var toolTip1: String?,
     var toolTip2: String?,
     var toolTip3: String?,
+    var collectionCount: Int? = null,
 )
 
 data class EstateDetailDtoRs(

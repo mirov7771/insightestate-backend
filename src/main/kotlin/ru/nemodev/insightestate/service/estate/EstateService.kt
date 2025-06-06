@@ -7,6 +7,7 @@ import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.integration.ai.AiIntegration
 import ru.nemodev.insightestate.repository.AiRequestRepository
+import ru.nemodev.insightestate.repository.EstateCollectionRepository
 import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
@@ -32,7 +33,8 @@ interface EstateService {
         city: Set<String>?,
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
-        pageable: Pageable
+        pageable: Pageable,
+        userId: UUID?,
     ): List<EstateEntity>
 
     fun findById(
@@ -67,7 +69,8 @@ interface EstateService {
 class EstateServiceImpl(
     private val repository: EstateRepository,
     private val aiIntegration: AiIntegration,
-    private val aiRequestRepository: AiRequestRepository
+    private val aiRequestRepository: AiRequestRepository,
+    private val collectionRepository: EstateCollectionRepository
 ) : EstateService {
 
     override fun findAll(): List<EstateEntity> {
@@ -88,7 +91,8 @@ class EstateServiceImpl(
         city: Set<String>?,
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
-        pageable: Pageable
+        pageable: Pageable,
+        userId: UUID?
     ): List<EstateEntity> {
 
         var minTotalPrice =  minPrice ?:
@@ -166,6 +170,26 @@ class EstateServiceImpl(
             limit = pageable.pageSize,
             offset = pageable.offset
         )
+
+        if (estates.isNotEmpty() && userId != null) {
+            val collections = collectionRepository.findAllByParams(
+                userId = userId.toString(),
+                limit = 100,
+                offset = 0
+            )
+            if (collections.isNotEmpty()) {
+                collections.forEach {
+                    collection -> collection.collectionDetail.estateIds.forEach { estateId ->
+                        estates.forEach { estate ->
+                            if (estateId == estate.id) {
+                                val count = estate.estateDetail.collectionCount ?: 0
+                                estate.estateDetail.collectionCount = count + 1
+                            }
+                        }
+                }
+                }
+            }
+        }
 
         return estates
     }
