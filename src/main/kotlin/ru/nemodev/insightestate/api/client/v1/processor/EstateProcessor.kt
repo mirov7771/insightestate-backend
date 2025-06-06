@@ -110,7 +110,7 @@ class EstateProcessorImpl(
             pageSize = estates.size,
             pageNumber = pageable.pageNumber,
             hasMore = estates.size >= pageable.pageSize,
-            totalPages = estateService.findPages(pageable.pageSize),
+            totalPages = estateService.findPages(pageable.pageSize, count),
             totalCount = count
         )
     }
