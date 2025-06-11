@@ -219,4 +219,7 @@ class EstateController (
         @RequestBody
         rq: AiRequest
     ):CustomPageDtoRs = estateProcessor.aiRequest(rq)
+
+    @GetMapping("geo")
+    fun geo() = estateProcessor.geo()
 }

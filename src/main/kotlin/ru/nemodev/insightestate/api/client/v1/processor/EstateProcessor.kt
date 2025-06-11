@@ -8,6 +8,8 @@ import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConvert
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.dto.estate.AiRequest
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
+import ru.nemodev.insightestate.api.client.v1.dto.estate.GeoDto
+import ru.nemodev.insightestate.api.client.v1.dto.estate.GeoRs
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
@@ -45,6 +47,7 @@ interface EstateProcessor {
     fun loadImagesFromGoogleDrive()
 
     fun aiRequest(rq: AiRequest): CustomPageDtoRs
+    fun geo(): GeoRs
 }
 
 @Component
@@ -151,5 +154,38 @@ class EstateProcessorImpl(
             hasMore = false,
             totalPages = 0
         )
+    }
+
+    override fun geo(): GeoRs {
+        val list = estateService.findAll().map {
+            GeoDto(
+                id = it.id,
+                lat = getLat(it.estateDetail.location.mapUrl),
+                lng = getLng(it.estateDetail.location.mapUrl)
+            )
+        }
+        return GeoRs(
+            geo = list.filter { it.lat != null && it.lng != null },
+        )
+    }
+
+    private fun getLat(url: String): String? {
+        val split = url.split("@")
+        if (split.size < 2)
+            return null
+        val s = split[1].split(",")
+        if (s.size < 2)
+            return null
+        return s[0]
+    }
+
+    private fun getLng(url: String): String? {
+        val split = url.split("@")
+        if (split.size < 2)
+            return null
+        val s = split[1].split(",")
+        if (s.size < 2)
+            return null
+        return s[1]
     }
 }

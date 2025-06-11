@@ -173,3 +173,13 @@ data class EstateDetailDtoRs(
 data class AiRequest (
     val request: String
 )
+
+data class GeoRs(
+    val geo: List<GeoDto>?,
+)
+
+data class GeoDto (
+    val id: UUID,
+    val lat: String?,
+    val lng: String?,
+)
