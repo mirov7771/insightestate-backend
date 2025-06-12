@@ -5,13 +5,13 @@ import io.swagger.v3.oas.annotations.media.Schema
 @Schema(description = "Запрос регистрации")
 data class SignUpDtoRq(
     @Schema(description = "Email", example = "test@gmail.com")
-    val login: String,
+    var login: String,
 )
 
 @Schema(description = "Запрос проверки кода")
 data class SignUpConfirmCodeDtoRq(
     @Schema(description = "Email", example = "test@gmail.com")
-    val login: String,
+    var login: String,
 
     @Schema(description = "Код подтверждения почты", example = "123456")
     val confirmCode: String,
@@ -20,7 +20,7 @@ data class SignUpConfirmCodeDtoRq(
 @Schema(description = "Запрос завершения регистрации")
 data class SignUpEndDtoRq(
     @Schema(description = "Email", example = "test@gmail.com")
-    val login: String,
+    var login: String,
 
     @Schema(description = "ФИО", example = "Ivanov Ivan")
     val fio: String,

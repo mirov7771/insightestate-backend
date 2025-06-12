@@ -54,6 +54,7 @@ class AuthServiceImpl(
 ) : AuthService {
 
     override fun signUp(request: SignUpDtoRq) {
+        request.login = request.login.lowercase()
         val userEntity = userService.findByLogin(request.login.lowercase())
 
         if (userEntity != null) {
@@ -76,6 +77,7 @@ class AuthServiceImpl(
     }
 
     override fun signUpCheckConfirmCode(request: SignUpConfirmCodeDtoRq) {
+        request.login = request.login.lowercase()
         val userEntity = userService.findByLogin(request.login.lowercase())
             ?: throw NotFoundLogicalException(
                 errorCode = ErrorCode.createNotFound("User with email ${request.login} not found")
@@ -98,6 +100,7 @@ class AuthServiceImpl(
     }
 
     override fun signUpSendNewConfirmCode(request: SignUpDtoRq) {
+        request.login = request.login.lowercase()
         val userEntity = userService.findByLogin(request.login.lowercase())
             ?: throw NotFoundLogicalException(
                 errorCode = ErrorCode.createNotFound("User with email ${request.login} not found")
@@ -116,6 +119,7 @@ class AuthServiceImpl(
     }
 
     override fun signUpEnd(request: SignUpEndDtoRq) {
+        request.login = request.login.lowercase()
         val userEntity = userService.findByLogin(request.login)
 //            ?: throw NotFoundLogicalException(
 //                errorCode = ErrorCode.createNotFound("User with email ${request.login} not found")
@@ -196,6 +200,7 @@ class AuthServiceImpl(
     }
 
     override fun resetPassword(request: UserPasswordResetDtoRq) {
+        request.login = request.login.lowercase()
         val userEntity = userService.findByLogin(request.login) ?: return
 
         // TODO что делать если ранее уже был отправлен код?
@@ -218,6 +223,7 @@ class AuthServiceImpl(
     }
 
     override fun confirmResetPassword(request: UserPasswordResetConfirmDtoRq) {
+        request.login = request.login.lowercase()
         val userEntity = userService.findByLogin(request.login) ?: return
         val userResetPassword = userEntity.userDetail.resetPassword ?: return
 
