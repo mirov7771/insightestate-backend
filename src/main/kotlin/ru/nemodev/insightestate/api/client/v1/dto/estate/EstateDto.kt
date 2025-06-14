@@ -1,9 +1,6 @@
 package ru.nemodev.insightestate.api.client.v1.dto.estate
 
-import ru.nemodev.insightestate.entity.EstateLevelType
-import ru.nemodev.insightestate.entity.EstateProductType
-import ru.nemodev.insightestate.entity.EstateStatus
-import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.entity.*
 import java.math.BigDecimal
 import java.util.*
 
@@ -182,4 +179,11 @@ data class GeoDto (
     val id: UUID,
     val lat: String?,
     val lng: String?,
+)
+
+data class UnitsRs (
+    val id: UUID,
+    val name: String,
+    val images: List<String>?,
+    val items: List<UnitEntity>? = null
 )

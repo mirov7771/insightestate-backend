@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.AiRequest
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
+import ru.nemodev.insightestate.api.client.v1.dto.estate.UnitsRs
 import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
@@ -222,4 +223,9 @@ class EstateController (
 
     @GetMapping("geo")
     fun geo() = estateProcessor.geo()
+
+    @GetMapping("{id}/units")
+    fun findUnits(
+        @PathVariable id: UUID,
+    ): UnitsRs = estateProcessor.findUnits(id)
 }

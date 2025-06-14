@@ -6,11 +6,9 @@ import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDtoRsConverter
-import ru.nemodev.insightestate.api.client.v1.dto.estate.AiRequest
-import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.estate.GeoDto
-import ru.nemodev.insightestate.api.client.v1.dto.estate.GeoRs
+import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
@@ -48,6 +46,7 @@ interface EstateProcessor {
 
     fun aiRequest(rq: AiRequest): CustomPageDtoRs
     fun geo(): GeoRs
+    fun findUnits(id: UUID): UnitsRs
 }
 
 @Component
@@ -57,7 +56,8 @@ class EstateProcessorImpl(
     private val estateDetailDtoRsConverter: EstateDetailDtoRsConverter,
 
     private val estateLoader: EstateLoader,
-    private val estateImageLoader: EstateImageLoader
+    private val estateImageLoader: EstateImageLoader,
+    private val unitRepository: UnitRepository
 ) : EstateProcessor {
 
     override fun findAll(
@@ -166,6 +166,18 @@ class EstateProcessorImpl(
         }
         return GeoRs(
             geo = list.filter { it.lat != null && it.lng != null },
+        )
+    }
+
+    override fun findUnits(id: UUID): UnitsRs {
+        val estate = estateService.findById(id)
+        val projectId = "${estate.estateDetail.projectId}%"
+
+        return UnitsRs(
+            id = estate.id,
+            name = estate.estateDetail.name,
+            images = estate.estateDetail.exteriorImages ?: estate.estateDetail.facilityImages ?: estate.estateDetail.interiorImages,
+            items = unitRepository.findByProjectId(projectId)
         )
     }
 
