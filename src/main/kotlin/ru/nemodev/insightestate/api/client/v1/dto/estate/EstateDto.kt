@@ -161,9 +161,9 @@ data class EstateDetailDtoRs(
     )
 
     data class MinMaxAvgParamDto (
-        val min: BigDecimal,
-        val max: BigDecimal,
-        val avg: BigDecimal?,
+        val min: String?,
+        val max: String?,
+        val avg: String?,
     )
 }
 

@@ -10,7 +10,11 @@ import ru.nemodev.insightestate.entity.RoomParams
 import ru.nemodev.insightestate.entity.TravelTime
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.integration.s3.minio.config.S3MinioProperties
+import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Component
 class EstateDetailDtoRsConverter(
@@ -134,9 +138,9 @@ private fun TravelTime.toTravelTimeDto(): EstateDetailDtoRs.TravelTimeDto {
 
 private fun MinMaxAvgParam.toMinMaxAvgParamDto(): EstateDetailDtoRs.MinMaxAvgParamDto {
     return EstateDetailDtoRs.MinMaxAvgParamDto(
-        min = min,
-        max = max,
-        avg = avg
+        min = min.formatBigDecimalWithSpaces(),
+        max = max.formatBigDecimalWithSpaces(),
+        avg = avg?.formatBigDecimalWithSpaces()
     )
 }
 
@@ -149,4 +153,12 @@ private fun RoomParams.toRoomParamsDto(): EstateDetailDtoRs.RoomParamsDto? {
         price = price?.toMinMaxAvgParamDto(),
         square = square?.toMinMaxAvgParamDto(),
     )
+}
+
+fun BigDecimal.formatBigDecimalWithSpaces(): String {
+    val symbols = DecimalFormatSymbols(Locale.ENGLISH)
+    symbols.groupingSeparator = ' '
+    val pattern = "#,##0." + "0".repeat(0)
+    val decimalFormat = DecimalFormat(pattern, symbols)
+    return decimalFormat.format(this).replace(".", "")
 }
