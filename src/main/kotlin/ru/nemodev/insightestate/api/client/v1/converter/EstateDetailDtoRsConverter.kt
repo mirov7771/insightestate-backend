@@ -58,7 +58,7 @@ class EstateDetailDtoRsConverter(
             ),
             status = estateDetail.status,
             saleStartDate = estateDetail.saleStartDate?.format(dateTimeFormatter),
-            buildEndDate = estateDetail.buildEndDate?.format(dateTimeFormatter),
+            buildEndDate = formatDate(estateDetail.buildEndDate?.format(dateTimeFormatter)),
             unitCount = EstateDetailDtoRs.UnitCountDto(
                 total = estateDetail.unitCount.total,
                 sailed = estateDetail.unitCount.sailed,

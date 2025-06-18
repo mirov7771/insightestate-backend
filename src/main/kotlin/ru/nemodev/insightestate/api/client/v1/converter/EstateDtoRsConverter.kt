@@ -51,21 +51,21 @@ class EstateDtoRsConverter(
             collectionCount = estateDetail.collectionCount ?: 0,
         )
     }
+}
 
-    private fun formatDate(date: String?): String {
-        if (date == null)
-            return ""
-        val dates = date.split("-")
-        if (dates.size < 3)
-            return ""
-        val year = dates[0]
-        val month = dates[1]
-        val quarter = when (month) {
-            "01", "02", "03" -> "Q1"
-            "04", "05", "06" -> "Q2"
-            "07", "08", "09" -> "Q3"
-            else -> "Q4"
-        }
-        return "$quarter $year"
+fun formatDate(date: String?): String {
+    if (date == null)
+        return ""
+    val dates = date.split("-")
+    if (dates.size < 3)
+        return ""
+    val year = dates[0]
+    val month = dates[1]
+    val quarter = when (month) {
+        "01", "02", "03" -> "Q1"
+        "04", "05", "06" -> "Q2"
+        "07", "08", "09" -> "Q3"
+        else -> "Q4"
     }
+    return "$quarter $year"
 }
