@@ -19,15 +19,11 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 
 allprojects {
     repositories {
+        mavenCentral()
+        maven { url = uri(System.getenv("NEXUS_URL") ?: "https://nexus.bistrodengi.ru/repository/maven-releases/") }
         maven { url = uri("https://jitpack.io") }
+        mavenLocal()
     }
-}
-
-repositories {
-    mavenCentral()
-    mavenLocal()
-    maven { url = uri(System.getenv("NEXUS_URL") ?: "https://nexus.bistrodengi.ru/repository/maven-releases/") }
-    maven { url = uri("https://jitpack.io") }
 }
 
 dependencies {
