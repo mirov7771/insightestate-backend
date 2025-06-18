@@ -124,7 +124,8 @@ class EstateDetailDtoRsConverter(
                 estateDetail.paymentPlan.split(",")
             else
                 null,
-            likes = estateDetail.likesCount
+            likes = estateDetail.likesCount,
+            city = estateDetail.location.city
         )
     }
 }
