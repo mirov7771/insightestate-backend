@@ -125,7 +125,10 @@ class EstateDetailDtoRsConverter(
             else
                 null,
             likes = estateDetail.likesCount,
-            city = estateDetail.location.city
+            city = estateDetail.location.city,
+            toolTip1 = estateDetail.toolTip1,
+            toolTip2 = estateDetail.toolTip2,
+            toolTip3 = estateDetail.toolTip3,
         )
     }
 }

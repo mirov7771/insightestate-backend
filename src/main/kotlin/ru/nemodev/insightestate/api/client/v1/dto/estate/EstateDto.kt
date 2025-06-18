@@ -67,6 +67,9 @@ data class EstateDetailDtoRs(
     val paymentPlanList: List<String>?,
     val likes: Long? = null,
     var city: String,
+    var toolTip1: String?,
+    var toolTip2: String?,
+    var toolTip3: String?,
 ) {
     data class EstateGradeDto(
         val main: BigDecimal,
