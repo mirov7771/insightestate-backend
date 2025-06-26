@@ -7,11 +7,14 @@ import ru.nemodev.insightestate.domen.EstateCollection
 import ru.nemodev.insightestate.entity.EstateCollectionDetail
 import ru.nemodev.insightestate.entity.EstateCollectionEntity
 import ru.nemodev.insightestate.entity.EstateEntity
+import ru.nemodev.insightestate.entity.UnitEstateLink
 import ru.nemodev.insightestate.repository.EstateCollectionRepository
+import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.UserService
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ForbiddenLogicalException
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -19,11 +22,12 @@ interface EstateCollectionService {
     fun findAll(authBasicToken: String, pageable: Pageable): List<EstateCollection>
     fun create(authBasicToken: String, request: EstateCollectionCreateDtoRq): EstateCollectionEntity
     fun findById(authBasicToken: String, id: UUID): EstateCollectionEntity
-    fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID)
+    fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID, unitId: UUID?)
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteById(authBasicToken: String, id: UUID)
     fun findById(id: UUID): EstateCollectionEntity
     fun findEstates(ids: Set<UUID>): List<EstateEntity>
+    fun findEstatesWithUnites(ids: List<UnitEstateLink>): List<EstateEntity>
     fun update(collection: EstateCollectionEntity)
 }
 
@@ -31,7 +35,8 @@ interface EstateCollectionService {
 class EstateCollectionServiceImpl(
     private val userService: UserService,
     private val estateService: EstateService,
-    private val estateCollectionRepository: EstateCollectionRepository
+    private val estateCollectionRepository: EstateCollectionRepository,
+    private val unitRepository: UnitRepository,
 ) : EstateCollectionService {
 
     override fun findAll(authBasicToken: String, pageable: Pageable): List<EstateCollection> {
@@ -47,10 +52,29 @@ class EstateCollectionServiceImpl(
             estateCollections.flatMap { it.collectionDetail.estateIds }.toSet()
         ).associateBy { it.id }
 
+
+
         return estateCollections.map { estateCollection ->
+            val estateList = estateCollection.collectionDetail.estateIds.mapNotNull { estateMap[it] }.toMutableList()
+
+            if (estateCollection.collectionDetail.unitIds.isNotNullOrEmpty()) {
+                val uniqueIds = estateCollection.collectionDetail.unitIds?.map { it.estateId }?.distinct()
+                val estates = estateService.findByIds(uniqueIds!!.toSet())
+                if (estates.isNotEmpty()) {
+                    estates.forEach {
+                        val uIds = estateCollection.collectionDetail.unitIds!!.filter { unit -> unit.estateId == it.id }.map { it.unitId }.distinct().toSet()
+                        val units = unitRepository.findAllById(uIds)
+                        if (units.isNotEmpty()) {
+                            it.estateDetail.units = units
+                            estateList.addLast(it)
+                        }
+                    }
+                }
+            }
+
             EstateCollection(
                 estateCollection = estateCollection,
-                estates = estateCollection.collectionDetail.estateIds.mapNotNull { estateMap[it] }
+                estates = estateList
             )
         }
     }
@@ -77,15 +101,34 @@ class EstateCollectionServiceImpl(
         return estateCollection
     }
 
-    override fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID) {
+    override fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID, unitId: UUID?) {
         val userEntity = userService.getUser(authBasicToken)
         val estateCollectionEntity = findById(id = id, userId = userEntity.id)
         val estate = estateService.findById(estateId)
 
-        if (estateId !in estateCollectionEntity.collectionDetail.estateIds) {
+        val unitIds = estateCollectionEntity.collectionDetail.unitIds ?: emptyList()
+        if (unitId != null && !unitIds.any { it.unitId == unitId }) {
+            if (unitIds.isEmpty()) {
+                estateCollectionEntity.collectionDetail.unitIds = mutableListOf(
+                    UnitEstateLink(
+                        estateId = estateId,
+                        unitId = unitId
+                    )
+                )
+            } else {
+                estateCollectionEntity.collectionDetail.unitIds?.addLast(
+                    UnitEstateLink(
+                        estateId = estateId,
+                        unitId = unitId
+                    )
+                )
+            }
+            estateCollectionRepository.save(estateCollectionEntity)
+        } else if (estateId !in estateCollectionEntity.collectionDetail.estateIds) {
             estateCollectionEntity.collectionDetail.estateIds.addLast(estate.id)
             estateCollectionRepository.save(estateCollectionEntity)
         }
+
     }
 
     override fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID) {
@@ -126,6 +169,21 @@ class EstateCollectionServiceImpl(
 
     override fun findEstates(ids: Set<UUID>): List<EstateEntity> {
         val estates = estateService.findByIds(ids)
+        return estates
+    }
+
+    override fun findEstatesWithUnites(ids: List<UnitEstateLink>): List<EstateEntity> {
+        val uniqueIds = ids.map { it.estateId }.distinct()
+        val estates = estateService.findByIds(uniqueIds.toSet())
+        if (estates.isNotEmpty()) {
+            estates.forEach {
+                val uIds = ids.filter { unit -> unit.estateId == it.id }.map { it.unitId }.distinct().toSet()
+                val units = unitRepository.findAllById(uIds)
+                if (units.isNotEmpty()) {
+                    it.estateDetail.units = units
+                }
+            }
+        }
         return estates
     }
 

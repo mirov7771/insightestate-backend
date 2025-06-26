@@ -12,12 +12,13 @@ import ru.nemodev.insightestate.service.EmailService
 import ru.nemodev.insightestate.service.UserService
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.util.*
 
 interface EstateCollectionProcessor {
     fun findAll(authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs>
     fun create(authBasicToken: String, request: EstateCollectionCreateDtoRq): EstateCollectionCreateDtoRs
-    fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID)
+    fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID, unitId: UUID?)
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteById(authBasicToken: String, id: UUID)
     fun getById(id: UUID): EstateCollectionDtoRs
@@ -54,11 +55,12 @@ class EstateCollectionProcessorImpl(
         )
     }
 
-    override fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID) {
+    override fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID, unitId: UUID?) {
         estateCollectionService.addEstateToCollection(
             authBasicToken = authBasicToken,
             id = id,
-            estateId = estateId
+            estateId = estateId,
+            unitId = unitId,
         )
     }
 
@@ -76,7 +78,15 @@ class EstateCollectionProcessorImpl(
 
     override fun getById(id: UUID): EstateCollectionDtoRs {
         val entity = estateCollectionService.findById(id)
-        val estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toSet())
+        val estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toSet()).toMutableList()
+
+        if (entity.collectionDetail.unitIds.isNotNullOrEmpty()) {
+            val list = estateCollectionService.findEstatesWithUnites(entity.collectionDetail.unitIds!!)
+            if (list.isNotEmpty()) {
+                estates.addAll(list)
+            }
+        }
+
         estates.forEach { estate ->
             estate.estateDetail.likesCount =
                 likesRepository.findByCollectionIdAndEstateId(id, estate.id).firstOrNull()?.likeCount

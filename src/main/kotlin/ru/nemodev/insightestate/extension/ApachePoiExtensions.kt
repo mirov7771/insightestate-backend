@@ -32,7 +32,7 @@ fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
 
         val value = cell.numericCellValue.toBigDecimal()
         if (scale != null) {
-            return value.scaleAndRoundAmount(scale)
+            return value.scaleAndRoundAmount()
         }
         return value
     }
@@ -47,12 +47,12 @@ fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
     if (value == null || scale == null) {
         return value
     }
-    return value.scaleAndRoundAmount(scale, RoundingMode.HALF_UP)
+    return value.scaleAndRoundAmount()
 }
 
 fun Row.getBigDecimalFromPercent(cellName: String, scale: Int): BigDecimal? {
     val value = getBigDecimal(cellName)?.toDouble() ?: return null
-    return (value * 100).toBigDecimal().scaleAndRoundAmount(scale)
+    return (value * 100).toBigDecimal().scaleAndRoundAmount()
 }
 
 fun Row.getInt(cellName: String): Int? {

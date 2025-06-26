@@ -74,6 +74,8 @@ data class EstateDetail (
     var toolTip2: String? = null,
     var toolTip3: String? = null,
     var collectionCount: Int? = null,
+
+    var units: List<UnitEntity>? = null,
 )
 
 // Оценка проекта

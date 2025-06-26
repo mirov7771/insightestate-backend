@@ -23,10 +23,10 @@ class UnitEntity (
     val rooms: String? = null,
     @Column("square")
     val square: String? = null,
-    @Column("priceSq")
+    @Column("pricesq")
     val priceSq: String? = null,
     @Column("price")
     val price: String? = null,
-    @Column("planImage")
+    @Column("planimage")
     val planImage: String? = null,
 ) : AbstractEntity<UUID>(id, createdAt, updatedAt)

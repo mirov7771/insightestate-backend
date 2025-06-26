@@ -19,7 +19,7 @@ import java.util.*
 @Component
 class EstateDetailDtoRsConverter(
     appProperties: AppProperties,
-    s3MinioProperties: S3MinioProperties
+    s3MinioProperties: S3MinioProperties,
 ) : Converter<EstateEntity, EstateDetailDtoRs> {
 
     companion object {
@@ -129,6 +129,7 @@ class EstateDetailDtoRsConverter(
             toolTip1 = if (estateDetail.toolTip1.isNullOrEmpty()) "false" else "true",
             toolTip2 = if (estateDetail.toolTip2.isNullOrEmpty()) "false" else "true",
             toolTip3 = if (estateDetail.toolTip3.isNullOrEmpty()) "false" else "true",
+            units = estateDetail.units,
         )
     }
 }

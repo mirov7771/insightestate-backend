@@ -132,12 +132,16 @@ class EstateCollectionController (
         @PathVariable("id") id: UUID,
 
         @Parameter(description = "Id объекта", required = true)
-        @RequestParam("estateId") estateId: UUID
+        @RequestParam("estateId") estateId: UUID,
+
+        @Parameter(description = "Id юнита", required = true)
+        @RequestParam("unitId") unitId: UUID? = null,
     ) {
         estateCollectionProcessor.addEstateToCollection(
             authBasicToken = authBasicToken,
             id = id,
-            estateId = estateId
+            estateId = estateId,
+            unitId = unitId
         )
     }
 
