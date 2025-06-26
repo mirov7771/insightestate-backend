@@ -1,6 +1,8 @@
 package ru.nemodev.insightestate.service.estate
 
+import jakarta.annotation.PostConstruct
 import org.springframework.data.domain.Pageable
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.entity.AiRequestEntity
 import ru.nemodev.insightestate.entity.EstateEntity
@@ -13,6 +15,7 @@ import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -498,5 +501,14 @@ class EstateServiceImpl(
         if (list.size > 50)
             return list.take(20)
         return list
+    }
+
+    @PostConstruct
+    @Scheduled(cron = "0 0 4 * * *")
+    fun range() {
+        repository.findRandom().forEach {
+            it.updatedAt = LocalDateTime.now()
+            repository.save(it)
+        }
     }
 }

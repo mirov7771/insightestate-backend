@@ -46,7 +46,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
             and (:beachName::text[] is null or (estate_detail -> 'location' ->> 'beach' = any(:beachName)))
             and (:city::text[] is null or (estate_detail -> 'location' ->> 'city' = any(:city)))
             and ((estate_detail ->> 'canShow')::boolean = true)
-        order by created_at desc
+        order by updated_at desc
         limit :limit offset :offset
     """)
     fun findByParams(
