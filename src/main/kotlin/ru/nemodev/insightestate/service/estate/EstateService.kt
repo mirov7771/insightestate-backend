@@ -302,7 +302,10 @@ class EstateServiceImpl(
     }
 
     override fun findPages(pageCount: Int, allCount: Int): Int {
-        return (allCount / pageCount) + 1
+        val pages = allCount / pageCount
+        if (pages % 2 == 0)
+            return pages
+        return pages + 1
     }
 
     override fun aiRequest(rq: String): List<EstateEntity> {
