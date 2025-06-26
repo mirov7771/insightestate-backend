@@ -39,18 +39,15 @@ data class UserUpdateDtoRq(
 
     @Schema(description = "Номер телефона", example = "+79531234567")
     @field:NotBlank
-    @field:Size(min = 10, max = 32, message = "Field must contains from 10 to 32 characters")
     val mobileNumber: String,
 
     @Schema(description = "Страна и город", example = "Kazahstan Astana")
     @field:NotBlank
-    @field:Size(min = 4, max = 64, message = "Field must contains from 4 to 64 characters")
     val location: String,
 
     @Schema(description = "Пароль", example = "1234567890")
-    @field:Size(min = 6, max = 15, message = "Field must contains from 6 to 15 characters")
     val password: String?,
-    
+
     @Schema(description = "WhatsUp", example = "1234567890")
     val whatsUp: String?,
 
