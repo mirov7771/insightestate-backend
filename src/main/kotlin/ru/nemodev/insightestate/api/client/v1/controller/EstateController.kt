@@ -17,6 +17,7 @@ import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.AiRequest
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDetailDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.estate.UnitsRs
+import ru.nemodev.insightestate.api.client.v1.dto.user.MainInfoDto
 import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
@@ -228,4 +229,9 @@ class EstateController (
     fun findUnits(
         @PathVariable id: UUID,
     ): UnitsRs = estateProcessor.findUnits(id)
+
+    @GetMapping("main/info")
+    fun getMainInfo(
+        @RequestParam userId: UUID
+    ): MainInfoDto = estateProcessor.getMainInfo(userId)
 }

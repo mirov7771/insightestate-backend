@@ -20,5 +20,4 @@ interface EstateCollectionRepository : ListCrudRepository<EstateCollectionEntity
         limit : Int,
         offset : Long,
     ): List<EstateCollectionEntity>
-
 }

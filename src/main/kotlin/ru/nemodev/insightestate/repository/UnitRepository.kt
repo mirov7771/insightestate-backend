@@ -14,4 +14,10 @@ interface UnitRepository: ListCrudRepository<UnitEntity, UUID> {
           where code like :projectId
     """)
     fun findByProjectId(projectId: String): List<UnitEntity>
+
+    @Query("""
+        select count(*) from estate_collections 
+        where collection_detail ->> 'userId' = :userId
+    """)
+    fun findAllCollections(userId: String): Int
 }
