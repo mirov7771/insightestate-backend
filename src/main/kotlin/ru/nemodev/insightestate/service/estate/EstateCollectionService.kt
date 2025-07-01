@@ -130,18 +130,8 @@ class EstateCollectionServiceImpl(
                 }
             }
             estateCollectionRepository.save(estateCollectionEntity)
-        } else if (estateId !in estateCollectionEntity.collectionDetail.estateIds) {
+        } else if (estateId !in estateCollectionEntity.collectionDetail.estateIds && !unitIds.any { it.estateId == estateId }) {
             estateCollectionEntity.collectionDetail.estateIds.addLast(estate.id)
-
-            val units = estateCollectionEntity.collectionDetail.unitIds
-            if (units.isNotNullOrEmpty()) {
-                if (units!!.any { it.estateId == estateId }) {
-                    estateCollectionEntity.collectionDetail.unitIds = units.filter {
-                        it.estateId != estateId
-                    }.toMutableList()
-                }
-            }
-
             estateCollectionRepository.save(estateCollectionEntity)
         }
 
