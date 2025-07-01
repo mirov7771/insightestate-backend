@@ -21,7 +21,7 @@ class EstateCollectionEntity(
 data class EstateCollectionDetail(
     val userId: UUID,
     var name: String,
-    val estateIds: MutableList<UUID>,
+    var estateIds: MutableList<UUID>,
     var unitIds: MutableList<UnitEstateLink>? = null,
 )
 
