@@ -34,7 +34,7 @@ class EstateDtoRsConverter(
             grade = estateDetail.grade.main,
             priceMin = estateDetail.price.min,
             roi = estateDetail.profitability.roi,
-            buildEndDate = formatDate(estateDetail.buildEndDate?.format(buildEndDateFormatter)),
+            buildEndDate = formatDate(estateDetail.buildEndDate?.toString()),
             level = estateDetail.level,
             beachTravelTime = beachTravelTime,
             facilityImages = estateDetail.facilityImages?.map { "$baseEstateImageUrl/$it" }?.ifEmpty { null },
