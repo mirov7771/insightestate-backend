@@ -91,6 +91,7 @@ class EstateCollectionProcessorImpl(
             estate.estateDetail.likesCount =
                 likesRepository.findByCollectionIdAndEstateId(id, estate.id).firstOrNull()?.likeCount
         }
+
         val rs = estateCollectionDtoRsConverter.convert(
             EstateCollection(
                 estateCollection = entity,
