@@ -10,8 +10,8 @@ spring:
         enabled: false
   servlet:
     multipart:
-      max-file-size: 5MB
-      max-request-size: 6MB
+      max-file-size: 20MB
+      max-request-size: 1MB
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://77.238.232.18:5432/insightestate}
     username: ${DATABASE_USERNAME:insightestate_admin}
