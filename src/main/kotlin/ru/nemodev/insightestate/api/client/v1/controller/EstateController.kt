@@ -234,4 +234,7 @@ class EstateController (
     fun getMainInfo(
         @RequestParam userId: UUID
     ): MainInfoDto = estateProcessor.getMainInfo(userId)
+
+    @GetMapping("generate/xml", produces = [MediaType.APPLICATION_XML_VALUE])
+    fun generateXml() = estateProcessor.prepareXml()
 }

@@ -15,6 +15,7 @@ import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.NotFoundLogicalException
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
@@ -66,6 +67,8 @@ interface EstateService {
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
     ): Int
+
+    fun createXml(): String
 }
 
 @Service
@@ -510,5 +513,91 @@ class EstateServiceImpl(
             it.updatedAt = LocalDateTime.now()
             repository.save(it)
         }
+    }
+
+    override fun createXml(): String {
+        val sb = StringBuilder("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+        sb.append("<objects>\n")
+        repository.findAll().toList().forEach {
+            var rooms = 1
+            if (it.estateDetail.roomLayouts.villaFive != null || it.estateDetail.roomLayouts.five != null) {
+                rooms += 5
+            } else if (it.estateDetail.roomLayouts.villaFour != null || it.estateDetail.roomLayouts.four != null) {
+                rooms += 4
+            } else if (it.estateDetail.roomLayouts.villaThree != null || it.estateDetail.roomLayouts.three != null) {
+                rooms += 3
+            } else if (it.estateDetail.roomLayouts.villaTwo != null || it.estateDetail.roomLayouts.two != null) {
+                rooms += 2
+            } else if (it.estateDetail.roomLayouts.one != null) {
+                rooms += 1
+            }
+            val type = when (it.estateDetail.type) {
+                EstateType.VILLA -> 6
+                else -> 1
+            }
+
+            val region = when (it.estateDetail.location.city) {
+                "Bangkok" -> 4
+                "Phuket" -> 323
+                else -> 74
+            }
+            val status = if (it.estateDetail.buildEndDate != null && it.estateDetail.buildEndDate!!.isAfter(LocalDate.now()))
+                2
+            else
+                1
+
+            val price = it.estateDetail.price.max
+            sb.append("   <object>\n")
+            sb.append("      <id>${it.id}</id>\n")
+            sb.append("      <edited>${it.createdAt}</edited>\n")
+            sb.append("      <edited>${it.createdAt}</edited>\n")
+            sb.append("      <description>\n" +
+                      "         <ru><![CDATA[${it.estateDetail.name}]]></ru>\n" +
+                      "         <en><![CDATA[${it.estateDetail.name}]]></en>\n" +
+                      "      </description>\n")
+            sb.append("      <deal>2</deal>\n" +
+                      "      <price>$price</price>\n" +
+                      "      <currency>USD</currency>\n" +
+                      "      <installment>1</installment>\n" +
+                      "      <type>${type}</type>\n" +
+                      "      <region>${region}</region>\n" +
+                      "      <status>${status}</status>\n" +
+                      "      <rooms>${rooms}</rooms>\n" +
+                      "      <floors>${it.estateDetail.floors ?: 1}</floors>\n" +
+                      "      <tosea>${it.estateDetail.infrastructure.beachTime.walk ?: it.estateDetail.infrastructure.beachTime.car}</tosea>\n" +
+                      "      <toairport>${it.estateDetail.infrastructure.airportTime.car}</toairport>\n")
+            if (it.estateDetail.buildEndDate != null) {
+                val quarter = when (it.estateDetail.buildEndDate?.monthValue) {
+                    1, 2, 3 -> 1
+                    4, 5, 6 -> 2
+                    7, 8, 9 -> 3
+                    else -> 4
+                }
+                sb.append(
+                    "      <finish>\n" +
+                            "         <year>${it.estateDetail.buildEndDate?.year}</year>\n" +
+                            "         <quarter>$quarter</quarter>\n" +
+                            "      </finish>\n"
+                )
+            }
+
+            val images = mutableListOf<String>()
+            if (it.estateDetail.interiorImages.isNotNullOrEmpty())
+                images.addAll(it.estateDetail.interiorImages!!.toMutableList())
+            if (it.estateDetail.exteriorImages.isNotNullOrEmpty())
+                images.addAll(it.estateDetail.exteriorImages!!.toMutableList())
+            if (it.estateDetail.facilityImages.isNotNullOrEmpty())
+                images.addAll(it.estateDetail.facilityImages!!.toMutableList())
+            if (images.isNotEmpty()) {
+                sb.append("<images>\n")
+                images.forEach {
+                    image -> sb.append("<image>https://insightestate.pro/estate-images/$image</image>\n")
+                }
+                sb.append("</images>\n")
+            }
+            sb.append("   </object>\n")
+        }
+        sb.append("</objects>\n")
+        return sb.toString()
     }
 }

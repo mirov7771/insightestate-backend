@@ -49,6 +49,8 @@ interface EstateProcessor {
     fun geo(): GeoRs
     fun findUnits(id: UUID): UnitsRs
     fun getMainInfo(userId: UUID): MainInfoDto
+
+    fun prepareXml(): String
 }
 
 @Component
@@ -192,6 +194,10 @@ class EstateProcessorImpl(
             objects = list.size,
             bestObjects = list.filter { it.estateDetail.grade.main >= BigDecimal(9) }.size,
         )
+    }
+
+    override fun prepareXml(): String {
+        return estateService.createXml()
     }
 
     private fun getLat(url: String): String? {
