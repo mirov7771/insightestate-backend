@@ -70,7 +70,7 @@ class UserServiceImpl(
         userEntity.userDetail.fio = request.fio
         userEntity.userDetail.mobileNumber = request.mobileNumber
         userEntity.userDetail.location = request.location
-        userEntity.userDetail.whatsUp = request.whatsUp
+        userEntity.userDetail.whatsUp = request.whatsUp ?: request.mobileNumber
         userEntity.userDetail.tgName = request.tgName
         userEntity.userDetail.profileImage = request.profileImage
         if (request.password.isNotNullOrEmpty() && request.password.isNotNullOrBlank()) {

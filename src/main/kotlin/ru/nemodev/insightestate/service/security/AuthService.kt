@@ -145,7 +145,7 @@ class AuthServiceImpl(
         userEntity.userDetail.status = UserStatus.ACTIVE
         userEntity.userDetail.tgName = request.tgName
         userEntity.userDetail.profileImage = request.profileImage
-        userEntity.userDetail.whatsUp = request.whatsUp
+        userEntity.userDetail.whatsUp = request.whatsUp ?: request.mobileNumber
 
         userService.update(userEntity)
     }
