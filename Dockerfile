@@ -6,4 +6,4 @@ ENV JVM_OPTS="-Xmx1536m"
 ENV JAR_ARGS=""
 RUN chown -R javauser:javauser /home/app/application.jar
 USER javauser
-ENTRYPOINT java -XshowSettings:vm -XX:+PrintCommandLineFlags -Duser.timezone=GMT+3 -Dfile.encoding=UTF-8 -XX:+UseParallelGC -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled ${JVM_OPTS} -jar application.jar ${JAR_ARGS}
+ENTRYPOINT java -XshowSettings:vm -XX:+PrintCommandLineFlags -Duser.timezone=GMT+3 -Dfile.encoding=UTF-8 -XX:+UseSerialGC -XX:+DisableExplicitGC -XX:+ParallelRefProcEnabled ${JVM_OPTS} -jar application.jar ${JAR_ARGS}
