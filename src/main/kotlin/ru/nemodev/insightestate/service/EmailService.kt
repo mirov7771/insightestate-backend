@@ -40,7 +40,7 @@ class EmailServiceImpl(
     private fun send(email: String, subject: String, message: String) {
         val emailMessage = emailSender.createMimeMessage()
         MimeMessageHelper(emailMessage, false).apply {
-            setFrom("it@insightestate.com", "Insight Estate Pro")
+            setFrom("it@insightestate.com", "Lots Of Properties")
             setTo(email)
             setSubject(subject)
             setText(message)
