@@ -97,7 +97,7 @@ class StripeServiceImpl (
                 )
                 .setCustomer(customerId)
                 .setPaymentMethod(paymentId)
-                .setReturnUrl("https://insightestate.pro/tariffs?tariffId=$tariffId")
+                .setReturnUrl("https://lotsof.properties/tariffs?tariffId=$tariffId")
                 .setConfirm(true)
                 .setOffSession(true)
                 .build()

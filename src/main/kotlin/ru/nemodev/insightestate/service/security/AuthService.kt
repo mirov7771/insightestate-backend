@@ -195,7 +195,7 @@ class AuthServiceImpl(
         )
         // TODO формировать урл нужно как для фото объектов без привязки к серверу
         return ProfileImageRs(
-            "https://insightestate.pro/estate-images/$name"
+            "https://lotsof.properties/estate-images/$name"
         )
     }
 

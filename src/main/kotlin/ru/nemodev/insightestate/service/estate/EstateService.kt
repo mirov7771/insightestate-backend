@@ -591,7 +591,7 @@ class EstateServiceImpl(
             if (images.isNotEmpty()) {
                 sb.append("<images>\n")
                 images.forEach {
-                    image -> sb.append("<image>https://insightestate.pro/estate-images/$image</image>\n")
+                    image -> sb.append("<image>https://lotsof.properties/estate-images/$image</image>\n")
                 }
                 sb.append("</images>\n")
             }
