@@ -146,6 +146,12 @@ class EstateCollectionServiceImpl(
             estateCollectionEntity.collectionDetail.estateIds.remove(estate.id)
             estateCollectionRepository.save(estateCollectionEntity)
         }
+
+        if (estateCollectionEntity.collectionDetail.unitIds.isNotNullOrEmpty()) {
+            val unitIds = estateCollectionEntity.collectionDetail.unitIds?.filter { unit -> unit.estateId != estateId }
+            estateCollectionEntity.collectionDetail.unitIds = unitIds?.toMutableList()
+            estateCollectionRepository.save(estateCollectionEntity)
+        }
     }
 
     override fun deleteById(authBasicToken: String, id: UUID) {
