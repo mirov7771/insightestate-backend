@@ -46,6 +46,13 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
             and (:beachName::text[] is null or (estate_detail -> 'location' ->> 'beach' = any(:beachName)))
             and (:city::text[] is null or (estate_detail -> 'location' ->> 'city' = any(:city)))
             and ((estate_detail ->> 'canShow')::boolean = true)
+            
+            and ((:isOneMinPrice is null or ((estate_detail -> 'roomLayouts' -> 'one' -> 'price' ->> 'min')::numeric > :isOneMinPrice))
+                and (:isOneMaxPrice is null or ((estate_detail -> 'roomLayouts' -> 'one' -> 'price' ->> 'min')::numeric <= :isOneMaxPrice)))
+            and ((:isTwoMinPrice is null or ((estate_detail -> 'roomLayouts' -> 'two' -> 'price' ->> 'min')::numeric > :isTwoMinPrice))
+                and (:isTwoMaxPrice is null or ((estate_detail -> 'roomLayouts' -> 'two' -> 'price' ->> 'min')::numeric <= :isTwoMaxPrice)))
+            and ((:isFreeMinPrice is null or ((estate_detail -> 'roomLayouts' -> 'three' -> 'price' ->> 'min')::numeric > :isFreeMinPrice))
+                and (:isFreeMaxPrice is null or ((estate_detail -> 'roomLayouts' -> 'three' -> 'price' ->> 'min')::numeric <= :isFreeMaxPrice)))                                                                        
         order by updated_at desc
         limit :limit offset :offset
     """)
@@ -92,7 +99,14 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         city: Array<String>?,
 
         offset: Long,
-        limit: Int
+        limit: Int,
+
+        isOneMinPrice: BigDecimal?,
+        isOneMaxPrice: BigDecimal?,
+        isTwoMinPrice: BigDecimal?,
+        isTwoMaxPrice: BigDecimal?,
+        isFreeMinPrice: BigDecimal?,
+        isFreeMaxPrice: BigDecimal?,
     ): List<EstateEntity>
 
     @Query("""

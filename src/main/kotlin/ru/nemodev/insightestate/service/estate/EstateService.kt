@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.entity.AiRequestEntity
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.entity.RoomParams
 import ru.nemodev.insightestate.integration.ai.AiIntegration
 import ru.nemodev.insightestate.repository.AiRequestRepository
 import ru.nemodev.insightestate.repository.EstateCollectionRepository
@@ -125,27 +126,62 @@ class EstateServiceImpl(
 
         if (minTotalPrice != null && maxTotalPrice != null) {
             if (minTotalPrice > maxTotalPrice) {
-                maxTotalPrice = BigDecimal(1000000)
+                maxTotalPrice = BigDecimal(4000000)
             }
         }
 
+        val isStudioRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("0")
+        val isOneRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("1")
+        val isTwoRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("2")
+        val isFreeRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("3")
+        val isFourRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("4")
+
         val cityArray = city?.map { it }?.toTypedArray()
         val beachArray = beachName?.map { it }?.toTypedArray()
+
+        var isOneMinPrice: BigDecimal? = null
+        var isOneMaxPrice: BigDecimal? = null
+        var isTwoMinPrice: BigDecimal? = null
+        var isTwoMaxPrice: BigDecimal? = null
+        var isFreeMinPrice: BigDecimal? = null
+        var isFreeMaxPrice: BigDecimal? = null
+
+        if (rooms.isNotNullOrEmpty() && rooms?.size == 1) {
+            if (minTotalPrice != null && maxTotalPrice != null) {
+                if (isOneRoom == true) {
+                    isOneMinPrice = minTotalPrice
+                    isOneMaxPrice = maxTotalPrice
+                }
+                if (isTwoRoom == true) {
+                    isTwoMinPrice = minTotalPrice
+                    isTwoMaxPrice = maxTotalPrice
+                }
+                if (isFreeRoom == true) {
+                    isFreeMinPrice = minTotalPrice
+                    isFreeMaxPrice = maxTotalPrice
+                }
+            }
+        }
+
         val estates = repository.findByParams(
             types = types?.map { it.name }?.toTypedArray(),
             buildEndYears = buildEndYears?.map { it.toString() }?.toTypedArray(),
 
-            isStudioRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("0"),
-            isOneRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("1"),
-            isTwoRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("2"),
-            isFreeRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("3"),
-            isFourRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("4"),
+            isStudioRoom = isStudioRoom,
+            isOneRoom = isOneRoom,
+            isTwoRoom = isTwoRoom,
+            isFreeRoom = isFreeRoom,
+            isFourRoom = isFourRoom,
 
             minPrice = minTotalPrice,
             maxPrice = maxTotalPrice,
 
-            gradeInvestmentSecurity = if (grades.isNullOrEmpty()) null else if (grades.contains("1")) BigDecimal.valueOf(9) else null,
-            gradeInvestmentPotential = if (grades.isNullOrEmpty()) null else if (grades.contains("2")) BigDecimal.valueOf(9) else null,
+            gradeInvestmentSecurity = if (grades.isNullOrEmpty()) null else if (grades.contains("1")) BigDecimal.valueOf(
+                9
+            ) else null,
+            gradeInvestmentPotential = if (grades.isNullOrEmpty()) null else if (grades.contains("2")) BigDecimal.valueOf(
+                9
+            ) else null,
             gradeProjectLocation = if (grades.isNullOrEmpty()) null else if (grades.contains("3")) BigDecimal.valueOf(9) else null,
             gradeComfortOfLife = if (grades.isNullOrEmpty()) null else if (grades.contains("4")) BigDecimal.valueOf(9) else null,
 
@@ -161,10 +197,22 @@ class EstateServiceImpl(
             minBeachCarTravelTimeFree = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("13")) 11 else null,
             maxBeachCarTravelTimeFree = if (beachTravelTimes.isNullOrEmpty()) null else if (beachTravelTimes.contains("13")) 30 else null,
 
-            maxAirportCarTravelTimeOne = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("1")) 30 else null,
-            minAirportCarTravelTimeTwo = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("2")) 31 else null,
-            maxAirportCarTravelTimeTwo = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("2")) 60 else null,
-            maxAirportCarTravelTimeFree = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains("3")) 61 else null,
+            maxAirportCarTravelTimeOne = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains(
+                    "1"
+                )
+            ) 30 else null,
+            minAirportCarTravelTimeTwo = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains(
+                    "2"
+                )
+            ) 31 else null,
+            maxAirportCarTravelTimeTwo = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains(
+                    "2"
+                )
+            ) 60 else null,
+            maxAirportCarTravelTimeFree = if (airportTravelTimes.isNullOrEmpty()) null else if (airportTravelTimes.contains(
+                    "3"
+                )
+            ) 61 else null,
 
             parking = parking,
             managementCompanyEnabled = managementCompanyEnabled,
@@ -174,7 +222,14 @@ class EstateServiceImpl(
             city = cityArray,
 
             limit = pageable.pageSize,
-            offset = pageable.offset
+            offset = pageable.offset,
+
+            isFreeMaxPrice = isFreeMaxPrice,
+            isFreeMinPrice = isFreeMinPrice,
+            isOneMaxPrice = isOneMaxPrice,
+            isTwoMaxPrice = isTwoMaxPrice,
+            isTwoMinPrice = isTwoMinPrice,
+            isOneMinPrice = isOneMinPrice,
         )
 
         if (estates.isNotEmpty() && userId != null) {
@@ -245,14 +300,44 @@ class EstateServiceImpl(
 
         val cityArray = city?.map { it }?.toTypedArray()
         val beachArray = beachName?.map { it }?.toTypedArray()
+
+        val isOneRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("1")
+        val isTwoRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("2")
+        val isFreeRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("3")
+
+
+        var isOneMinPrice: BigDecimal? = null
+        var isOneMaxPrice: BigDecimal? = null
+        var isTwoMinPrice: BigDecimal? = null
+        var isTwoMaxPrice: BigDecimal? = null
+        var isFreeMinPrice: BigDecimal? = null
+        var isFreeMaxPrice: BigDecimal? = null
+
+        if (rooms.isNotNullOrEmpty() && rooms?.size == 1) {
+            if (minTotalPrice != null && maxTotalPrice != null) {
+                if (isOneRoom == true) {
+                    isOneMinPrice = minTotalPrice
+                    isOneMaxPrice = maxTotalPrice
+                }
+                if (isTwoRoom == true) {
+                    isTwoMinPrice = minTotalPrice
+                    isTwoMaxPrice = maxTotalPrice
+                }
+                if (isFreeRoom == true) {
+                    isFreeMinPrice = minTotalPrice
+                    isFreeMaxPrice = maxTotalPrice
+                }
+            }
+        }
+
         return repository.findByParams(
             types = types?.map { it.name }?.toTypedArray(),
             buildEndYears = buildEndYears?.map { it.toString() }?.toTypedArray(),
 
             isStudioRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("0"),
-            isOneRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("1"),
-            isTwoRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("2"),
-            isFreeRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("3"),
+            isOneRoom = isOneRoom,
+            isTwoRoom = isTwoRoom,
+            isFreeRoom = isFreeRoom,
             isFourRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("4"),
 
             minPrice = minTotalPrice,
@@ -288,7 +373,14 @@ class EstateServiceImpl(
             city = cityArray,
 
             limit = 500,
-            offset = 0
+            offset = 0,
+
+            isFreeMaxPrice = isFreeMaxPrice,
+            isFreeMinPrice = isFreeMinPrice,
+            isOneMaxPrice = isOneMaxPrice,
+            isTwoMaxPrice = isTwoMaxPrice,
+            isTwoMinPrice = isTwoMinPrice,
+            isOneMinPrice = isOneMinPrice,
         ).size
     }
 
@@ -451,6 +543,12 @@ class EstateServiceImpl(
             city = if (rs.city != null) arrayOf(rs.city) else null,
             offset = 0,
             limit = 150,
+            isFreeMinPrice = null,
+            isOneMinPrice = null,
+            isOneMaxPrice = null,
+            isTwoMinPrice = null,
+            isTwoMaxPrice = null,
+            isFreeMaxPrice = null,
         )
         if (list.isEmpty())
             list = repository.findRandom()
@@ -506,7 +604,7 @@ class EstateServiceImpl(
         return list
     }
 
-    @PostConstruct
+    //@PostConstruct
     @Scheduled(cron = "0 0 4 * * *")
     fun range() {
         repository.findRandom().forEach {
