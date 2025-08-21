@@ -42,6 +42,8 @@ class EstateDetailDtoRsConverter(
                 name = estateDetail.developer.name,
                 country = estateDetail.developer.country,
                 yearOfFoundation = estateDetail.developer.yearOfFoundation,
+                phone = estateDetail.developer.phone,
+                email = estateDetail.developer.email,
             ),
             grade = EstateDetailDtoRs.EstateGradeDto(
                 main = estateDetail.grade.main,

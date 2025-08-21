@@ -92,6 +92,8 @@ data class EstateDeveloper(
     val name: String,                   // название
     val country: String? = null,        // страна
     val yearOfFoundation: Int? = null,  // год основания
+    val phone: String? = null,
+    val email: String? = null,
 )
 
 // Число проектов

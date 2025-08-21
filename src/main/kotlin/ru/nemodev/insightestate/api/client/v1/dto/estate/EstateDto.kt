@@ -85,6 +85,8 @@ data class EstateDetailDtoRs(
         val name: String,
         val country: String?,
         val yearOfFoundation: Int?,
+        val phone: String? = null,
+        val email: String? = null,
     )
 
     data class ProjectCountDto(
