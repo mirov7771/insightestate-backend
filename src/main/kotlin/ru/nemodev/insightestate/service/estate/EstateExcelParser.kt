@@ -146,8 +146,8 @@ class EstateExcelParserImpl : EstateExcelParser {
                     enabled =  row.getBoolean("CB"),
                 ),
                 price = MinMaxAvgParam(
-                    min = getMinPrice(row, listOf("DI", "DL", "DO", "DR", "DU", "DX", "II", "IK", "IM", "IO")),
-                    max = getMaxPrice(row, listOf("DK", "DN", "DQ", "DT", "DW", "DZ", "IJ", "IL", "IN", "IP")),
+                    min = getMinPrice(row, listOf("DI", "DL", "DO", "DR", "DU", "DX", "II", "IK", "IM", "IO", "EA")),
+                    max = getMaxPrice(row, listOf("DK", "DN", "DQ", "DT", "DW", "DZ", "IJ", "IL", "IN", "IP", "EC")),
                     avg = row.getBigDecimal("EB", 0) // TODO средняя стоимость указана только для вилл
                 ),
                 ceilingHeight = row.getBigDecimal("BJ", 1),
