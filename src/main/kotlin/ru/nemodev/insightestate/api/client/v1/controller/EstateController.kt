@@ -228,7 +228,17 @@ class EstateController (
     @GetMapping("{id}/units")
     fun findUnits(
         @PathVariable id: UUID,
-    ): UnitsRs = estateProcessor.findUnits(id)
+        @RequestParam(required = false) orderBy: String? = null,
+        @RequestParam(required = false) rooms: Set<String>? = null,
+        @RequestParam(required = false) minPrice: Double? = null,
+        @RequestParam(required = false) maxPrice: Double? = null,
+        @RequestParam(required = false) minSize: Double? = null,
+        @RequestParam(required = false) maxSize: Double? = null,
+        @RequestParam(required = false) minPriceSq: Double? = null,
+        @RequestParam(required = false) maxPriceSq: Double? = null,
+    ): UnitsRs = estateProcessor.findUnits(
+        id, orderBy, rooms, minPrice, maxPrice, minSize, maxSize, minPriceSq, maxPriceSq
+    )
 
     @GetMapping("main/info")
     fun getMainInfo(

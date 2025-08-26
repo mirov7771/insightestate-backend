@@ -2,6 +2,7 @@ package ru.nemodev.insightestate.api.client.v1.processor
 
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
@@ -13,6 +14,7 @@ import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.math.BigDecimal
 import java.util.*
 
@@ -47,7 +49,17 @@ interface EstateProcessor {
 
     fun aiRequest(rq: AiRequest): CustomPageDtoRs
     fun geo(): GeoRs
-    fun findUnits(id: UUID): UnitsRs
+    fun findUnits(
+        id: UUID,
+        orderBy: String?,
+        rooms: Set<String>?,
+        minPrice: Double? = null,
+        maxPrice: Double? = null,
+        minSize: Double? = null,
+        maxSize: Double? = null,
+        minPriceSq: Double? = null,
+        maxPriceSq: Double? = null
+    ): UnitsRs
     fun getMainInfo(userId: UUID): MainInfoDto
 
     fun prepareXml(): String
@@ -173,16 +185,77 @@ class EstateProcessorImpl(
         )
     }
 
-    override fun findUnits(id: UUID): UnitsRs {
+    override fun findUnits(
+        id: UUID,
+        orderBy: String?,
+        rooms: Set<String>?,
+        minPrice: Double?,
+        maxPrice: Double?,
+        minSize: Double?,
+        maxSize: Double?,
+        minPriceSq: Double?,
+        maxPriceSq: Double?
+    ): UnitsRs {
         val estate = estateService.findById(id)
         val projectId = "${estate.estateDetail.projectId}%"
+        var units = unitRepository.findByProjectId(projectId)
+
+        val counts = units.size
+        if (units.isNotEmpty()) {
+            if (orderBy != null) {
+                units = when (orderBy.lowercase()) {
+                    "price" -> units.sortedByDescending { stringToDouble(it.price) }
+                    "area" -> units.sortedByDescending { stringToDouble(it.square) }
+                    "income" -> units.sortedByDescending { stringToDouble(it.priceSq) }
+                    "payback" -> units.sortedByDescending { it.rooms }
+                    else -> units
+                }
+            }
+            if (rooms.isNotNullOrEmpty()) {
+                units = units.filter { it.rooms != null && rooms!!.contains(it.rooms) }
+            }
+
+            if (minPrice != null) {
+                units = units.filter { stringToDouble(it.price) >= minPrice }
+            }
+            if (maxPrice != null) {
+                units = units.filter { stringToDouble(it.price) <= maxPrice }
+            }
+            if (minSize != null) {
+                units = units.filter { stringToDouble(it.square) >= minSize }
+            }
+            if (maxSize != null) {
+                units = units.filter { stringToDouble(it.square) <= maxSize }
+            }
+            if (minPriceSq != null) {
+                units = units.filter { stringToDouble(it.priceSq) >= minPriceSq }
+            }
+            if (maxPriceSq != null) {
+                units = units.filter { stringToDouble(it.priceSq) >= maxPriceSq }
+            }
+        }
 
         return UnitsRs(
             id = estate.id,
             name = estate.estateDetail.name,
             images = estate.estateDetail.exteriorImages ?: estate.estateDetail.facilityImages ?: estate.estateDetail.interiorImages,
-            items = unitRepository.findByProjectId(projectId)
+            items = units,
+            count = counts,
         )
+    }
+
+    private fun stringToDouble(value: String?): Double {
+        if (value == null) {
+            return 0.0
+        }
+        return try {
+            value.replace(" ", "")
+                .replace(" ", "")
+                .replace(",", ".")
+                .toDouble()
+        } catch (_: Exception) {
+            0.0
+        }
     }
 
     override fun getMainInfo(userId: UUID): MainInfoDto {

@@ -193,5 +193,6 @@ data class UnitsRs (
     val id: UUID,
     val name: String,
     val images: List<String>?,
-    val items: List<UnitEntity>? = null
+    val items: List<UnitEntity>? = null,
+    val count: Int,
 )
