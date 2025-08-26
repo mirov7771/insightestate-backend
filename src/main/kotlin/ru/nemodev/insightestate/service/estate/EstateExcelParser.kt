@@ -58,7 +58,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                 developer = EstateDeveloper(
                     name = row.getString("H")!!,
                     country = row.getString("AJ"),
-                    yearOfFoundation = row.getInt("AL"),
+                    //yearOfFoundation = row.getInt("AL"),
                     phone = row.getString("AL"),
                     email = row.getString("AM"),
                 ),
