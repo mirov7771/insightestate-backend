@@ -2,7 +2,6 @@ package ru.nemodev.insightestate.api.client.v1.processor
 
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
-import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
@@ -36,6 +35,7 @@ interface EstateProcessor {
         maxPrice: BigDecimal? = null,
         pageable: Pageable,
         userId: UUID? = null,
+        name: String? = null,
     ): CustomPageDtoRs
 
     fun findById(
@@ -91,7 +91,8 @@ class EstateProcessorImpl(
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
         pageable: Pageable,
-        userId: UUID?
+        userId: UUID?,
+        name: String?
     ): CustomPageDtoRs {
         val estates = estateService.findAll(
             types = types,
@@ -108,7 +109,8 @@ class EstateProcessorImpl(
             minPrice = minPrice,
             maxPrice = maxPrice,
             pageable = pageable,
-            userId = userId
+            userId = userId,
+            name = name
         )
 
         val count = estateService.findCount(
@@ -124,7 +126,8 @@ class EstateProcessorImpl(
             beachName = beachName,
             city = city,
             minPrice = minPrice,
-            maxPrice = maxPrice
+            maxPrice = maxPrice,
+            name = name
         )
 
         return CustomPageDtoRs(

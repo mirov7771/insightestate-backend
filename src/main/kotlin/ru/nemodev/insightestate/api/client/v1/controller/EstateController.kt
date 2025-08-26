@@ -113,6 +113,9 @@ class EstateController (
 
         @RequestHeader(name = "x-user-id", required = false)
         userId: UUID? = null,
+
+        @RequestParam(required = false)
+        name: String? = null,
     ): CustomPageDtoRs = estateProcessor.findAll(
         types = types,
         buildEndYears = buildEndYears,
@@ -131,7 +134,8 @@ class EstateController (
             pageNumber ?: 0,
             pageSize ?: 25
         ),
-        userId = userId
+        userId = userId,
+        name = name,
     )
 
     @Operation(

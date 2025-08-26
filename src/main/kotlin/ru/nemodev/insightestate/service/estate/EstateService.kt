@@ -1,13 +1,11 @@
 package ru.nemodev.insightestate.service.estate
 
-import jakarta.annotation.PostConstruct
 import org.springframework.data.domain.Pageable
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.entity.AiRequestEntity
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
-import ru.nemodev.insightestate.entity.RoomParams
 import ru.nemodev.insightestate.integration.ai.AiIntegration
 import ru.nemodev.insightestate.repository.AiRequestRepository
 import ru.nemodev.insightestate.repository.EstateCollectionRepository
@@ -40,6 +38,7 @@ interface EstateService {
         maxPrice: BigDecimal?,
         pageable: Pageable,
         userId: UUID?,
+        name: String?
     ): List<EstateEntity>
 
     fun findById(
@@ -67,6 +66,7 @@ interface EstateService {
         city: Set<String>?,
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
+        name: String?
     ): Int
 
     fun createXml(): String
@@ -99,8 +99,17 @@ class EstateServiceImpl(
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
         pageable: Pageable,
-        userId: UUID?
+        userId: UUID?,
+        name: String?
     ): List<EstateEntity> {
+
+        if (name.isNotNullOrEmpty()) {
+            var list = repository.findAll()
+            list = list.filter {
+                it.estateDetail.name.contains(name!!, ignoreCase = true)
+            }
+            return list
+        }
 
         var minTotalPrice =  minPrice ?:
             when (price) {
@@ -268,8 +277,16 @@ class EstateServiceImpl(
         beachName: Set<String>?,
         city: Set<String>?,
         minPrice: BigDecimal?,
-        maxPrice: BigDecimal?
+        maxPrice: BigDecimal?,
+        name: String?
     ): Int {
+        if (name.isNotNullOrEmpty()) {
+            var list = repository.findAll()
+            list = list.filter {
+                it.estateDetail.name.contains(name!!, ignoreCase = true)
+            }
+            return list.size
+        }
         var minTotalPrice =  minPrice ?:
         when (price) {
             "1" -> BigDecimal.ZERO
