@@ -38,7 +38,8 @@ interface EstateService {
         maxPrice: BigDecimal?,
         pageable: Pageable,
         userId: UUID?,
-        name: String?
+        name: String?,
+        developer: Set<String>?,
     ): List<EstateEntity>
 
     fun findById(
@@ -66,7 +67,8 @@ interface EstateService {
         city: Set<String>?,
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
-        name: String?
+        name: String?,
+        developer: Set<String>?,
     ): Int
 
     fun createXml(): String
@@ -100,7 +102,8 @@ class EstateServiceImpl(
         maxPrice: BigDecimal?,
         pageable: Pageable,
         userId: UUID?,
-        name: String?
+        name: String?,
+        developer: Set<String>?,
     ): List<EstateEntity> {
 
         if (name.isNotNullOrEmpty()) {
@@ -146,6 +149,7 @@ class EstateServiceImpl(
         val isFourRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("4")
 
         val cityArray = city?.map { it }?.toTypedArray()
+        val developerArray = developer?.map { it }?.toTypedArray()
         val beachArray = beachName?.map { it }?.toTypedArray()
 
         var isOneMinPrice: BigDecimal? = null
@@ -239,6 +243,7 @@ class EstateServiceImpl(
             isTwoMaxPrice = isTwoMaxPrice,
             isTwoMinPrice = isTwoMinPrice,
             isOneMinPrice = isOneMinPrice,
+            developer = developerArray
         )
 
         if (estates.isNotEmpty() && userId != null) {
@@ -278,7 +283,8 @@ class EstateServiceImpl(
         city: Set<String>?,
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
-        name: String?
+        name: String?,
+        developer: Set<String>?
     ): Int {
         if (name.isNotNullOrEmpty()) {
             var list = repository.findAll()
@@ -316,6 +322,7 @@ class EstateServiceImpl(
         }
 
         val cityArray = city?.map { it }?.toTypedArray()
+        val developerArray = developer?.map { it }?.toTypedArray()
         val beachArray = beachName?.map { it }?.toTypedArray()
 
         val isOneRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("1")
@@ -398,6 +405,7 @@ class EstateServiceImpl(
             isTwoMaxPrice = isTwoMaxPrice,
             isTwoMinPrice = isTwoMinPrice,
             isOneMinPrice = isOneMinPrice,
+            developer = developerArray
         ).size
     }
 
@@ -566,6 +574,7 @@ class EstateServiceImpl(
             isTwoMinPrice = null,
             isTwoMaxPrice = null,
             isFreeMaxPrice = null,
+            developer = null,
         )
         if (list.isEmpty())
             list = repository.findRandom()

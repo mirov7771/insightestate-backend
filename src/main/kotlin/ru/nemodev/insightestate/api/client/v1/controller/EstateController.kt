@@ -116,6 +116,9 @@ class EstateController (
 
         @RequestParam(required = false)
         name: String? = null,
+
+        @RequestParam(name = "developer", required = false)
+        developer: Set<String>?,
     ): CustomPageDtoRs = estateProcessor.findAll(
         types = types,
         buildEndYears = buildEndYears,
@@ -136,6 +139,7 @@ class EstateController (
         ),
         userId = userId,
         name = name,
+        developer = developer,
     )
 
     @Operation(

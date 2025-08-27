@@ -45,6 +45,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
             and (:managementCompanyEnabled is null or (:managementCompanyEnabled and ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)) or (not :managementCompanyEnabled and not ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)))
             and (:beachName::text[] is null or (estate_detail -> 'location' ->> 'beach' = any(:beachName)))
             and (:city::text[] is null or (estate_detail -> 'location' ->> 'city' = any(:city)))
+            and (:developer::text[] is null or (estate_detail -> 'developer' ->> 'name' = any(:developer)))
             and ((estate_detail ->> 'canShow')::boolean = true)
             
             and ((:isOneMinPrice is null or ((estate_detail -> 'roomLayouts' -> 'one' -> 'price' ->> 'min')::numeric > :isOneMinPrice))
@@ -107,6 +108,8 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         isTwoMaxPrice: BigDecimal?,
         isFreeMinPrice: BigDecimal?,
         isFreeMaxPrice: BigDecimal?,
+
+        developer: Array<String>?,
     ): List<EstateEntity>
 
     @Query("""
