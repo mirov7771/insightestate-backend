@@ -40,6 +40,7 @@ interface EstateService {
         userId: UUID?,
         name: String?,
         developer: Set<String>?,
+        petFriendly: Boolean?,
     ): List<EstateEntity>
 
     fun findById(
@@ -69,6 +70,7 @@ interface EstateService {
         maxPrice: BigDecimal?,
         name: String?,
         developer: Set<String>?,
+        petFriendly: Boolean?,
     ): Int
 
     fun createXml(): String
@@ -104,6 +106,7 @@ class EstateServiceImpl(
         userId: UUID?,
         name: String?,
         developer: Set<String>?,
+        petFriendly: Boolean?,
     ): List<EstateEntity> {
 
         if (name.isNotNullOrEmpty()) {
@@ -243,7 +246,8 @@ class EstateServiceImpl(
             isTwoMaxPrice = isTwoMaxPrice,
             isTwoMinPrice = isTwoMinPrice,
             isOneMinPrice = isOneMinPrice,
-            developer = developerArray
+            developer = developerArray,
+            petFriendly = petFriendly,
         )
 
         if (estates.isNotEmpty() && userId != null) {
@@ -284,7 +288,8 @@ class EstateServiceImpl(
         minPrice: BigDecimal?,
         maxPrice: BigDecimal?,
         name: String?,
-        developer: Set<String>?
+        developer: Set<String>?,
+        petFriendly: Boolean?
     ): Int {
         if (name.isNotNullOrEmpty()) {
             var list = repository.findAll()
@@ -405,7 +410,8 @@ class EstateServiceImpl(
             isTwoMaxPrice = isTwoMaxPrice,
             isTwoMinPrice = isTwoMinPrice,
             isOneMinPrice = isOneMinPrice,
-            developer = developerArray
+            developer = developerArray,
+            petFriendly = petFriendly,
         ).size
     }
 
@@ -575,6 +581,7 @@ class EstateServiceImpl(
             isTwoMaxPrice = null,
             isFreeMaxPrice = null,
             developer = null,
+            petFriendly = null,
         )
         if (list.isEmpty())
             list = repository.findRandom()

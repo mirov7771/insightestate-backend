@@ -43,6 +43,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
             )
             and (:parking is null or (:parking and ((estate_detail -> 'options' ->> 'parkingSize')::numeric > 0)) or (:parking = false and ((estate_detail -> 'options' -> 'parkingSize' is null))))
             and (:managementCompanyEnabled is null or (:managementCompanyEnabled and ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)) or (not :managementCompanyEnabled and not ((estate_detail -> 'managementCompany' ->> 'enabled')::bool)))
+            and (:petFriendly is null or (:petFriendly and ((estate_detail -> 'options' ->> 'petFriendly')::bool)) or (not :petFriendly and not ((estate_detail -> 'options' ->> 'petFriendly')::bool)))
             and (:beachName::text[] is null or (estate_detail -> 'location' ->> 'beach' = any(:beachName)))
             and (:city::text[] is null or (estate_detail -> 'location' ->> 'city' = any(:city)))
             and (:developer::text[] is null or (estate_detail -> 'developer' ->> 'name' = any(:developer)))
@@ -110,6 +111,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         isFreeMaxPrice: BigDecimal?,
 
         developer: Array<String>?,
+        petFriendly: Boolean?,
     ): List<EstateEntity>
 
     @Query("""

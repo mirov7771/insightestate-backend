@@ -119,6 +119,8 @@ class EstateController (
 
         @RequestParam(name = "developer", required = false)
         developer: Set<String>?,
+        @RequestParam(name = "petFriendly", required = false)
+        petFriendly: Boolean?,
     ): CustomPageDtoRs = estateProcessor.findAll(
         types = types,
         buildEndYears = buildEndYears,
@@ -140,6 +142,7 @@ class EstateController (
         userId = userId,
         name = name,
         developer = developer,
+        petFriendly = petFriendly,
     )
 
     @Operation(
