@@ -28,6 +28,8 @@ data class UserDtoRs(
 
     @Schema(description = "Фото профиля", example = "1234567890")
     val profileImage: String?,
+
+    val group: String?,
 )
 
 @Schema(description = "Запрос обновления пользователя")

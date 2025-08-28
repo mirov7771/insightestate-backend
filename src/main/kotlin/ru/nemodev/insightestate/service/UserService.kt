@@ -137,7 +137,8 @@ class UserServiceImpl(
             whatsUp = userEntity.userDetail.whatsUp,
             tgName = userEntity.userDetail.tgName,
             profileImage = userEntity.userDetail.profileImage,
-            id = userEntity.id
+            id = userEntity.id,
+            group = userEntity.userDetail.group
         )
     }
 }

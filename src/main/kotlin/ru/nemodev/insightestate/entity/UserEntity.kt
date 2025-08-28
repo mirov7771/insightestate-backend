@@ -42,6 +42,7 @@ data class UserDetail(
     var tgName: String? = null,
     var profileImage: String? = null,
     var resetPassword: ResetPassword? = null,
+    val group: String? = null,
 ) {
     data class ResetPassword(
         val createdAt: LocalDateTime,
