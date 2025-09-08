@@ -77,7 +77,7 @@ cutt:
 
 google:
   spreadsheets:
-    estate-load-cron: 0 0 0 * * *
+    estate-load-cron: 0 0 8 * * *
     estate-spreadsheet-id: "1JKUYrunv2WXQlj81HPD2Sk3pXX6BTyL-NLpSx_9RZIM"
   drive:
     estate-image-load-cron: 0 0 1 * * Mon

@@ -215,10 +215,10 @@ class EstateProcessorImpl(
         if (units.isNotEmpty()) {
             if (orderBy != null) {
                 units = when (orderBy.lowercase()) {
-                    "price" -> units.sortedByDescending { stringToDouble(it.price) }
-                    "area" -> units.sortedByDescending { stringToDouble(it.square) }
-                    "income" -> units.sortedByDescending { stringToDouble(it.priceSq) }
-                    "payback" -> units.sortedByDescending { it.rooms }
+                    "price" -> units.sortedBy { stringToDouble(it.price) }
+                    "area" -> units.sortedBy { stringToDouble(it.square) }
+                    "income" -> units.sortedBy { stringToDouble(it.priceSq) }
+                    "payback" -> units.sortedBy { it.rooms }
                     else -> units
                 }
             }
