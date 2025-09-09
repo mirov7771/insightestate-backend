@@ -11,10 +11,13 @@ import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.io.InputStream
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 interface EstateExcelParser {
     fun parse(inputStream: InputStream): List<EstateEntity>
+    fun parseUnits(inputStream: InputStream): List<UnitEntity>?
 }
 
 @Component
@@ -40,6 +43,45 @@ class EstateExcelParserImpl : EstateExcelParser {
                     null
                 }
             }
+    }
+
+    override fun parseUnits(inputStream: InputStream): List<UnitEntity>? {
+        val workbook = XSSFWorkbook(inputStream).getSheet("Прайс платформа")
+        val list = workbook.mapIndexedNotNull { index, row ->
+            parseUnitRow(row, index)
+        }
+        if (list.isEmpty())
+            return null
+        return list
+    }
+
+    private fun parseUnitRow(
+        row: Row,
+        index: Int,
+    ): UnitEntity? {
+        try {
+            var image = row.getString("L") ?: ""
+            if (image.isNotBlank()) {
+                image = "https://lotsof.properties/estate-images/$image.webp"
+            }
+            return UnitEntity(
+                id = UUID.randomUUID(),
+                createdAt = LocalDateTime.now(),
+                updatedAt = LocalDateTime.now(),
+                code = row.getString("A")!!,
+                corpus = row.getString("C") ?: "",
+                number = row.getString("D") ?: "",
+                floor = row.getString("E") ?: "",
+                rooms = row.getString("F"),
+                square = row.getString("G"),
+                priceSq = row.getString("H"),
+                price = row.getString("I"),
+                planImage = image
+            ).apply { isNew = true }
+        } catch (e: Exception) {
+            logError(e) { "Ошибка парсинга юнита с кодом = ${row.getString("A")} строка = ${index + 1}" }
+            return null
+        }
     }
 
     private fun parseRow(row: Row): EstateEntity {

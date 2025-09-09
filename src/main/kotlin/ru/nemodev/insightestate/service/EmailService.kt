@@ -24,7 +24,7 @@ class EmailServiceImpl(
     override fun signUpSendConfirmCode(email: String, confirmCode: String) {
         send(
             email = email,
-            subject = "Confirmation code for sign up to https://www.insightestate.com",
+            subject = "Confirmation code for sign up to https://lotsof.properties/",
             message = "Your code - $confirmCode"
         )
     }
@@ -32,7 +32,7 @@ class EmailServiceImpl(
     override fun sendResetPasswordCode(email: String, resetPasswordCode: String) {
         send(
             email = email,
-            subject = "Confirmation code for reset password on https://www.insightestate.com",
+            subject = "Confirmation code for reset password on https://lotsof.properties/",
             message = "Your reset code - $resetPasswordCode"
         )
     }

@@ -5,7 +5,9 @@ import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.config.property.GoogleProperties
 import ru.nemodev.insightestate.entity.EstateEntity
+import ru.nemodev.insightestate.entity.UnitEntity
 import ru.nemodev.insightestate.integration.google.GoogleDriveIntegration
+import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
@@ -24,6 +26,7 @@ class EstateLoaderImpl(
     private val googleProperties: GoogleProperties,
     private val googleDriveIntegration: GoogleDriveIntegration,
     private val transactionTemplate: TransactionTemplate,
+    private val unitRepository: UnitRepository,
 ) : EstateLoader {
 
     companion object : Loggable
@@ -43,6 +46,9 @@ class EstateLoaderImpl(
             val parsedEstates = estateExcelParser.parse(filePart.inputStream)
             load(parsedEstates)
 
+            val parsedUnits = estateExcelParser.parseUnits(filePart.inputStream)
+            loadUnits(parsedUnits)
+
             logInfo { "Закончили парсинг и загрузку объектов недвижимости из файла ${filePart.originalFilename}, всего объектов - ${parsedEstates.size}" }
         }
     }
@@ -55,6 +61,9 @@ class EstateLoaderImpl(
             val parsedEstates = estateExcelParser.parse(driveExcelFile)
 
             load(parsedEstates)
+
+            val parsedUnits = estateExcelParser.parseUnits(driveExcelFile)
+            loadUnits(parsedUnits)
 
             logInfo { "Закончили парсинг и загрузку объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}, всего объектов - ${parsedEstates.size}" }
         }
@@ -91,6 +100,13 @@ class EstateLoaderImpl(
             estateService.saveAll(newEstates)
             estateService.saveAll(existEstates)
         }
+    }
+
+    private fun loadUnits(parsedUnits: List<UnitEntity>?) {
+        if (parsedUnits.isNullOrEmpty())
+            return
+        unitRepository.deleteAll()
+        unitRepository.saveAll(parsedUnits)
     }
 
     private fun withUpdateLock(action: () -> Unit) {
