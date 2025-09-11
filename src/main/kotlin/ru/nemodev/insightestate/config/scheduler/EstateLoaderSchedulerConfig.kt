@@ -13,7 +13,7 @@ class EstateLoaderSchedulerConfig(
     private val estateLoader: EstateLoader,
     private val estateImageLoader: EstateImageLoader
 ) {
-    @PostConstruct
+    //@PostConstruct
     @Scheduled(cron = "\${google.spreadsheets.estate-load-cron}")
     fun loadEstateFromGoogleSpreadsheets() {
         estateLoader.loadFromGoogleSpreadsheets()
