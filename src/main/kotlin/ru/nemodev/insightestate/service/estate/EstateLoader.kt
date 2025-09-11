@@ -43,13 +43,14 @@ class EstateLoaderImpl(
 
             logInfo { "Начало парсинга объектов недвижимости из файла ${filePart.originalFilename}" }
 
-            val parsedEstates = estateExcelParser.parse(filePart.inputStream)
-            load(parsedEstates)
+            val parsed = estateExcelParser.parse(filePart.inputStream)
+            load(parsed.estates)
+            loadUnits(parsed.units)
 
-            val parsedUnits = estateExcelParser.parseUnits(filePart.inputStream)
-            loadUnits(parsedUnits)
-
-            logInfo { "Закончили парсинг и загрузку объектов недвижимости из файла ${filePart.originalFilename}, всего объектов - ${parsedEstates.size}" }
+            logInfo { "Закончили парсинг и загрузку объектов недвижимости из файла ${googleProperties.spreadsheets.estateSpreadsheetId}" +
+                    ", всего объектов - ${parsed.estates?.size}" +
+                    ", всего юнитов - ${parsed.units?.size}"
+            }
         }
     }
 
@@ -58,18 +59,20 @@ class EstateLoaderImpl(
             logInfo { "Начало парсинга объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}" }
 
             val driveExcelFile = googleDriveIntegration.downloadExcelFile(googleProperties.spreadsheets.estateSpreadsheetId)
-            val parsedEstates = estateExcelParser.parse(driveExcelFile)
+            val parsed = estateExcelParser.parse(driveExcelFile)
+            load(parsed.estates)
+            loadUnits(parsed.units)
 
-            load(parsedEstates)
-
-            val parsedUnits = estateExcelParser.parseUnits(driveExcelFile)
-            loadUnits(parsedUnits)
-
-            logInfo { "Закончили парсинг и загрузку объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}, всего объектов - ${parsedEstates.size}" }
+            logInfo { "Закончили парсинг и загрузку объектов недвижимости из google spreadsheets ${googleProperties.spreadsheets.estateSpreadsheetId}" +
+                    ", всего объектов - ${parsed.estates?.size}" +
+                    ", всего юнитов - ${parsed.units?.size}"
+            }
         }
     }
 
-    private fun load(parsedEstates: List<EstateEntity>) {
+    private fun load(parsedEstates: List<EstateEntity>?) {
+        if (parsedEstates.isNullOrEmpty())
+            return
         val existsEstateByProjectMap = estateService.findAll().associateBy { it.estateDetail.projectId }.toMutableMap()
         val newEstates = mutableListOf<EstateEntity>()
         parsedEstates.forEach { parsedEstate ->

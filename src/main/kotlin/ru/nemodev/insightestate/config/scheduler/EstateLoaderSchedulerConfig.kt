@@ -1,5 +1,6 @@
 package ru.nemodev.insightestate.config.scheduler
 
+import jakarta.annotation.PostConstruct
 import org.springframework.context.annotation.Configuration
 import org.springframework.scheduling.annotation.EnableScheduling
 import org.springframework.scheduling.annotation.Scheduled
@@ -12,6 +13,7 @@ class EstateLoaderSchedulerConfig(
     private val estateLoader: EstateLoader,
     private val estateImageLoader: EstateImageLoader
 ) {
+    @PostConstruct
     @Scheduled(cron = "\${google.spreadsheets.estate-load-cron}")
     fun loadEstateFromGoogleSpreadsheets() {
         estateLoader.loadFromGoogleSpreadsheets()

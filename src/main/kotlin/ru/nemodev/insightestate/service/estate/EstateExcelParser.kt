@@ -5,19 +5,20 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.entity.*
 import ru.nemodev.insightestate.extension.*
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.extensions.nullIfEmpty
 import ru.nemodev.platform.core.extensions.scaleAndRoundAmount
 import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.io.InputStream
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 interface EstateExcelParser {
-    fun parse(inputStream: InputStream): List<EstateEntity>
-    fun parseUnits(inputStream: InputStream): List<UnitEntity>?
+    fun parse(inputStream: InputStream): LoadDto
 }
 
 @Component
@@ -28,10 +29,10 @@ class EstateExcelParserImpl : EstateExcelParser {
         private val buildEndDateSaveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     }
 
-    override fun parse(inputStream: InputStream): List<EstateEntity> {
+    override fun parse(inputStream: InputStream): LoadDto {
         val workbook = XSSFWorkbook(inputStream)
-
-        return workbook.getSheet("База")
+        val estateSheet = workbook.getSheet("База")
+        val estates = estateSheet
             .mapIndexedNotNull { index, row ->
                 if (row.getString("F") != "Done") {
                     return@mapIndexedNotNull null
@@ -43,22 +44,34 @@ class EstateExcelParserImpl : EstateExcelParser {
                     null
                 }
             }
-    }
 
-    override fun parseUnits(inputStream: InputStream): List<UnitEntity>? {
-        val workbook = XSSFWorkbook(inputStream).getSheet("Прайс платформа")
-        val list = workbook.mapIndexedNotNull { index, row ->
+        val unitSheet = workbook.getSheet("Прайс платформа")
+        val units = unitSheet.mapIndexedNotNull { index, row ->
+            if (index == 0)
+                return@mapIndexedNotNull null
+            if (row.getString("A").isNullOrEmpty())
+                return@mapIndexedNotNull null
             parseUnitRow(row, index)
         }
-        if (list.isEmpty())
-            return null
-        return list
+        return LoadDto(
+            estates = estates,
+            units = units
+        )
     }
 
     private fun parseUnitRow(
         row: Row,
         index: Int,
     ): UnitEntity? {
+        fun parseNumber(value: String?): String? {
+            if (value.isNullOrEmpty())
+                return null
+            return try {
+                BigDecimal(value.replace(",", ".").replace(" ", "")).setScale(0, RoundingMode.HALF_UP).toString()
+            } catch (_: Exception) {
+                value
+            }
+        }
         try {
             var image = row.getString("L") ?: ""
             if (image.isNotBlank()) {
@@ -73,9 +86,9 @@ class EstateExcelParserImpl : EstateExcelParser {
                 number = row.getString("D") ?: "",
                 floor = row.getString("E") ?: "",
                 rooms = row.getString("F"),
-                square = row.getString("G"),
-                priceSq = row.getString("H"),
-                price = row.getString("I"),
+                square = parseNumber(row.getString("G")),
+                priceSq = parseNumber(row.getString("H")),
+                price = parseNumber(row.getString("I")),
                 planImage = image
             ).apply { isNew = true }
         } catch (e: Exception) {
@@ -117,7 +130,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                     finished = row.getInt("AI")!!,
                     deviationFromDeadline = row.getInt("AM"),
                 ),
-                status = when (row.getString("AN")!!) {
+                status = when (row.getString("AN") ?: "") {
                     "Строится" -> EstateStatus.BUILD
                     "Сдан" -> EstateStatus.FINISHED
                     else -> EstateStatus.UNKNOWN
@@ -126,29 +139,29 @@ class EstateExcelParserImpl : EstateExcelParser {
                 buildEndDate = row.getLocalDate("AP")
                     ?: row.getString("AP")?.nullIfEmpty()?.let { LocalDate.parse(it, buildEndDateParseFormatter) },
                 unitCount = UnitCount(
-                    total = row.getInt("AQ")!!,
+                    total = row.getInt("AQ") ?: 0,
                     sailed = row.getInt("AR"),
                     available = row.getInt("AS"),
                 ),
                 type = row.getString("EA").let {
                     if (it == null) EstateType.APARTMENT else EstateType.VILLA
                 },
-                level = when (row.getString("BE")!!) {
+                level = when (row.getString("BE") ?: "") {
                     "Премиум" -> EstateLevelType.PREMIUM
                     "Люкс" -> EstateLevelType.LUX
                     "Комфорт" -> EstateLevelType.COMFORT
                     else -> EstateLevelType.UNKNOWN
                 },
-                product = when (row.getString("BG")!!) {
+                product = when (row.getString("BG") ?: "") {
                     "Инвест" -> EstateProductType.INVESTMENT
                     "Резиденция" -> EstateProductType.RESIDENCE
                     else -> EstateProductType.UNKNOWN
                 },
                 profitability = EstateProfitability(
-                    roi = row.getBigDecimalFromPercent("HN", 1)!!,
-                    roiSummary = row.getBigDecimalFromPercent("IR", 0)!!,
-                    irr = row.getBigDecimalFromPercent("HM", 1)!!,
-                    capRateFirstYear = row.getBigDecimalFromPercent("HL", 1)!!,
+                    roi = row.getBigDecimalFromPercent("HN", 1) ?: BigDecimal.ZERO,
+                    roiSummary = row.getBigDecimalFromPercent("IR", 0) ?: BigDecimal.ZERO,
+                    irr = row.getBigDecimalFromPercent("HM", 1) ?: BigDecimal.ZERO,
+                    capRateFirstYear = row.getBigDecimalFromPercent("HL", 1) ?: BigDecimal.ZERO,
                 ),
                 location = EstateLocation(
                     name = row.getString("AU")!!,
@@ -171,7 +184,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                         car = row.getInt("BA")!!,
                     ),
                     school = EstateInfrastructure.School(
-                        radius = row.getBigDecimal("BC", 1)!!,
+                        radius = row.getBigDecimal("BC", 1) ?: BigDecimal.ZERO,
                         name = row.getString("BD")
                     ),
                 ),
@@ -282,3 +295,8 @@ class EstateExcelParserImpl : EstateExcelParser {
     }
 
 }
+
+data class LoadDto (
+    val estates: List<EstateEntity>? = null,
+    val units: List<UnitEntity>? = null,
+)
