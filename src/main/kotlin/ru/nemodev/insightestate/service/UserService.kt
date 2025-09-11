@@ -33,6 +33,7 @@ interface UserService : UserDetailsService {
     fun helpWithClient(authBasicToken: String, request: HelpWithClientRq)
     fun deleteUser(authBasicToken: String)
     fun getUserById(userId: UUID): UserDtoRs
+    fun updateTheme(userId: UUID, logo: String?, colorId: String?, colorValue: String?)
 }
 
 @Service
@@ -138,7 +139,18 @@ class UserServiceImpl(
             tgName = userEntity.userDetail.tgName,
             profileImage = userEntity.userDetail.profileImage,
             id = userEntity.id,
-            group = userEntity.userDetail.group
+            group = userEntity.userDetail.group,
+            collectionLogo = userEntity.userDetail.collectionLogo,
+            collectionColorId = userEntity.userDetail.collectionColorId,
+            collectionColorValue = userEntity.userDetail.collectionColorValue,
         )
+    }
+
+    override fun updateTheme(userId: UUID, logo: String?, colorId: String?, colorValue: String?) {
+        val userEntity = userRepository.findById(userId).getOrNull() ?: return
+        userEntity.userDetail.collectionLogo = logo
+        userEntity.userDetail.collectionColorId = colorId
+        userEntity.userDetail.collectionColorValue = colorValue
+        userRepository.save(userEntity.apply { isNew = false })
     }
 }

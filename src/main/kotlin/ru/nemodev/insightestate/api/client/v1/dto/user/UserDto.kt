@@ -30,6 +30,10 @@ data class UserDtoRs(
     val profileImage: String?,
 
     val group: String?,
+
+    val collectionLogo: String?,
+    val collectionColorId: String?,
+    val collectionColorValue: String?,
 )
 
 @Schema(description = "Запрос обновления пользователя")

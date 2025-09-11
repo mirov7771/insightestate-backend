@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
 import ru.nemodev.insightestate.api.client.v1.dto.user.HelpWithClientRq
+import ru.nemodev.insightestate.api.client.v1.dto.user.ThemeDto
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
 import ru.nemodev.insightestate.api.client.v1.processor.UserProcessor
@@ -105,4 +106,12 @@ class UserController (
         @Parameter(description = "Токен basic auth", required = true, hidden = true)
         @RequestHeader("Authorization") authBasicToken: String
     ) = userProcessor.deleteUser(authBasicToken)
+
+
+    @PostMapping("/theme")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun theme(
+        @RequestBody
+        request: ThemeDto
+    ) = userProcessor.theme(request)
 }

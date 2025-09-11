@@ -2,15 +2,18 @@ package ru.nemodev.insightestate.api.client.v1.processor
 
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.api.client.v1.dto.user.HelpWithClientRq
+import ru.nemodev.insightestate.api.client.v1.dto.user.ThemeDto
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
 import ru.nemodev.insightestate.service.UserService
+import java.util.*
 
 interface UserProcessor {
     fun getUser(authBasicToken: String): UserDtoRs
     fun update(authBasicToken: String, request: UserUpdateDtoRq)
     fun helpWithClient(authBasicToken: String, request: HelpWithClientRq)
     fun deleteUser(authBasicToken: String)
+    fun theme(request: ThemeDto)
 }
 
 @Component
@@ -29,7 +32,10 @@ class UserProcessorImpl(
             tgName = userEntity.userDetail.tgName,
             profileImage = userEntity.userDetail.profileImage,
             id = userEntity.id,
-            group = userEntity.userDetail.group
+            group = userEntity.userDetail.group,
+            collectionLogo = userEntity.userDetail.collectionLogo,
+            collectionColorId = userEntity.userDetail.collectionColorId,
+            collectionColorValue = userEntity.userDetail.collectionColorValue,
         )
     }
 
@@ -43,5 +49,14 @@ class UserProcessorImpl(
 
     override fun deleteUser(authBasicToken: String) {
         userService.deleteUser(authBasicToken)
+    }
+
+    override fun theme(request: ThemeDto) {
+        userService.updateTheme(
+            userId = UUID.fromString(request.userId),
+            logo = request.logo,
+            colorId = request.colorId,
+            colorValue = request.colorValue,
+        )
     }
 }
