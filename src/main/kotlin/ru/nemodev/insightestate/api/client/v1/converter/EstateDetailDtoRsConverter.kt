@@ -132,6 +132,8 @@ class EstateDetailDtoRsConverter(
             toolTip2 = if (estateDetail.toolTip2.isNullOrEmpty()) "false" else "true",
             toolTip3 = if (estateDetail.toolTip3.isNullOrEmpty()) "false" else "true",
             units = estateDetail.units,
+            lat = estateDetail.lat,
+            lon = estateDetail.lon,
         )
     }
 }
