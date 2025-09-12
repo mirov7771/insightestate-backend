@@ -187,8 +187,8 @@ class EstateProcessorImpl(
         val list = estateService.findAll().map {
             GeoDto(
                 id = it.id,
-                lat = getLat(it.estateDetail.location.mapUrl),
-                lng = getLng(it.estateDetail.location.mapUrl)
+                lat = it.estateDetail.lat ?: getLat(it.estateDetail.location.mapUrl),
+                lng = it.estateDetail.lon ?: getLng(it.estateDetail.location.mapUrl)
             )
         }
         return GeoRs(

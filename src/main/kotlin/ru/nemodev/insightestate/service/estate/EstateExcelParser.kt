@@ -100,6 +100,8 @@ class EstateExcelParserImpl : EstateExcelParser {
     private fun parseRow(row: Row): EstateEntity {
         return EstateEntity(
             estateDetail = EstateDetail(
+                lat = row.getString("JB"),
+                lon = row.getString("JC"),
                 toolTip1 = row.getString("IV"),
                 toolTip2 = row.getString("IW"),
                 toolTip3 = row.getString("IX"),

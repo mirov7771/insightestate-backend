@@ -76,6 +76,9 @@ data class EstateDetail (
     var collectionCount: Int? = null,
 
     var units: List<UnitEntity>? = null,
+
+    val lat: String? = null,
+    val lon: String? = null,
 )
 
 // Оценка проекта
