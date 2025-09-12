@@ -16,6 +16,7 @@ SERVER_DOCKER_COMPOSE_DIR="${SERVER_DOCKER_DIR}"
 DOCKER_COMPOSE_FILE="docker-compose.yml"
 SERVER_DOCKER_COMPOSE_FILE="${SERVER_DOCKER_COMPOSE_DIR}/${DOCKER_COMPOSE_FILE}"
 
+echo "Start build docker image $IMAGE_NAME"
 # Удаляем контейнер + образ
 sh docker-remove.sh $CONTAINER_NAME $IMAGE_NAME
 ## Собираем артефакты
@@ -23,6 +24,9 @@ cd ../ && sh build-local.sh && cd deploy
 ## Собираем новый образ и экспортируем в архив
 sudo sh docker-build.sh $IMAGE_NAME $IMAGE_ARCHIVE_NAME
 #
+echo "End build docker image $IMAGE_NAME"
+
+echo "Start deploy docker image $IMAGE_NAME"
 ## Загружаем на сервер образ
 sh server-upload-file.sh $SERVER_HOST $SERVER_USER $SERVER_PASSWORD $IMAGE_ARCHIVE_NAME $SERVER_DOCKER_IMAGE_DIR
 # Загружаем docker-compose
@@ -33,3 +37,4 @@ sshpass -p $SERVER_PASSWORD ssh $SERVER_USER@$SERVER_HOST sudo 'bash -s' < docke
 sshpass -p $SERVER_PASSWORD ssh $SERVER_USER@$SERVER_HOST sudo 'bash -s' < docker-load-image.sh $SERVER_IMAGE_PATH
 # Подключаемся к серверу запускаем контейнер
 sshpass -p $SERVER_PASSWORD ssh $SERVER_USER@$SERVER_HOST sudo 'bash -s' < docker-run.sh $SERVER_DOCKER_COMPOSE_FILE $CONTAINER_NAME
+echo "End deploy docker image $IMAGE_NAME"
