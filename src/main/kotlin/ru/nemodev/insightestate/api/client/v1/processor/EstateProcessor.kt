@@ -201,7 +201,8 @@ class EstateProcessorImpl(
                 lat = it.estateDetail.lat ?: getLat(it.estateDetail.location.mapUrl),
                 lng = it.estateDetail.lon ?: getLng(it.estateDetail.location.mapUrl),
                 title = it.estateDetail.name,
-                image = image
+                image = image,
+                description = "${it.estateDetail.price.min}$ • ${it.estateDetail.location.city}"
             )
         }
         return GeoRs(

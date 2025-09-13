@@ -193,6 +193,7 @@ data class GeoDto (
     val lng: String?,
     val title: String?,
     val image: String?,
+    val description: String,
 )
 
 data class UnitsRs (
