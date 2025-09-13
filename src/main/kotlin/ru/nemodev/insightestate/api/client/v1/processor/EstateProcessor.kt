@@ -185,10 +185,23 @@ class EstateProcessorImpl(
 
     override fun geo(): GeoRs {
         val list = estateService.findAll().map {
+            var image = if (it.estateDetail.exteriorImages.isNotNullOrEmpty())
+                it.estateDetail.exteriorImages!![0]
+            else if (it.estateDetail.interiorImages.isNotNullOrEmpty())
+                it.estateDetail.interiorImages!![0]
+            else if (it.estateDetail.facilityImages.isNotNullOrEmpty())
+                it.estateDetail.facilityImages!![0]
+            else
+                null
+            if (image.isNotNullOrEmpty()) {
+                image = "https://lotsof.properties/estate-images/$image"
+            }
             GeoDto(
                 id = it.id,
                 lat = it.estateDetail.lat ?: getLat(it.estateDetail.location.mapUrl),
-                lng = it.estateDetail.lon ?: getLng(it.estateDetail.location.mapUrl)
+                lng = it.estateDetail.lon ?: getLng(it.estateDetail.location.mapUrl),
+                title = it.estateDetail.name,
+                image = image
             )
         }
         return GeoRs(

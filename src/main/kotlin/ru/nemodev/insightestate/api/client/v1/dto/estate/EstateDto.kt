@@ -191,6 +191,8 @@ data class GeoDto (
     val id: UUID,
     val lat: String?,
     val lng: String?,
+    val title: String?,
+    val image: String?,
 )
 
 data class UnitsRs (
