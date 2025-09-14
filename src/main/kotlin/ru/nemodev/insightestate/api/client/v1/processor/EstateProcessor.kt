@@ -15,6 +15,7 @@ import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import java.util.*
 
 interface EstateProcessor {
@@ -77,6 +78,10 @@ class EstateProcessorImpl(
     private val estateImageLoader: EstateImageLoader,
     private val unitRepository: UnitRepository
 ) : EstateProcessor {
+
+    companion object {
+        val dec = DecimalFormat("#,###.00")
+    }
 
     override fun findAll(
         types: Set<EstateType>?,
@@ -202,7 +207,7 @@ class EstateProcessorImpl(
                 lng = it.estateDetail.lon ?: getLng(it.estateDetail.location.mapUrl),
                 title = it.estateDetail.name,
                 image = image,
-                description = "${it.estateDetail.price.min}$ • ${it.estateDetail.location.city}"
+                description = "${dec.format(it.estateDetail.price.min)}$ • ${it.estateDetail.location.city}"
             )
         }
         return GeoRs(
