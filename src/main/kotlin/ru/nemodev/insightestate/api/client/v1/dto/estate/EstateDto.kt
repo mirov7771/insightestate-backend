@@ -194,6 +194,10 @@ data class GeoDto (
     val title: String?,
     val image: String?,
     val description: String,
+    val toolTip1: String?,
+    val toolTip2: String?,
+    val toolTip3: String?,
+    val roi: String?,
 )
 
 data class UnitsRs (

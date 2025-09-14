@@ -6,6 +6,7 @@ import org.springframework.web.multipart.MultipartFile
 import ru.nemodev.insightestate.api.auth.v1.dto.CustomPageDtoRs
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDetailDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.converter.EstateDtoRsConverter
+import ru.nemodev.insightestate.api.client.v1.converter.formatDate
 import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.api.client.v1.dto.user.MainInfoDto
 import ru.nemodev.insightestate.entity.EstateType
@@ -201,13 +202,21 @@ class EstateProcessorImpl(
             if (image.isNotNullOrEmpty()) {
                 image = "https://lotsof.properties/estate-images/$image"
             }
+            var roi = "${it.estateDetail.profitability.roi}%"
+            if (it.estateDetail.buildEndDate != null) {
+                roi = "${formatDate(it.estateDetail.buildEndDate.toString())} $roi"
+            }
             GeoDto(
                 id = it.id,
                 lat = it.estateDetail.lat ?: getLat(it.estateDetail.location.mapUrl),
                 lng = it.estateDetail.lon ?: getLng(it.estateDetail.location.mapUrl),
                 title = it.estateDetail.name,
                 image = image,
-                description = "${dec.format(it.estateDetail.price.min)}$ • ${it.estateDetail.location.city}"
+                description = "${dec.format(it.estateDetail.price.min)}$ • ${it.estateDetail.location.city}",
+                toolTip1 = it.estateDetail.toolTip1,
+                toolTip2 = it.estateDetail.toolTip2,
+                toolTip3 = it.estateDetail.toolTip3,
+                roi = roi
             )
         }
         return GeoRs(
