@@ -204,7 +204,7 @@ class EstateProcessorImpl(
             }
             var roi = "${it.estateDetail.profitability.roi}%"
             if (it.estateDetail.buildEndDate != null) {
-                roi = "${formatDate(it.estateDetail.buildEndDate.toString())} $roi"
+                roi = "${formatDate(it.estateDetail.buildEndDate.toString())} • $roi"
             }
             GeoDto(
                 id = it.id,
