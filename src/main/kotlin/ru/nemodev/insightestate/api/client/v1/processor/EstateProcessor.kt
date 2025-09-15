@@ -202,7 +202,7 @@ class EstateProcessorImpl(
             if (image.isNotNullOrEmpty()) {
                 image = "https://lotsof.properties/estate-images/$image"
             }
-            var roi = "${it.estateDetail.profitability.roi}%"
+            var roi = "ROI ${it.estateDetail.profitability.roi}%"
             if (it.estateDetail.buildEndDate != null) {
                 roi = "${formatDate(it.estateDetail.buildEndDate.toString())} • $roi"
             }
@@ -213,9 +213,9 @@ class EstateProcessorImpl(
                 title = it.estateDetail.name,
                 image = image,
                 description = "${dec.format(it.estateDetail.price.min)}$ • ${it.estateDetail.location.city}",
-                toolTip1 = it.estateDetail.toolTip1,
-                toolTip2 = it.estateDetail.toolTip2,
-                toolTip3 = it.estateDetail.toolTip3,
+                toolTip1 = if (it.estateDetail.toolTip1.isNullOrEmpty()) "false" else "true",
+                toolTip2 = if (it.estateDetail.toolTip2.isNullOrEmpty()) "false" else "true",
+                toolTip3 = if (it.estateDetail.toolTip3.isNullOrEmpty()) "false" else "true",
                 roi = roi
             )
         }
