@@ -13,6 +13,7 @@ import ru.nemodev.insightestate.entity.UserDetail
 import ru.nemodev.insightestate.entity.UserEntity
 import ru.nemodev.insightestate.entity.UserStatus
 import ru.nemodev.insightestate.extension.toAuthenticationToken
+import ru.nemodev.insightestate.repository.EstateCollectionRepository
 import ru.nemodev.insightestate.repository.EstateRepository
 import ru.nemodev.insightestate.repository.UserRepository
 import ru.nemodev.insightestate.service.security.UserAuthenticationManager
@@ -43,7 +44,8 @@ class UserServiceImpl(
     private val authManager: UserAuthenticationManager,
     private val passwordEncoder: PasswordEncoder,
     private val repository: EstateRepository,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    private val estateCollectionRepository: EstateCollectionRepository
 ) : UserService {
 
     override fun findByLogin(login: String, status: UserStatus?): UserEntity? {
@@ -130,6 +132,11 @@ class UserServiceImpl(
 
     override fun getUserById(userId: UUID): UserDtoRs {
         val userEntity = userRepository.findById(userId).get()
+        val estateCollections = estateCollectionRepository.findAllByParams(
+            userId = userEntity.id.toString(),
+            limit = 50,
+            offset = 0
+        )
         return UserDtoRs(
             login = userEntity.userDetail.login,
             fio = userEntity.userDetail.fio!!,
@@ -143,6 +150,7 @@ class UserServiceImpl(
             collectionLogo = userEntity.userDetail.collectionLogo,
             collectionColorId = userEntity.userDetail.collectionColorId,
             collectionColorValue = userEntity.userDetail.collectionColorValue,
+            collectionCount = estateCollections.size
         )
     }
 

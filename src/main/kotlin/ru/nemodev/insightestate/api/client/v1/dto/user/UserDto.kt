@@ -34,6 +34,8 @@ data class UserDtoRs(
     val collectionLogo: String?,
     val collectionColorId: String?,
     val collectionColorValue: String?,
+
+    val collectionCount: Int?,
 )
 
 @Schema(description = "Запрос обновления пользователя")

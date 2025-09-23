@@ -243,4 +243,10 @@ class EstateCollectionController (
         @RequestBody
         rq: LikeDto
     ) = estateCollectionProcessor.saveLike(rq)
+
+    @PostMapping("template")
+    fun createCollectionFromTemplate(
+        @RequestBody
+        rq: TemplateRq
+    ) = estateCollectionProcessor.template(rq)
 }

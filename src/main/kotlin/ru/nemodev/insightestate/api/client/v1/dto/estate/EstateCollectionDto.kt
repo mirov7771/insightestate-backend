@@ -49,3 +49,9 @@ data class LikeDto (
     val collection: String,
     val url: String,
 )
+
+data class TemplateRq (
+    val id: Int,
+    val userId: UUID,
+    val template: String,
+)

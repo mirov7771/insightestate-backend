@@ -21,6 +21,7 @@ import kotlin.jvm.optionals.getOrNull
 interface EstateCollectionService {
     fun findAll(authBasicToken: String, pageable: Pageable): List<EstateCollection>
     fun create(authBasicToken: String, request: EstateCollectionCreateDtoRq): EstateCollectionEntity
+    fun create(userId: UUID, ids: List<UUID>, template: String): EstateCollectionEntity
     fun findById(authBasicToken: String, id: UUID): EstateCollectionEntity
     fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID, unitId: UUID?)
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
@@ -89,6 +90,19 @@ class EstateCollectionServiceImpl(
                     userId = userEntity.id,
                     name = request.name,
                     estateIds = estateEntity?.let { listOf(it.id) }?.toMutableList() ?: mutableListOf(),
+                )
+            )
+        )
+    }
+
+    override fun create(userId: UUID, ids: List<UUID>, template: String): EstateCollectionEntity {
+        val userEntity = userService.getUserById(userId)
+        return estateCollectionRepository.save(
+            EstateCollectionEntity(
+                collectionDetail = EstateCollectionDetail(
+                    userId = userEntity.id,
+                    name = template,
+                    estateIds = ids.toMutableList(),
                 )
             )
         )
