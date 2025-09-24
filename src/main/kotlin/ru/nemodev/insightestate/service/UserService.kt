@@ -19,6 +19,7 @@ import ru.nemodev.insightestate.repository.UserRepository
 import ru.nemodev.insightestate.service.security.UserAuthenticationManager
 import ru.nemodev.platform.core.extensions.isNotNullOrBlank
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
@@ -90,7 +91,8 @@ class UserServiceImpl(
         val authentication = authManager.authenticateWithoutCheckPassword(authToken)
 
         val userEntity = authentication.principal as UserEntity
-
+        userEntity.updatedAt = LocalDateTime.now()
+        userRepository.save(userEntity.apply { isNew = false })
         return userEntity
     }
 
