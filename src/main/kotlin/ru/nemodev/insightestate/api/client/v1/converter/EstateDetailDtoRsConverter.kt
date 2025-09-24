@@ -13,6 +13,7 @@ import ru.nemodev.platform.core.integration.s3.minio.config.S3MinioProperties
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -134,6 +135,7 @@ class EstateDetailDtoRsConverter(
             units = estateDetail.units,
             lat = estateDetail.lat,
             lon = estateDetail.lon,
+            priceDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
         )
     }
 }

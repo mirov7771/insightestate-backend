@@ -76,6 +76,8 @@ data class EstateDetailDtoRs(
     var units: List<UnitEntity>? = null,
     val lat: String? = null,
     val lon: String? = null,
+
+    val priceDate: String? = null,
 ) {
     data class EstateGradeDto(
         val main: BigDecimal,
