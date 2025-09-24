@@ -25,7 +25,7 @@ interface EstateCollectionProcessor {
     fun update(id: UUID, rq: EstateCollectionUpdateDto)
     fun short(rq: ShortDto): ShortDto
     fun saveLike(rq: LikeDto)
-    fun template(rq: TemplateRq)
+    fun template(rq: TemplateRq): TemplateRs
 }
 
 @Component
@@ -136,8 +136,8 @@ class EstateCollectionProcessorImpl(
         )
     }
 
-    override fun template(rq: TemplateRq) {
-        when (rq.id) {
+    override fun template(rq: TemplateRq): TemplateRs {
+        val id = when (rq.id) {
             //Лидеры продаж — Пхукет/Top sellers — Phuket
             1 -> estateCollectionService.create(
                 userId = rq.userId,
@@ -154,7 +154,7 @@ class EstateCollectionProcessorImpl(
                     UUID.fromString("01952e8b-1c94-75d1-9d17-b26919f3fb50"),
                 ),
                 template = rq.template
-            )
+            ).id
             //Выбор платформы — Виллы/Platform’s choice — Villas
             2 -> estateCollectionService.create(
                 userId = rq.userId,
@@ -165,7 +165,7 @@ class EstateCollectionProcessorImpl(
                     UUID.fromString("01952e8b-1c94-75d1-9d17-b26919f3fb51"),
                 ),
                 template = rq.template
-            )
+            ).id
             //Первая линия/First line
             3 -> estateCollectionService.create(
                 userId = rq.userId,
@@ -182,7 +182,7 @@ class EstateCollectionProcessorImpl(
                     UUID.fromString("01952e8b-1c8e-7773-bcc7-f1fa7123fa30"),
                 ),
                 template = rq.template
-            )
+            ).id
             //Выбор платформы — Кондо/Platform’s choice — Condos
             4 -> estateCollectionService.create(
                 userId = rq.userId,
@@ -199,7 +199,7 @@ class EstateCollectionProcessorImpl(
                     UUID.fromString("01952e8b-1c97-781b-b492-b08314b4c386"),
                 ),
                 template = rq.template
-            )
+            ).id
             //Кондо до 150 000$/Condos up to $150,000
             5 -> estateCollectionService.create(
                 userId = rq.userId,
@@ -216,7 +216,7 @@ class EstateCollectionProcessorImpl(
                     UUID.fromString("01952e8b-1ca4-7dee-bfb6-cc5f542ef09f"),
                 ),
                 template = rq.template
-            )
+            ).id
             //Для семьи — школы и сады рядом/For families — schools and kindergartens nearby
             6 -> estateCollectionService.create(
                 userId = rq.userId,
@@ -232,7 +232,7 @@ class EstateCollectionProcessorImpl(
                     UUID.fromString("01996238-4101-778f-945d-b76b22c4fffa"),
                 ),
                 template = rq.template
-            )
+            ).id
             //Выбор наших пользователей/Our users’ choice
             else -> estateCollectionService.create(
                 userId = rq.userId,
@@ -249,7 +249,8 @@ class EstateCollectionProcessorImpl(
                     UUID.fromString("01952e8b-1c97-781b-b492-b08314b4c386"),
                 ),
                 template = rq.template
-            )
+            ).id
         }
+        return TemplateRs(id)
     }
 }

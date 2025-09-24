@@ -55,3 +55,7 @@ data class TemplateRq (
     val userId: UUID,
     val template: String,
 )
+
+data class TemplateRs (
+    val id: UUID
+)
