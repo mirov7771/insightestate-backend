@@ -14,12 +14,12 @@ class EstateLoaderSchedulerConfig(
     private val estateImageLoader: EstateImageLoader
 ) {
     //@PostConstruct
-    @Scheduled(cron = "\${google.spreadsheets.estate-load-cron}")
+//    @Scheduled(cron = "\${google.spreadsheets.estate-load-cron}")
     fun loadEstateFromGoogleSpreadsheets() {
         estateLoader.loadFromGoogleSpreadsheets()
     }
 
-    @Scheduled(cron = "\${google.drive.estate-image-load-cron}")
+//    @Scheduled(cron = "\${google.drive.estate-image-load-cron}")
     fun loadEstateImageFromGoogleDrive() {
         estateImageLoader.loadFromGoogleDrive()
     }
