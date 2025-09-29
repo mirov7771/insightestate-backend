@@ -10,11 +10,15 @@ import ru.nemodev.insightestate.api.client.v1.converter.formatDate
 import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.api.client.v1.dto.user.MainInfoDto
 import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.extension.getBigDecimal
+import ru.nemodev.insightestate.extension.getString
+import ru.nemodev.insightestate.integration.currency.CurrencyService
 import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
+import ru.nemodev.platform.core.extensions.nullIfEmpty
 import java.math.BigDecimal
 import java.text.DecimalFormat
 import java.util.*
@@ -22,6 +26,7 @@ import java.util.*
 interface EstateProcessor {
 
     fun findAll(
+        currency: String? = null,
         types: Set<EstateType>?,
         buildEndYears: Set<Int>?,
         rooms: Set<String>?,
@@ -43,6 +48,7 @@ interface EstateProcessor {
     ): CustomPageDtoRs
 
     fun findById(
+        currency: String? = null,
         id: UUID
     ): EstateDetailDtoRs
 
@@ -51,9 +57,15 @@ interface EstateProcessor {
     fun loadImagesFromDir()
     fun loadImagesFromGoogleDrive()
 
-    fun aiRequest(rq: AiRequest): CustomPageDtoRs
-    fun geo(): GeoRs
+    fun aiRequest(
+        currency: String? = null,
+        rq: AiRequest
+    ): CustomPageDtoRs
+    fun geo(
+        currency: String? = null,
+    ): GeoRs
     fun findUnits(
+        currency: String? = null,
         id: UUID,
         orderBy: String?,
         rooms: Set<String>?,
@@ -77,14 +89,17 @@ class EstateProcessorImpl(
 
     private val estateLoader: EstateLoader,
     private val estateImageLoader: EstateImageLoader,
-    private val unitRepository: UnitRepository
+    private val unitRepository: UnitRepository,
+
+    private val currencyService: CurrencyService,
 ) : EstateProcessor {
 
     companion object {
-        val dec = DecimalFormat("#,###.00")
+        val dec = DecimalFormat("#,###")
     }
 
     override fun findAll(
+        currency: String?,
         types: Set<EstateType>?,
         buildEndYears: Set<Int>?,
         rooms: Set<String>?,
@@ -104,6 +119,18 @@ class EstateProcessorImpl(
         developer: Set<String>?,
         petFriendly: Boolean?,
     ): CustomPageDtoRs {
+        var rMinPrice = minPrice
+        var rMaxPrice = maxPrice
+        if (currency != null && currency != "USD") {
+            val rate = currencyService.getRate(currency)
+            if (rMinPrice != null && rMinPrice > BigDecimal.ZERO) {
+                rMinPrice = rMinPrice.divide(rate)
+            }
+            if (rMaxPrice != null && rMaxPrice > BigDecimal.ZERO) {
+                rMaxPrice = rMaxPrice.divide(rate)
+            }
+        }
+
         val estates = estateService.findAll(
             types = types,
             buildEndYears = buildEndYears,
@@ -116,14 +143,22 @@ class EstateProcessorImpl(
             managementCompanyEnabled = managementCompanyEnabled,
             beachName = beachName,
             city = city,
-            minPrice = minPrice,
-            maxPrice = maxPrice,
+            minPrice = rMinPrice,
+            maxPrice = rMaxPrice,
             pageable = pageable,
             userId = userId,
             name = name,
             developer = developer,
             petFriendly = petFriendly,
         )
+
+        if (currency != null && currency != "USD") {
+            estates.forEach { entity ->
+                entity.estateDetail.price.min = getPrice(entity.estateDetail.price.min, currency)!!
+                entity.estateDetail.price.max = getPrice(entity.estateDetail.price.max, currency)!!
+                entity.estateDetail.price.avg = getPrice(entity.estateDetail.price.avg, currency)
+            }
+        }
 
         val count = estateService.findCount(
             types = types,
@@ -137,8 +172,8 @@ class EstateProcessorImpl(
             managementCompanyEnabled = managementCompanyEnabled,
             beachName = beachName,
             city = city,
-            minPrice = minPrice,
-            maxPrice = maxPrice,
+            minPrice = rMinPrice,
+            maxPrice = rMaxPrice,
             name = name,
             developer = developer,
             petFriendly = petFriendly,
@@ -154,10 +189,13 @@ class EstateProcessorImpl(
         )
     }
 
-    override fun findById(id: UUID): EstateDetailDtoRs {
-        return estateDetailDtoRsConverter.convert(
-            estateService.findById(id)
-        )
+    override fun findById(currency: String?, id: UUID): EstateDetailDtoRs {
+        val entity = estateService.findById(id)
+        entity.estateDetail.price.min = getPrice(entity.estateDetail.price.min, currency)!!
+        entity.estateDetail.price.max = getPrice(entity.estateDetail.price.max, currency)!!
+        entity.estateDetail.price.avg = getPrice(entity.estateDetail.price.avg, currency)
+        val rs = estateDetailDtoRsConverter.convert(entity)
+        return rs
     }
 
     override fun loadFromFile(filePart: MultipartFile) {
@@ -176,10 +214,17 @@ class EstateProcessorImpl(
         estateImageLoader.loadFromGoogleDrive()
     }
 
-    override fun aiRequest(rq: AiRequest): CustomPageDtoRs {
+    override fun aiRequest(currency: String?, rq: AiRequest): CustomPageDtoRs {
         val estates = estateService.aiRequest(
             String(Base64.getDecoder().decode(rq.request))
         )
+        if (currency != "USD") {
+            estates.forEach { entity ->
+                entity.estateDetail.price.min = getPrice(entity.estateDetail.price.min, currency)!!
+                entity.estateDetail.price.max = getPrice(entity.estateDetail.price.max, currency)!!
+                entity.estateDetail.price.avg = getPrice(entity.estateDetail.price.avg, currency)
+            }
+        }
         return CustomPageDtoRs(
             items = estates.map { estateDtoRsConverter.convert(it) },
             pageSize = estates.size,
@@ -189,7 +234,12 @@ class EstateProcessorImpl(
         )
     }
 
-    override fun geo(): GeoRs {
+    override fun geo(currency: String?): GeoRs {
+        val currencySym = when (currency) {
+            "RUB" -> "₽"
+            "THB" -> "฿"
+            else -> "$"
+        }
         val list = estateService.findAll().map {
             var image = if (it.estateDetail.exteriorImages.isNotNullOrEmpty())
                 it.estateDetail.exteriorImages!![0]
@@ -212,7 +262,7 @@ class EstateProcessorImpl(
                 lng = it.estateDetail.lon ?: getLng(it.estateDetail.location.mapUrl),
                 title = it.estateDetail.name,
                 image = image,
-                description = "${dec.format(it.estateDetail.price.min)}$ • ${it.estateDetail.location.city}",
+                description = "${dec.format(getPrice(it.estateDetail.price.min, currency))} ${currencySym} • ${it.estateDetail.location.city}",
                 toolTip1 = if (it.estateDetail.toolTip1.isNullOrEmpty()) "false" else "true",
                 toolTip2 = if (it.estateDetail.toolTip2.isNullOrEmpty()) "false" else "true",
                 toolTip3 = if (it.estateDetail.toolTip3.isNullOrEmpty()) "false" else "true",
@@ -225,6 +275,7 @@ class EstateProcessorImpl(
     }
 
     override fun findUnits(
+        currency: String?,
         id: UUID,
         orderBy: String?,
         rooms: Set<String>?,
@@ -238,6 +289,13 @@ class EstateProcessorImpl(
         val estate = estateService.findById(id)
         val projectId = "${estate.estateDetail.projectId}%"
         var units = unitRepository.findByProjectId(projectId)
+
+        if (currency != null && currency != "USD") {
+            units.forEach {
+                it.price = dec.format(getPrice(strToBigDecimal(it.price), currency)).toString()
+                it.priceSq = dec.format(getPrice(strToBigDecimal(it.priceSq), currency)).toString()
+            }
+        }
 
         val counts = units.size
         if (units.isNotEmpty()) {
@@ -330,5 +388,26 @@ class EstateProcessorImpl(
         if (s.size < 2)
             return null
         return s[1]
+    }
+
+    private fun getPrice(
+        price: BigDecimal?,
+        currency: String?
+    ): BigDecimal? {
+        if (price == null)
+            return null
+        return currencyService.getValueByCurrency(
+            value = price,
+            currency = currency ?: "USD"
+        )
+    }
+
+    private fun strToBigDecimal(str: String?): BigDecimal? {
+        return str?.replace(" ", "")
+            ?.replace(",", ".")
+            ?.replace("%", "")
+            ?.replace(" ", "")
+            ?.nullIfEmpty()
+            ?.toBigDecimal()
     }
 }

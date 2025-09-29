@@ -48,6 +48,8 @@ class EstateCollectionController (
     )
     @GetMapping
     fun findAll(
+        @RequestHeader("Currency", required = false)
+        currency: String? = null,
         @Parameter(description = "Токен basic auth", required = true, hidden = true)
         @RequestHeader("Authorization") authBasicToken: String,
 
@@ -64,6 +66,7 @@ class EstateCollectionController (
         @Max(100, message = "Максимальное значение 100")
         pageSize: Int? = 25
     ): PageDtoRs<EstateCollectionDtoRs> = estateCollectionProcessor.findAll(
+        currency = currency,
         authBasicToken = authBasicToken,
         pageable = PageRequest.of(
             pageNumber ?: 0,
@@ -223,8 +226,10 @@ class EstateCollectionController (
 
     @GetMapping("/{id}")
     fun getById(
+        @RequestHeader("Currency", required = false)
+        currency: String? = null,
         @PathVariable("id") id: UUID
-    ): EstateCollectionDtoRs = estateCollectionProcessor.getById(id)
+    ): EstateCollectionDtoRs = estateCollectionProcessor.getById(currency = currency, id = id)
 
     @PutMapping("/{id}")
     fun update(

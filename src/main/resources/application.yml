@@ -86,12 +86,12 @@ platform:
   integration:
     s3-minio:
       access-key: ${S3_MINIO_ACCESS_KEY:admin}
-      secret-key: ${S3_MINIO_SECRET_KEY:admin1234}
+      secret-key: ${S3_MINIO_SECRET_KEY:BLundRaiNATE}
       bucket: ${S3_MINIO_BUCKET:estate-images}
       file-content-type: ${S3_MINIO_FILE_CONTENT_TYPE:image/jpeg}
       upload-file-part-size: 5MB
       http-client:
-        url: ${S3_MINIO_URL:http://127.0.0.1:9000}
+        url: ${S3_MINIO_URL:http://77.238.232.18:9000}
   security:
     oauth2-resource:
       rsa-key:
@@ -124,3 +124,14 @@ springdoc:
       display-name: Client API
       packages-to-scan:
         - "ru.nemodev.insightestate.api.client"
+
+
+
+currency:
+  integration:
+    http-client:
+      service-id: currency
+      url: https://open.er-api.com/v6/latest/USD
+      timeout:
+        connection: 230s
+        read: 230s

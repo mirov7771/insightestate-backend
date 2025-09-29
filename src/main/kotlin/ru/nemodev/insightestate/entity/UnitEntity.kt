@@ -24,9 +24,9 @@ class UnitEntity (
     @Column("square")
     val square: String? = null,
     @Column("pricesq")
-    val priceSq: String? = null,
+    var priceSq: String? = null,
     @Column("price")
-    val price: String? = null,
+    var price: String? = null,
     @Column("planimage")
     val planImage: String? = null,
 ) : AbstractEntity<UUID>(id, createdAt, updatedAt)

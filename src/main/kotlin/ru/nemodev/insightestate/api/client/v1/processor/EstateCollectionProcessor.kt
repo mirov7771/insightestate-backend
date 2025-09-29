@@ -6,6 +6,7 @@ import ru.nemodev.insightestate.api.client.v1.converter.EstateCollectionDtoRsCon
 import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.domen.EstateCollection
 import ru.nemodev.insightestate.entity.LikesEntity
+import ru.nemodev.insightestate.integration.currency.CurrencyService
 import ru.nemodev.insightestate.integration.cutt.CuttIntegration
 import ru.nemodev.insightestate.repository.LikesRepository
 import ru.nemodev.insightestate.service.EmailService
@@ -13,15 +14,16 @@ import ru.nemodev.insightestate.service.UserService
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
+import java.math.BigDecimal
 import java.util.*
 
 interface EstateCollectionProcessor {
-    fun findAll(authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs>
+    fun findAll(currency: String? = null, authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs>
     fun create(authBasicToken: String, request: EstateCollectionCreateDtoRq): EstateCollectionCreateDtoRs
     fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID, unitId: UUID?)
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
     fun deleteById(authBasicToken: String, id: UUID)
-    fun getById(id: UUID): EstateCollectionDtoRs
+    fun getById(currency: String? = null, id: UUID): EstateCollectionDtoRs
     fun update(id: UUID, rq: EstateCollectionUpdateDto)
     fun short(rq: ShortDto): ShortDto
     fun saveLike(rq: LikeDto)
@@ -36,9 +38,10 @@ class EstateCollectionProcessorImpl(
     private val likesRepository: LikesRepository,
     private val emailService: EmailService,
     private val userService: UserService,
+    private val currencyService: CurrencyService,
 ) : EstateCollectionProcessor {
 
-    override fun findAll(authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs> {
+    override fun findAll(currency: String?, authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs> {
         val estateCollections = estateCollectionService.findAll(authBasicToken, pageable)
 
         return PageDtoRs(
@@ -77,7 +80,7 @@ class EstateCollectionProcessorImpl(
         estateCollectionService.deleteById(authBasicToken, id)
     }
 
-    override fun getById(id: UUID): EstateCollectionDtoRs {
+    override fun getById(currency: String?, id: UUID): EstateCollectionDtoRs {
         val entity = estateCollectionService.findById(id)
         val estates = estateCollectionService.findEstates(entity.collectionDetail.estateIds.toSet()).toMutableList()
 
@@ -85,6 +88,14 @@ class EstateCollectionProcessorImpl(
             val list = estateCollectionService.findEstatesWithUnites(entity.collectionDetail.unitIds!!)
             if (list.isNotEmpty()) {
                 estates.addAll(list)
+            }
+        }
+
+        if (currency != null && currency != "USD") {
+            estates.forEach {
+                it.estateDetail.price.min = getPrice(it.estateDetail.price.min, currency)!!
+                it.estateDetail.price.max = getPrice(it.estateDetail.price.max, currency)!!
+                it.estateDetail.price.avg = getPrice(it.estateDetail.price.avg, currency)
             }
         }
 
@@ -252,5 +263,17 @@ class EstateCollectionProcessorImpl(
             ).id
         }
         return TemplateRs(id)
+    }
+
+    private fun getPrice(
+        price: BigDecimal?,
+        currency: String?
+    ): BigDecimal? {
+        if (price == null)
+            return null
+        return currencyService.getValueByCurrency(
+            value = price,
+            currency = currency ?: "USD"
+        )
     }
 }

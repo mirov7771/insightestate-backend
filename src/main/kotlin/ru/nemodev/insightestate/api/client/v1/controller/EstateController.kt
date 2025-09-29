@@ -48,6 +48,8 @@ class EstateController (
     )
     @GetMapping
     fun findAll(
+        @RequestHeader("Currency", required = false)
+        currency: String? = null,
         @Parameter(description = "Тип застройки", required = false)
         @RequestParam(name = "types", required = false)
         types: Set<EstateType>?,
@@ -122,6 +124,7 @@ class EstateController (
         @RequestParam(name = "petFriendly", required = false)
         petFriendly: Boolean?,
     ): CustomPageDtoRs = estateProcessor.findAll(
+        currency = currency,
         types = types,
         buildEndYears = buildEndYears,
         rooms = rooms,
@@ -159,9 +162,14 @@ class EstateController (
     )
     @GetMapping("/{id}")
     fun findById(
+        @RequestHeader("Currency", required = false)
+        currency: String? = null,
         @PathVariable
         id: UUID,
-    ): EstateDetailDtoRs = estateProcessor.findById(id)
+    ): EstateDetailDtoRs = estateProcessor.findById(
+        currency = currency,
+        id = id
+    )
 
     // TODO вынести эти методы ниже в admin контроллер и закрыть апикеем
     @Operation(
@@ -229,15 +237,25 @@ class EstateController (
 
     @PostMapping("ai")
     fun aiRequest(
+        @RequestHeader("Currency", required = false)
+        currency: String? = null,
         @RequestBody
         rq: AiRequest
-    ):CustomPageDtoRs = estateProcessor.aiRequest(rq)
+    ):CustomPageDtoRs = estateProcessor.aiRequest(
+        currency = currency,
+        rq = rq
+    )
 
     @GetMapping("geo")
-    fun geo() = estateProcessor.geo()
+    fun geo(
+        @RequestHeader("Currency", required = false)
+        currency: String? = null,
+    ) = estateProcessor.geo(currency = currency)
 
     @GetMapping("{id}/units")
     fun findUnits(
+        @RequestHeader("Currency", required = false)
+        currency: String? = null,
         @PathVariable id: UUID,
         @RequestParam(required = false) orderBy: String? = null,
         @RequestParam(required = false) rooms: Set<String>? = null,
@@ -248,7 +266,16 @@ class EstateController (
         @RequestParam(required = false) minPriceSq: Double? = null,
         @RequestParam(required = false) maxPriceSq: Double? = null,
     ): UnitsRs = estateProcessor.findUnits(
-        id, orderBy, rooms, minPrice, maxPrice, minSize, maxSize, minPriceSq, maxPriceSq
+        currency = currency,
+        id = id,
+        orderBy = orderBy,
+        rooms = rooms,
+        minPrice = minPrice,
+        maxPrice = maxPrice,
+        minSize = minSize,
+        maxSize = maxSize,
+        minPriceSq = minPriceSq,
+        maxPriceSq = maxPriceSq
     )
 
     @GetMapping("main/info")

@@ -6,18 +6,12 @@ import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
 import ru.nemodev.insightestate.config.property.AppProperties
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.platform.core.integration.s3.minio.config.S3MinioProperties
-import java.time.format.DateTimeFormatter
 
 @Component
 class EstateDtoRsConverter(
     appProperties: AppProperties,
     s3MinioProperties: S3MinioProperties
 ) : Converter<EstateEntity, EstateDtoRs> {
-
-    companion object {
-        private val buildEndDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    }
-
     private val baseEstateImageUrl = "${appProperties.imageBaseUrl}/${s3MinioProperties.bucket}"
 
     override fun convert(source: EstateEntity): EstateDtoRs {

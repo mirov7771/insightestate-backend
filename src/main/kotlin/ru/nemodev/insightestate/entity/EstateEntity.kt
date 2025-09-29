@@ -188,9 +188,9 @@ data class RoomParams(
 )
 
 data class MinMaxAvgParam (
-    val min: BigDecimal,
-    val max: BigDecimal,
-    val avg: BigDecimal? = null,
+    var min: BigDecimal,
+    var max: BigDecimal,
+    var avg: BigDecimal? = null,
 )
 
 enum class EstateLevelType {
