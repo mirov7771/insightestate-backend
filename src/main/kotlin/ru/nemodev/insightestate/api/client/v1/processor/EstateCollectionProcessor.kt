@@ -96,6 +96,67 @@ class EstateCollectionProcessorImpl(
                 it.estateDetail.price.min = getPrice(it.estateDetail.price.min, currency)!!
                 it.estateDetail.price.max = getPrice(it.estateDetail.price.max, currency)!!
                 it.estateDetail.price.avg = getPrice(it.estateDetail.price.avg, currency)
+
+                if (it.estateDetail.roomLayouts.one?.price != null) {
+                    it.estateDetail.roomLayouts.one?.price!!.min = getPrice(it.estateDetail.roomLayouts.one?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.one?.price!!.max = getPrice(it.estateDetail.roomLayouts.one?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.one?.price?.avg != null)
+                        it.estateDetail.roomLayouts.one?.price!!.avg = getPrice(it.estateDetail.roomLayouts.one?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.two?.price != null) {
+                    it.estateDetail.roomLayouts.two?.price!!.min = getPrice(it.estateDetail.roomLayouts.two?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.two?.price!!.max = getPrice(it.estateDetail.roomLayouts.two?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.two?.price?.avg != null)
+                        it.estateDetail.roomLayouts.two?.price!!.avg = getPrice(it.estateDetail.roomLayouts.two?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.three?.price != null) {
+                    it.estateDetail.roomLayouts.three?.price!!.min = getPrice(it.estateDetail.roomLayouts.three?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.three?.price!!.max = getPrice(it.estateDetail.roomLayouts.three?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.three?.price?.avg != null)
+                        it.estateDetail.roomLayouts.three?.price!!.avg = getPrice(it.estateDetail.roomLayouts.three?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.four?.price != null) {
+                    it.estateDetail.roomLayouts.four?.price!!.min = getPrice(it.estateDetail.roomLayouts.four?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.four?.price!!.max = getPrice(it.estateDetail.roomLayouts.four?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.four?.price?.avg != null)
+                        it.estateDetail.roomLayouts.four?.price!!.avg = getPrice(it.estateDetail.roomLayouts.four?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.five?.price != null) {
+                    it.estateDetail.roomLayouts.five?.price!!.min = getPrice(it.estateDetail.roomLayouts.five?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.five?.price!!.max = getPrice(it.estateDetail.roomLayouts.five?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.five?.price?.avg != null)
+                        it.estateDetail.roomLayouts.five?.price!!.avg = getPrice(it.estateDetail.roomLayouts.five?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.studio?.price != null) {
+                    it.estateDetail.roomLayouts.studio?.price!!.min = getPrice(it.estateDetail.roomLayouts.studio?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.studio?.price!!.max = getPrice(it.estateDetail.roomLayouts.studio?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.studio?.price?.avg != null)
+                        it.estateDetail.roomLayouts.studio?.price!!.avg = getPrice(it.estateDetail.roomLayouts.studio?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.villaTwo?.price != null) {
+                    it.estateDetail.roomLayouts.villaTwo?.price!!.min = getPrice(it.estateDetail.roomLayouts.villaTwo?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.villaTwo?.price!!.max = getPrice(it.estateDetail.roomLayouts.villaTwo?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.villaTwo?.price?.avg != null)
+                        it.estateDetail.roomLayouts.villaTwo?.price!!.avg = getPrice(it.estateDetail.roomLayouts.villaTwo?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.villaThree?.price != null) {
+                    it.estateDetail.roomLayouts.villaThree?.price!!.min = getPrice(it.estateDetail.roomLayouts.villaThree?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.villaThree?.price!!.max = getPrice(it.estateDetail.roomLayouts.villaThree?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.villaThree?.price?.avg != null)
+                        it.estateDetail.roomLayouts.villaThree?.price!!.avg = getPrice(it.estateDetail.roomLayouts.villaThree?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.villaFour?.price != null) {
+                    it.estateDetail.roomLayouts.villaFour?.price!!.min = getPrice(it.estateDetail.roomLayouts.villaFour?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.villaFour?.price!!.max = getPrice(it.estateDetail.roomLayouts.villaFour?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.villaFour?.price?.avg != null)
+                        it.estateDetail.roomLayouts.villaFour?.price!!.avg = getPrice(it.estateDetail.roomLayouts.villaFour?.price?.avg, currency)
+                }
+                if (it.estateDetail.roomLayouts.villaFive?.price != null) {
+                    it.estateDetail.roomLayouts.villaFive?.price!!.min = getPrice(it.estateDetail.roomLayouts.villaFive?.price!!.min, currency)!!
+                    it.estateDetail.roomLayouts.villaFive?.price!!.max = getPrice(it.estateDetail.roomLayouts.villaFive?.price!!.min, currency)!!
+                    if (it.estateDetail.roomLayouts.villaFive?.price?.avg != null)
+                        it.estateDetail.roomLayouts.villaFive?.price!!.avg = getPrice(it.estateDetail.roomLayouts.villaFive?.price?.avg, currency)
+                }
             }
         }
 

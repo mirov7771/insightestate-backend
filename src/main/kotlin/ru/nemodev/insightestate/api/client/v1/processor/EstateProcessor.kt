@@ -194,6 +194,68 @@ class EstateProcessorImpl(
         entity.estateDetail.price.min = getPrice(entity.estateDetail.price.min, currency)!!
         entity.estateDetail.price.max = getPrice(entity.estateDetail.price.max, currency)!!
         entity.estateDetail.price.avg = getPrice(entity.estateDetail.price.avg, currency)
+
+        if (entity.estateDetail.roomLayouts.one?.price != null) {
+            entity.estateDetail.roomLayouts.one?.price!!.min = getPrice(entity.estateDetail.roomLayouts.one?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.one?.price!!.max = getPrice(entity.estateDetail.roomLayouts.one?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.one?.price?.avg != null)
+                entity.estateDetail.roomLayouts.one?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.one?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.two?.price != null) {
+            entity.estateDetail.roomLayouts.two?.price!!.min = getPrice(entity.estateDetail.roomLayouts.two?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.two?.price!!.max = getPrice(entity.estateDetail.roomLayouts.two?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.two?.price?.avg != null)
+                entity.estateDetail.roomLayouts.two?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.two?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.three?.price != null) {
+            entity.estateDetail.roomLayouts.three?.price!!.min = getPrice(entity.estateDetail.roomLayouts.three?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.three?.price!!.max = getPrice(entity.estateDetail.roomLayouts.three?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.three?.price?.avg != null)
+                entity.estateDetail.roomLayouts.three?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.three?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.four?.price != null) {
+            entity.estateDetail.roomLayouts.four?.price!!.min = getPrice(entity.estateDetail.roomLayouts.four?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.four?.price!!.max = getPrice(entity.estateDetail.roomLayouts.four?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.four?.price?.avg != null)
+                entity.estateDetail.roomLayouts.four?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.four?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.five?.price != null) {
+            entity.estateDetail.roomLayouts.five?.price!!.min = getPrice(entity.estateDetail.roomLayouts.five?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.five?.price!!.max = getPrice(entity.estateDetail.roomLayouts.five?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.five?.price?.avg != null)
+                entity.estateDetail.roomLayouts.five?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.five?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.studio?.price != null) {
+            entity.estateDetail.roomLayouts.studio?.price!!.min = getPrice(entity.estateDetail.roomLayouts.studio?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.studio?.price!!.max = getPrice(entity.estateDetail.roomLayouts.studio?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.studio?.price?.avg != null)
+                entity.estateDetail.roomLayouts.studio?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.studio?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.villaTwo?.price != null) {
+            entity.estateDetail.roomLayouts.villaTwo?.price!!.min = getPrice(entity.estateDetail.roomLayouts.villaTwo?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.villaTwo?.price!!.max = getPrice(entity.estateDetail.roomLayouts.villaTwo?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.villaTwo?.price?.avg != null)
+                entity.estateDetail.roomLayouts.villaTwo?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.villaTwo?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.villaThree?.price != null) {
+            entity.estateDetail.roomLayouts.villaThree?.price!!.min = getPrice(entity.estateDetail.roomLayouts.villaThree?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.villaThree?.price!!.max = getPrice(entity.estateDetail.roomLayouts.villaThree?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.villaThree?.price?.avg != null)
+                entity.estateDetail.roomLayouts.villaThree?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.villaThree?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.villaFour?.price != null) {
+            entity.estateDetail.roomLayouts.villaFour?.price!!.min = getPrice(entity.estateDetail.roomLayouts.villaFour?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.villaFour?.price!!.max = getPrice(entity.estateDetail.roomLayouts.villaFour?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.villaFour?.price?.avg != null)
+                entity.estateDetail.roomLayouts.villaFour?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.villaFour?.price?.avg, currency)
+        }
+        if (entity.estateDetail.roomLayouts.villaFive?.price != null) {
+            entity.estateDetail.roomLayouts.villaFive?.price!!.min = getPrice(entity.estateDetail.roomLayouts.villaFive?.price!!.min, currency)!!
+            entity.estateDetail.roomLayouts.villaFive?.price!!.max = getPrice(entity.estateDetail.roomLayouts.villaFive?.price!!.min, currency)!!
+            if (entity.estateDetail.roomLayouts.villaFive?.price?.avg != null)
+                entity.estateDetail.roomLayouts.villaFive?.price!!.avg = getPrice(entity.estateDetail.roomLayouts.villaFive?.price?.avg, currency)
+        }
+
         val rs = estateDetailDtoRsConverter.convert(entity)
         return rs
     }
