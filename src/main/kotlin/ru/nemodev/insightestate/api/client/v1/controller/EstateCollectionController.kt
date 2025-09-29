@@ -11,6 +11,7 @@ import jakarta.validation.Valid
 import jakarta.validation.constraints.Max
 import jakarta.validation.constraints.Min
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.*
@@ -65,7 +66,7 @@ class EstateCollectionController (
         @Min(1, message = "Минимальное значение 1")
         @Max(100, message = "Максимальное значение 100")
         pageSize: Int? = 25
-    ): PageDtoRs<EstateCollectionDtoRs> = estateCollectionProcessor.findAll(
+    ): PageDtoRs<EstateCollectionDtoRs> = getAll(
         currency = currency,
         authBasicToken = authBasicToken,
         pageable = PageRequest.of(
@@ -73,6 +74,40 @@ class EstateCollectionController (
             pageSize ?: 25
         )
     )
+
+    private fun getAll(
+        currency: String? = null,
+        authBasicToken: String,
+        pageable: Pageable
+    ): PageDtoRs<EstateCollectionDtoRs> {
+        var rs = getAllWithEx(currency, authBasicToken, pageable)
+        if (rs == null) {
+            for (i in 0..5) {
+                Thread.sleep(250)
+                rs = getAllWithEx(currency, authBasicToken, pageable)
+                if (rs != null) {
+                    return rs
+                }
+            }
+        }
+        return rs!!
+    }
+
+    private fun getAllWithEx(
+        currency: String? = null,
+        authBasicToken: String,
+        pageable: Pageable
+    ): PageDtoRs<EstateCollectionDtoRs>? {
+        return try {
+            estateCollectionProcessor.findAll(
+                currency = currency,
+                authBasicToken = authBasicToken,
+                pageable = pageable
+            )
+        } catch (_: Exception) {
+            null
+        }
+    }
 
     @Operation(
         summary = "Создать",
