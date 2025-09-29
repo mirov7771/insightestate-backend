@@ -230,7 +230,7 @@ class EstateExcelParserImpl : EstateExcelParser {
         var min = BigDecimal.valueOf(1000000000)
         cellNames.forEach {
             val curMin = row.getBigDecimal(it)
-            if (curMin != null && curMin != BigDecimal.ZERO && curMin < min) {
+            if (curMin != null && curMin > BigDecimal.ZERO && curMin > BigDecimal("0.0") && curMin < min) {
                 min = curMin
             }
         }
@@ -274,15 +274,15 @@ class EstateExcelParserImpl : EstateExcelParser {
     private fun getMinMaxAvgParam(row: Row, cellNames: List<String>): MinMaxAvgParam? {
         val min = row.getString(cellNames[0])?.replace(" ", "")?.nullIfEmpty()?.let {
             if (it == "0") null
-            else it.toBigDecimal().scaleAndRoundAmount()
+            else it.getBigDecimal()
         }
         val max = row.getString(cellNames[1])?.replace(" ", "")?.nullIfEmpty()?.let {
             if (it == "0") null
-            else it.toBigDecimal().scaleAndRoundAmount()
+            else it.getBigDecimal()
         }
         val avg = if (cellNames.size == 3)
             row.getString(cellNames[2])?.replace(" ", "")?.nullIfEmpty()?.let {
-                if (it == "0") null else it.toBigDecimal().scaleAndRoundAmount()
+                if (it == "0") null else it.getBigDecimal()
             }
             else null
 

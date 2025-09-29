@@ -108,7 +108,11 @@ class EstateImageLoaderImpl(
                     val originalExtension = imageFile.fileExtension ?: imageFile.name.getFileExtension()
                     val projectId = originalName.substringBefore("_")
                     val type = originalName.substringAfter("_").substringBefore("_")
-                    val order = originalName.substringAfterLast("_").substringBefore(".").filter { it.isDigit() }.toInt()
+                    val order = try {
+                        originalName.substringAfterLast("_").substringBefore(".").filter { it.isDigit() }.toInt()
+                    } catch (e: Exception) {
+                        11
+                    }
                     val extension = when (originalExtension) {
                         "jpg", "JPG" -> "jpeg"
                         "PNG" -> "png"

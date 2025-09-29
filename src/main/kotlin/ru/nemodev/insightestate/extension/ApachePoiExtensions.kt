@@ -41,11 +41,24 @@ fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
         ?.replace(" ", "")
         ?.replace(",", ".")
         ?.replace("%", "")
+        ?.replace(" ", "")
         ?.nullIfEmpty()
         ?.toBigDecimal()
 
     if (value == null || scale == null) {
         return value
+    }
+    return value.scaleAndRoundAmount()
+}
+
+fun String.getBigDecimal(): BigDecimal {
+    val value = this.replace(" ", "")
+        .replace(",", ".")
+        .replace("%", "")
+        .replace(" ", "")
+        .nullIfEmpty()?.toBigDecimal()
+    if (value == null) {
+        return BigDecimal.ZERO
     }
     return value.scaleAndRoundAmount()
 }
