@@ -63,3 +63,8 @@ data class TemplateRs (
 data class DuplicateRq (
     val id: UUID,
 )
+
+data class ActivityDto (
+    val id: UUID,
+    val url: String,
+)

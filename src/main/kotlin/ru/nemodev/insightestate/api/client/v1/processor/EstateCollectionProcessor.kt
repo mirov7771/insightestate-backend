@@ -29,6 +29,7 @@ interface EstateCollectionProcessor {
     fun saveLike(rq: LikeDto)
     fun template(rq: TemplateRq): TemplateRs
     fun duplicate(id: UUID)
+    fun activity(rq: ActivityDto)
 }
 
 @Component
@@ -329,6 +330,16 @@ class EstateCollectionProcessorImpl(
 
     override fun duplicate(id: UUID) {
         estateCollectionService.duplicate(id)
+    }
+
+    override fun activity(rq: ActivityDto) {
+        val collection = estateCollectionService.findById(rq.id)
+        val user = userService.getUserById(collection.collectionDetail.userId)
+        emailService.sendMessage(
+            email = user.login,
+            subject = "Your client open your collection!",
+            message = "Collection: ${collection.collectionDetail.name}\n\n${rq.url}"
+        )
     }
 
     private fun getPrice(

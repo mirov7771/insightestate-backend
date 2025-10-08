@@ -295,4 +295,10 @@ class EstateCollectionController (
         @RequestBody
         rq: DuplicateRq
     ) = estateCollectionProcessor.duplicate(rq.id)
+
+    @PostMapping("activity")
+    fun activity(
+        @RequestBody
+        rq: ActivityDto
+    ) = estateCollectionProcessor.activity(rq)
 }
