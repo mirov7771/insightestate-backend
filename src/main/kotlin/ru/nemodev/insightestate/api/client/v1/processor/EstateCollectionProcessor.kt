@@ -337,7 +337,7 @@ class EstateCollectionProcessorImpl(
         val user = userService.getUserById(collection.collectionDetail.userId)
         emailService.sendMessage(
             email = user.login,
-            subject = "Client open your collection!",
+            subject = "Client opened selection!",
             message = "Collection: ${collection.collectionDetail.name}\n\n${rq.url}"
         )
     }
