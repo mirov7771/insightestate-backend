@@ -30,6 +30,7 @@ interface EstateCollectionService {
     fun findEstates(ids: Set<UUID>): List<EstateEntity>
     fun findEstatesWithUnites(ids: List<UnitEstateLink>): List<EstateEntity>
     fun update(collection: EstateCollectionEntity)
+    fun duplicate(id: UUID)
 }
 
 @Service
@@ -215,5 +216,13 @@ class EstateCollectionServiceImpl(
 
     override fun update(collection: EstateCollectionEntity) {
         estateCollectionRepository.save(collection.apply { isNew = false })
+    }
+
+    override fun duplicate(id: UUID) {
+        val collection = estateCollectionRepository.findById(id).getOrNull() ?: return
+        estateCollectionRepository.save(EstateCollectionEntity(
+            id = UUID.randomUUID(),
+            collectionDetail = collection.collectionDetail
+        ).apply { isNew = true })
     }
 }

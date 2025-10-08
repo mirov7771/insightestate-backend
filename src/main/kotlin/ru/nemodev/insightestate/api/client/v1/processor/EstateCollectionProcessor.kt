@@ -28,6 +28,7 @@ interface EstateCollectionProcessor {
     fun short(rq: ShortDto): ShortDto
     fun saveLike(rq: LikeDto)
     fun template(rq: TemplateRq): TemplateRs
+    fun duplicate(id: UUID)
 }
 
 @Component
@@ -324,6 +325,10 @@ class EstateCollectionProcessorImpl(
             ).id
         }
         return TemplateRs(id)
+    }
+
+    override fun duplicate(id: UUID) {
+        estateCollectionService.duplicate(id)
     }
 
     private fun getPrice(

@@ -289,4 +289,10 @@ class EstateCollectionController (
         @RequestBody
         rq: TemplateRq
     ) = estateCollectionProcessor.template(rq)
+
+    @PostMapping("duplicate")
+    fun duplicate(
+        @RequestBody
+        rq: DuplicateRq
+    ) = estateCollectionProcessor.duplicate(rq.id)
 }

@@ -59,3 +59,7 @@ data class TemplateRq (
 data class TemplateRs (
     val id: UUID
 )
+
+data class DuplicateRq (
+    val id: UUID,
+)
