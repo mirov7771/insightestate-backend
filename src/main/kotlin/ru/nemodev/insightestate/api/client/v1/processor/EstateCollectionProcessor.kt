@@ -205,8 +205,8 @@ class EstateCollectionProcessorImpl(
         }
         emailService.sendMessage(
             email = rq.email,
-            subject = "Your client liked a property from your collection!",
-            message = "Property: ${rq.title}\nCollection: ${rq.collection}\n${rq.url}"
+            subject = "Your client liked a property from your selection!",
+            message = "Property: ${rq.title}\nSelection: ${rq.collection}\n${rq.url}"
         )
     }
 
@@ -338,7 +338,7 @@ class EstateCollectionProcessorImpl(
         emailService.sendMessage(
             email = user.login,
             subject = "Client opened selection!",
-            message = "Collection: ${collection.collectionDetail.name}\n\n${rq.url}"
+            message = "Selection: ${collection.collectionDetail.name}\n\n${rq.url}"
         )
     }
 
