@@ -48,7 +48,7 @@ class CurrencyServiceImpl (
 
 
     @Scheduled(cron = "0 0 0 * * *")
-    @PostConstruct
+    //@PostConstruct
     fun getRates() {
         val rates = try {
             currencyRestClient.get().retrieve()
