@@ -418,7 +418,7 @@ class EstateProcessorImpl(
     }
 
     override fun getMainInfo(userId: UUID): MainInfoDto {
-        val list = estateService.findAll()
+        val list = estateService.findAll().filter { it.isCanShow() }
         val units = unitRepository.findAll().toList()
         return MainInfoDto(
             collections = unitRepository.findAllCollections(userId.toString()),

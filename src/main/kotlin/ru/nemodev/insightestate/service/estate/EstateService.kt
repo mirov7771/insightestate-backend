@@ -146,7 +146,7 @@ class EstateServiceImpl(
         }
 
         if (minTotalPrice != null && maxTotalPrice == null) {
-            maxTotalPrice = BigDecimal(100000000)
+            maxTotalPrice = BigDecimal(100000000000)
         }
 
         val isStudioRoom = if (rooms.isNullOrEmpty()) null else rooms.contains("0")
@@ -331,7 +331,7 @@ class EstateServiceImpl(
         }
 
         if (minTotalPrice != null && maxTotalPrice == null) {
-            maxTotalPrice = BigDecimal(100000000)
+            maxTotalPrice = BigDecimal(100000000000)
         }
 
         val cityArray = city?.map { it }?.toTypedArray()

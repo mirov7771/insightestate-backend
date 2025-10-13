@@ -151,7 +151,7 @@ class EstateImageLoaderImpl(
     }
 
     private fun loadImages(estateImageMap: Map<String, EstateImages>) {
-        val estates = estateService.findAll()
+        val estates = estateService.findAll().filter { !it.isCanShow() }
         if (estates.isEmpty()) {
             logError { "Фото объектов не могут быть загружены т.к объектов нет в базе данных" }
             return
