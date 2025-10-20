@@ -9,6 +9,7 @@ import ru.nemodev.insightestate.api.client.v1.converter.EstateDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.converter.formatDate
 import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.api.client.v1.dto.user.MainInfoDto
+import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.extension.getBigDecimal
 import ru.nemodev.insightestate.extension.getString
@@ -79,6 +80,7 @@ interface EstateProcessor {
     fun getMainInfo(userId: UUID): MainInfoDto
 
     fun prepareXml(): String
+    fun prepareJson(): List<EstateEntity>
 }
 
 @Component
@@ -430,6 +432,28 @@ class EstateProcessorImpl(
 
     override fun prepareXml(): String {
         return estateService.createXml()
+    }
+
+    override fun prepareJson(): List<EstateEntity> {
+        val list = estateService.findAll()
+        list.forEach {
+            if (it.estateDetail.interiorImages.isNotNullOrEmpty()) {
+                it.estateDetail.interiorImages = it.estateDetail.interiorImages!!.map { image ->
+                    "https://lotsof.properties/estate-images/${image}"
+                }.toMutableList()
+            }
+            if (it.estateDetail.facilityImages.isNotNullOrEmpty()) {
+                it.estateDetail.facilityImages = it.estateDetail.facilityImages!!.map { image ->
+                    "https://lotsof.properties/estate-images/${image}"
+                }.toMutableList()
+            }
+            if (it.estateDetail.exteriorImages.isNotNullOrEmpty()) {
+                it.estateDetail.exteriorImages = it.estateDetail.exteriorImages!!.map { image ->
+                    "https://lotsof.properties/estate-images/${image}"
+                }.toMutableList()
+            }
+        }
+        return list
     }
 
     private fun getLat(url: String): String? {

@@ -285,4 +285,7 @@ class EstateController (
 
     @GetMapping("generate/xml", produces = [MediaType.APPLICATION_XML_VALUE])
     fun generateXml() = estateProcessor.prepareXml()
+
+    @GetMapping("generate/json")
+    fun generateJson() = estateProcessor.prepareJson()
 }
