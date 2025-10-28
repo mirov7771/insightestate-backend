@@ -11,6 +11,7 @@ import ru.nemodev.insightestate.api.client.v1.dto.estate.*
 import ru.nemodev.insightestate.api.client.v1.dto.user.MainInfoDto
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.entity.UnitEntity
 import ru.nemodev.insightestate.extension.getBigDecimal
 import ru.nemodev.insightestate.extension.getString
 import ru.nemodev.insightestate.integration.currency.CurrencyService
@@ -81,6 +82,7 @@ interface EstateProcessor {
 
     fun prepareXml(): String
     fun prepareJson(): List<EstateEntity>
+    fun prepareJsonUnit(): List<UnitEntity>
 }
 
 @Component
@@ -454,6 +456,11 @@ class EstateProcessorImpl(
             }
         }
         return list
+    }
+
+    override fun prepareJsonUnit(): List<UnitEntity> {
+        val units = unitRepository.findAll().toList()
+        return units
     }
 
     private fun getLat(url: String): String? {

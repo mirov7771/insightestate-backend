@@ -288,4 +288,7 @@ class EstateController (
 
     @GetMapping("generate/json")
     fun generateJson() = estateProcessor.prepareJson()
+
+    @GetMapping("generate/json/unit")
+    fun generateJsonUnit() = estateProcessor.prepareJsonUnit()
 }
