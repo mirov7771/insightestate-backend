@@ -179,7 +179,10 @@ class EstateCollectionProcessorImpl(
 
     override fun update(id: UUID, rq: EstateCollectionUpdateDto) {
         val entity = estateCollectionService.findById(id)
-        entity.collectionDetail.name = rq.name
+        if (rq.name != null)
+            entity.collectionDetail.name = rq.name
+        if (rq.comment != null)
+            entity.collectionDetail.comment = rq.comment
         estateCollectionService.update(entity)
     }
 

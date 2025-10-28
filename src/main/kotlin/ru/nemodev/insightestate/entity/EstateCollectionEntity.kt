@@ -23,6 +23,7 @@ data class EstateCollectionDetail(
     var name: String,
     var estateIds: MutableList<UUID>,
     var unitIds: MutableList<UnitEstateLink>? = null,
+    var comment: String? = null,
 )
 
 data class UnitEstateLink (

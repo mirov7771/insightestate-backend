@@ -30,11 +30,14 @@ data class EstateCollectionDtoRs(
     @Schema(description = "Детальная информация по объекту")
     val estates: List<EstateDetailDtoRs>?,
 
-    var agentInfo: UserDtoRs? = null
+    var agentInfo: UserDtoRs? = null,
+
+    val comment: String? = null,
 )
 
 data class EstateCollectionUpdateDto (
-    val name: String
+    val name: String? = null,
+    val comment: String? = null,
 )
 
 data class ShortDto (
