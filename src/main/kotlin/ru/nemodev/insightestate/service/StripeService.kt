@@ -6,7 +6,6 @@ import com.stripe.param.CustomerCreateParams
 import com.stripe.param.PaymentIntentCreateParams
 import com.stripe.param.PaymentMethodListParams
 import com.stripe.param.SubscriptionCreateParams
-import jakarta.annotation.PostConstruct
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeRecurrentRq
@@ -144,7 +143,7 @@ class StripeServiceImpl (
         return subscriptionService.getSubscription(userId)?.mainId
     }
 
-//    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     fun startPayment() {
         logger.info("Starting recurring payment at {}", LocalDateTime.now())
         subscriptionService.getPayments().forEach {
