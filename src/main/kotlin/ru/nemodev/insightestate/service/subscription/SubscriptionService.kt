@@ -4,6 +4,8 @@ import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.entity.SubscriptionEntity
 import ru.nemodev.insightestate.entity.TariffEntity
 import ru.nemodev.insightestate.repository.SubscriptionRepository
+import ru.nemodev.insightestate.service.EmailService
+import ru.nemodev.insightestate.service.UserService
 import ru.nemodev.insightestate.service.tariff.TariffService
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -39,6 +41,8 @@ interface SubscriptionService {
 class SubscriptionServiceImpl (
     private val subscriptionRepository: SubscriptionRepository,
     private val tariffService: TariffService,
+    private val emailService: EmailService,
+    private val userService: UserService,
 ) : SubscriptionService {
 
     override fun saveTariff(
@@ -53,6 +57,15 @@ class SubscriptionServiceImpl (
             tariff = tariff,
             subscription = subscription,
             promoCode = promoCode
+        )
+        val user = userService.getUserById(userId)
+        var message = "Клиент ${user.login} подключил тариф ${tariff.title}"
+        if (promoCode != null) {
+            message += "; Использовал промокод $promoCode"
+        }
+        emailService.sendToAdmin(
+            subject = "Клиент оформил подписку",
+            message = message
         )
     }
 

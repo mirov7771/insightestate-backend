@@ -75,6 +75,7 @@ class StripeServiceImpl (
     }
 
     override fun refund(rq: StripeRecurrentRq) {
+        Thread.sleep(5000)
         val params = RefundCreateParams.builder()
             .setCharge(getPaymentId(rq.userId, "charge"))
             .build()
@@ -97,16 +98,29 @@ class StripeServiceImpl (
                     .setCustomer(stripeUser)
                     .build()
                 val list = client.paymentIntents().list(params)
-                val payment = list.data.filter { it.status == "succeeded" }.sortedByDescending { it.created }.firstOrNull()
+                val payment = list.data.sortedByDescending { it.created }.firstOrNull()
                 payment?.id
             }
             "charge" -> {
                 val params = ChargeListParams.builder()
                     .setCustomer(stripeUser)
                     .build()
-                val list = client.charges().list(params)
-                val payment = list.data.filter { it.status == "succeeded" && !it.refunded }.sortedByDescending { it.created }.firstOrNull()
-                payment?.id
+                var list = client.charges().list(params)
+                var payment = list.data.filter { !it.refunded }.sortedByDescending { it.created }.firstOrNull()
+                var id = payment?.id
+                if (id == null) {
+                   for (i in 0..10) {
+                       list = client.charges().list(params)
+                       payment = list.data.filter { !it.refunded }.sortedByDescending { it.created }.firstOrNull()
+                       id = payment?.id
+                       if (id != null) {
+                           break
+                       } else {
+                           Thread.sleep(3000)
+                       }
+                   }
+                }
+                id
             }
             else -> {
                 val params =
