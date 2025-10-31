@@ -122,8 +122,8 @@ class SubscriptionServiceImpl (
         promoCode: String? = null,
     ) {
         var price = if (type == 0) tariff.price else null
-        val date = if (type == 0) LocalDateTime.now().plusDays(14).plusMonths(1) else null
-        val date2 = if (type == 1) LocalDateTime.now().plusDays(14).plusMonths(1) else null
+        val date = if (type == 0) LocalDateTime.now().plusDays(14) else null
+        val date2 = if (type == 1) LocalDateTime.now().plusDays(14) else null
         var price2 = if (type == 0) tariff.price else null
 
         if (price != null && promoCode != null) {
