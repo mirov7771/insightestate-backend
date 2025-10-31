@@ -36,4 +36,10 @@ class StripeController (
         @RequestBody
         rq: StripeRecurrentRq
     ) = stripeService.recurrent(rq)
+
+    @PostMapping("/refund")
+    fun refund(
+        @RequestBody
+        rq: StripeRecurrentRq
+    ) = stripeService.refund(rq)
 }

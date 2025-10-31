@@ -2,9 +2,12 @@ package ru.nemodev.insightestate.service
 
 import com.stripe.StripeClient
 import com.stripe.exception.CardException
+import com.stripe.param.ChargeListParams
 import com.stripe.param.CustomerCreateParams
 import com.stripe.param.PaymentIntentCreateParams
+import com.stripe.param.PaymentIntentListParams
 import com.stripe.param.PaymentMethodListParams
+import com.stripe.param.RefundCreateParams
 import com.stripe.param.SubscriptionCreateParams
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -25,6 +28,7 @@ interface StripeService {
     fun session(rq: StripeRq): StripeRs
     fun subscription(rq: StripeSubscriptionRq)
     fun recurrent(rq: StripeRecurrentRq)
+    fun refund(rq: StripeRecurrentRq)
 }
 
 @Service
@@ -64,16 +68,56 @@ class StripeServiceImpl (
     }
 
     override fun recurrent(rq: StripeRecurrentRq) {
-        val stripeUser = findOrCreate(rq.userId)
-        val params =
-            PaymentMethodListParams.builder()
-                .setCustomer(stripeUser)
-                .setType(PaymentMethodListParams.Type.CARD)
-                .build()
-        val list = client.paymentMethods().list(params)
-        val payment = list.data.sortedByDescending { it.created }.firstOrNull()
-        if (payment != null) {
-            startRecurrent(rq.userId, stripeUser, payment.id)
+        val paymentId = getPaymentId(rq.userId)
+        if (paymentId != null) {
+            startRecurrent(rq.userId, findOrCreate(rq.userId), paymentId)
+        }
+    }
+
+    override fun refund(rq: StripeRecurrentRq) {
+        val params = RefundCreateParams.builder()
+            .setCharge(getPaymentId(rq.userId, "charge"))
+            .build()
+        val rs = client.refunds().create(params)
+        try {
+            logger.info("Refund Success = {}", rs.id)
+        } catch (e: Exception) {
+            logger.error("Refund Error =", e)
+        }
+    }
+
+    private fun getPaymentId(
+        userId: UUID,
+        type: String = "method"
+    ): String? {
+        val stripeUser = findOrCreate(userId)
+        return when (type) {
+            "intent" -> {
+                val params = PaymentIntentListParams.builder()
+                    .setCustomer(stripeUser)
+                    .build()
+                val list = client.paymentIntents().list(params)
+                val payment = list.data.filter { it.status == "succeeded" }.sortedByDescending { it.created }.firstOrNull()
+                payment?.id
+            }
+            "charge" -> {
+                val params = ChargeListParams.builder()
+                    .setCustomer(stripeUser)
+                    .build()
+                val list = client.charges().list(params)
+                val payment = list.data.filter { it.status == "succeeded" && !it.refunded }.sortedByDescending { it.created }.firstOrNull()
+                payment?.id
+            }
+            else -> {
+                val params =
+                    PaymentMethodListParams.builder()
+                        .setCustomer(stripeUser)
+                        .setType(PaymentMethodListParams.Type.CARD)
+                        .build()
+                val list = client.paymentMethods().list(params)
+                val payment = list.data.sortedByDescending { it.created }.firstOrNull()
+                payment?.id
+            }
         }
     }
 
