@@ -32,7 +32,7 @@ class SubscriptionProcessorImpl (
     override fun saveTariff(
         rq: SubscriptionRq
     ) {
-        subscriptionService.saveTariff(rq.userId, rq.tariffId)
+        subscriptionService.saveTariff(rq.userId, rq.tariffId, rq.promoCode)
     }
 
     override fun getTariff(userId: UUID): SubscriptionRs {

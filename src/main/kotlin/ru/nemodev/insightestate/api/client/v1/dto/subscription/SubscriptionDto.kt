@@ -8,6 +8,7 @@ import java.util.*
 data class SubscriptionRq (
     val userId: UUID,
     val tariffId: UUID,
+    val promoCode: String? = null,
 )
 
 data class SubscriptionRs (
