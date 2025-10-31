@@ -135,14 +135,19 @@ class SubscriptionServiceImpl (
         promoCode: String? = null,
     ) {
         var price = if (type == 0) tariff.price else null
-        val date = if (type == 0) LocalDateTime.now().plusDays(14) else null
-        val date2 = if (type == 1) LocalDateTime.now().plusDays(14) else null
+        var date = if (type == 0) LocalDateTime.now().plusDays(14) else null
+        var date2 = if (type == 1) LocalDateTime.now().plusDays(14) else null
+        if (promoCode != null && promoCode == "START95") {
+            date = if (type == 0) LocalDateTime.now().plusMonths(1) else null
+            date2 = if (type == 1) LocalDateTime.now().plusMonths(1) else null
+        }
         var price2 = if (type == 0) tariff.price else null
 
         if (price != null && promoCode != null) {
             price = when (promoCode.uppercase()) {
                 "WEBINAR15" -> price.multiply(BigDecimal(0.85))
                 "ACTIVE50" -> price.multiply(BigDecimal(0.5))
+                "START95" -> price.multiply(BigDecimal(0.05))
                 else -> price
             }
         }
@@ -151,6 +156,7 @@ class SubscriptionServiceImpl (
             price2 = when (promoCode.uppercase()) {
                 "WEBINAR15" -> price2.multiply(BigDecimal(0.85))
                 "ACTIVE50" -> price2.multiply(BigDecimal(0.5))
+                "START95" -> price2.multiply(BigDecimal(0.05))
                 else -> price2
             }
         }
