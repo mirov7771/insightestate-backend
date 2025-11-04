@@ -42,7 +42,7 @@ class StripeServiceImpl (
     }
 
     override fun session(rq: StripeRq): StripeRs {
-        val stripeUser = findOrCreate(rq.userId)
+        val stripeUser = findOrCreate(rq.userId, rq.currency)
         val params =
             PaymentIntentCreateParams.builder()
                 .setAmount(rq.amount)
@@ -70,7 +70,7 @@ class StripeServiceImpl (
     override fun recurrent(rq: StripeRecurrentRq) {
         val paymentId = getPaymentId(rq.userId)
         if (paymentId != null) {
-            startRecurrent(rq.userId, findOrCreate(rq.userId), paymentId)
+            startRecurrent(rq.userId, findOrCreate(rq.userId), paymentId, getCurrency(rq.userId))
         }
     }
 
@@ -139,7 +139,8 @@ class StripeServiceImpl (
     private fun startRecurrent(
         userId: UUID,
         customerId: String,
-        paymentId: String
+        paymentId: String,
+        currency: String
     ) {
         val amount = getAmount(userId)
         if (amount == 0L) {
@@ -148,7 +149,7 @@ class StripeServiceImpl (
         val tariffId = getTariff(userId)
         val params =
             PaymentIntentCreateParams.builder()
-                .setCurrency("usd")
+                .setCurrency(currency)
                 .setAmount(amount)
                 .setAutomaticPaymentMethods(
                     PaymentIntentCreateParams.AutomaticPaymentMethods.builder().setEnabled(true).build()
@@ -168,7 +169,10 @@ class StripeServiceImpl (
         }
     }
 
-    private fun findOrCreate(userId: UUID): String {
+    private fun findOrCreate(
+        userId: UUID,
+        currency: String? = null,
+    ): String {
         var user = stripeUserRepository.findByUserId(userId)
         if (user == null) {
             val paramsCustomer =
@@ -179,11 +183,16 @@ class StripeServiceImpl (
             user = StripeUserEntity(
                 id = userId,
                 userId = userId,
-                customerId = customer.id
+                customerId = customer.id,
+                currency = currency ?: "usd",
             ).apply { isNew = true }
             stripeUserRepository.save(user)
         }
         return user.customerId
+    }
+
+    private fun getCurrency(userId: UUID): String {
+        return stripeUserRepository.findByUserId(userId)?.currency!!
     }
 
     private fun getAmount(

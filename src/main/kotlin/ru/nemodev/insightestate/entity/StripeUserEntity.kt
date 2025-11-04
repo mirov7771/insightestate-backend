@@ -15,4 +15,6 @@ class StripeUserEntity (
     val userId: UUID,
     @Column("customer_id")
     val customerId: String,
+    @Column("currency")
+    val currency: String,
 ) : AbstractEntity<UUID>(id, createdAt, updatedAt)
