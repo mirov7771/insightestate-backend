@@ -25,9 +25,8 @@ class SubscriptionController (
         userId: UUID
     ) = processor.getTariff(userId)
 
-    @DeleteMapping
+    @DeleteMapping("{id}")
     fun removeTariff(
-        @RequestBody
-        rq: SubscriptionRq
-    ) = processor.removeTariff(rq)
+        @PathVariable id: UUID
+    ) = processor.removeTariff(id)
 }

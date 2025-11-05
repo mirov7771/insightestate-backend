@@ -28,8 +28,7 @@ interface SubscriptionService {
     ): SubscriptionEntity?
 
     fun removeTariff(
-        userId: UUID,
-        tariffId: UUID
+        userId: UUID
     )
 
     fun getPayments(): List<SubscriptionEntity>
@@ -94,22 +93,10 @@ class SubscriptionServiceImpl (
     }
 
     override fun removeTariff(
-        userId: UUID,
-        tariffId: UUID
+        userId: UUID
     ) {
-        val tariff = tariffService.findById(tariffId)
         val subscription = subscriptionRepository.findByUserId(userId) ?: return
-        when (tariff.type) {
-            0 -> {
-                subscription.mainId = null
-                subscription.mainPayDate = null
-            }
-            else -> {
-                subscription.extraId = null
-                subscription.extraPayDate = null
-            }
-        }
-        subscriptionRepository.save(subscription.apply { isNew = false })
+        subscriptionRepository.delete(subscription)
     }
 
     override fun getPayments(): List<SubscriptionEntity> {

@@ -20,7 +20,7 @@ interface SubscriptionProcessor {
     ): SubscriptionRs
 
     fun removeTariff(
-        rq: SubscriptionRq
+        id: UUID
     )
 }
 
@@ -60,9 +60,9 @@ class SubscriptionProcessorImpl (
     }
 
     override fun removeTariff(
-        rq: SubscriptionRq
+        id: UUID
     ) {
-        subscriptionService.removeTariff(rq.userId, rq.tariffId)
+        subscriptionService.removeTariff(id)
     }
 }
 
