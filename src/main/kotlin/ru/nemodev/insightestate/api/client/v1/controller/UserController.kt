@@ -121,9 +121,11 @@ class UserController (
         @RequestParam("group", required = false)
         group: Group? = null,
         @RequestParam("tariff", required = false)
-        tariff: Tariff? = null
+        tariff: Tariff? = null,
+        @RequestParam("newGroup", required = false)
+        newGroup: String? = null,
     ) = userProcessor.addToGroup(UserGroupDto(
-        email, group, tariff
+        email, group, tariff, newGroup
     ))
 
     @GetMapping("/report")
