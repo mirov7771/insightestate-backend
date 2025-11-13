@@ -8,13 +8,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.validation.Valid
+import org.springframework.core.io.InputStreamResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import ru.nemodev.insightestate.api.client.v1.dto.user.HelpWithClientRq
-import ru.nemodev.insightestate.api.client.v1.dto.user.ThemeDto
-import ru.nemodev.insightestate.api.client.v1.dto.user.UserDtoRs
-import ru.nemodev.insightestate.api.client.v1.dto.user.UserUpdateDtoRq
+import ru.nemodev.insightestate.api.client.v1.dto.user.*
 import ru.nemodev.insightestate.api.client.v1.processor.UserProcessor
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 
@@ -114,4 +113,19 @@ class UserController (
         @RequestBody
         request: ThemeDto
     ) = userProcessor.theme(request)
+
+    @GetMapping("/group")
+    fun group(
+        @RequestParam("email")
+        email: String,
+        @RequestParam("group", required = false)
+        group: Group? = null,
+        @RequestParam("tariff", required = false)
+        tariff: Tariff? = null
+    ) = userProcessor.addToGroup(UserGroupDto(
+        email, group, tariff
+    ))
+
+    @GetMapping("/report")
+    fun report(): ResponseEntity<InputStreamResource> = userProcessor.report()
 }

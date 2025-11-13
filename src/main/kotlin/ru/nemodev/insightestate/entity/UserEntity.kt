@@ -42,7 +42,7 @@ data class UserDetail(
     var tgName: String? = null,
     var profileImage: String? = null,
     var resetPassword: ResetPassword? = null,
-    val group: String? = null,
+    var group: String? = null,
     var collectionLogo: String? = null,
     var collectionColorId: String? = null,
     var collectionColorValue: String? = null,

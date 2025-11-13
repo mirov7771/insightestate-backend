@@ -52,6 +52,10 @@ dependencies {
     //stripe
     implementation("com.stripe:stripe-java:29.1.0")
 
+    val fastexcelVersion = "0.18.1"
+    implementation("org.dhatim:fastexcel-reader:$fastexcelVersion")
+    implementation("org.dhatim:fastexcel:$fastexcelVersion")
+
 }
 
 jacoco {

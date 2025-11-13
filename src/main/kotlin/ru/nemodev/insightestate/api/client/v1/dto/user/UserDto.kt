@@ -65,3 +65,23 @@ data class UserUpdateDtoRq(
     @Schema(description = "Фото профиля", example = "1234567890")
     val profileImage: String?,
 )
+
+data class UserGroupDto (
+    val email: String,
+    val group: Group? = null,
+    val tariff: Tariff? = null
+)
+
+enum class Group {
+    extra,
+    insightestate,
+    comfort,
+    SID,
+    neginski
+}
+
+enum class Tariff {
+    Start,
+    Pro,
+    Enterpise
+}
