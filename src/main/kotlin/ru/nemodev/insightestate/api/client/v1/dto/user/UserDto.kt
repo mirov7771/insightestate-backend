@@ -69,7 +69,8 @@ data class UserUpdateDtoRq(
 data class UserGroupDto (
     val email: String,
     val group: Group? = null,
-    val tariff: Tariff? = null
+    val tariff: Tariff? = null,
+    val newGroup: String? = null,
 )
 
 enum class Group {
@@ -77,7 +78,8 @@ enum class Group {
     insightestate,
     comfort,
     SID,
-    neginski
+    neginski,
+    NFGroup
 }
 
 enum class Tariff {

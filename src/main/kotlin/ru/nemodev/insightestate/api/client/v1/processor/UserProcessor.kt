@@ -98,6 +98,9 @@ class UserProcessorImpl(
         if (rq.group != null) {
             user.userDetail.group = rq.group.name
             userService.update(user)
+        } else if (rq.newGroup != null) {
+            user.userDetail.group = rq.newGroup
+            userService.update(user)
         }
         if (rq.tariff != null) {
             val tariff = tariffRepository.findByTitle(rq.tariff.name) ?: return
