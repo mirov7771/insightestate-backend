@@ -151,7 +151,7 @@ class EstateImageLoaderImpl(
     }
 
     private fun loadImages(estateImageMap: Map<String, EstateImages>) {
-        val estates = estateService.findAll().filter { !it.isCanShow() }
+        val estates = estateService.findAll()
         if (estates.isEmpty()) {
             logError { "Фото объектов не могут быть загружены т.к объектов нет в базе данных" }
             return
@@ -175,6 +175,11 @@ class EstateImageLoaderImpl(
 
             // Обновляем признак можно ли показывать объект
             estate.estateDetail.canShow = estate.isCanShow()
+        }
+
+        estates.filter { !it.isCanShow() }.forEach {
+            it.estateDetail.exteriorImages = mutableListOf("https://lotsof.properties/estate-images/default_logo.png")
+            it.estateDetail.canShow = it.isCanShow()
         }
 
         transactionTemplate.executeWithoutResult {
