@@ -117,7 +117,8 @@ class EstateExcelParserImpl : EstateExcelParser {
                     country = row.getString("AJ"),
                     //yearOfFoundation = row.getInt("AL"),
                     phone = row.getString("AL"),
-                    email = row.getString("AM")
+                    email = row.getString("AM"),
+                    presentation = row.getString("AJ"),
                 ),
                 grade = EstateGrade(
                     main = row.getBigDecimal("I", 1)!!,

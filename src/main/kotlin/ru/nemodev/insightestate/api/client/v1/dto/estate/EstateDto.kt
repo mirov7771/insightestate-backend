@@ -93,6 +93,7 @@ data class EstateDetailDtoRs(
         val yearOfFoundation: Int?,
         val phone: String? = null,
         val email: String? = null,
+        val presentation: Boolean
     )
 
     data class ProjectCountDto(

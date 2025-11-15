@@ -97,6 +97,7 @@ data class EstateDeveloper(
     val yearOfFoundation: Int? = null,  // год основания
     val phone: String? = null,
     val email: String? = null,
+    val presentation: String? = null,
 )
 
 // Число проектов

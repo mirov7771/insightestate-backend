@@ -45,6 +45,7 @@ class EstateDetailDtoRsConverter(
                 yearOfFoundation = estateDetail.developer.yearOfFoundation,
                 phone = estateDetail.developer.phone,
                 email = estateDetail.developer.email,
+                presentation = estateDetail.developer.presentation != null && estateDetail.developer.presentation.equals("Done", ignoreCase = true),
             ),
             grade = EstateDetailDtoRs.EstateGradeDto(
                 main = estateDetail.grade.main,
