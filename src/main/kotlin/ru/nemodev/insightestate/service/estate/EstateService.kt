@@ -1,5 +1,6 @@
 package ru.nemodev.insightestate.service.estate
 
+import jakarta.annotation.PostConstruct
 import org.springframework.data.domain.Pageable
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -645,7 +646,6 @@ class EstateServiceImpl(
         return list
     }
 
-    //@PostConstruct
     @Scheduled(cron = "0 0 4 * * *")
     fun range() {
         repository.findRandom().forEach {
