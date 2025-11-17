@@ -36,7 +36,7 @@ class CurrencyServiceImpl (
         value: BigDecimal,
         currency: String
     ): BigDecimal {
-        if (currency == USD)
+        if (currency == THB)
             return value
         val rate = getRate(currency)
         return value.multiply(rate)
@@ -58,6 +58,6 @@ class CurrencyServiceImpl (
             null
         }
         currencyMap[RUB] = rates?.rub ?: DEFAULT_RUB.toBigDecimal()
-        currencyMap[THB] = rates?.thb ?: DEFAULT_THB.toBigDecimal()
+        currencyMap[USD] = rates?.thb ?: DEFAULT_THB.toBigDecimal()
     }
 }

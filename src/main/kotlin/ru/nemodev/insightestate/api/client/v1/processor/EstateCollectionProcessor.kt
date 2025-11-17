@@ -93,7 +93,7 @@ class EstateCollectionProcessorImpl(
             }
         }
 
-        if (currency != null && currency != "USD") {
+        if (currency != null && currency != "THB") {
             estates.forEach {
                 it.estateDetail.price.min = getPrice(it.estateDetail.price.min, currency)!!
                 it.estateDetail.price.max = getPrice(it.estateDetail.price.max, currency)!!
@@ -353,7 +353,7 @@ class EstateCollectionProcessorImpl(
             return null
         return currencyService.getValueByCurrency(
             value = price,
-            currency = currency ?: "USD"
+            currency = currency ?: "THB"
         )
     }
 }

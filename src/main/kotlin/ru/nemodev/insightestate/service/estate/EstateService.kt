@@ -479,12 +479,12 @@ class EstateServiceImpl(
             BigDecimal("1000000000000")
         }
 
-        val currency = rs.currency ?: "USD"
+        val currency = rs.currency ?: "THB"
         if (currency === "RUB") {
-            minPrice = minPrice.multiply(BigDecimal(85))
-            maxPrice = maxPrice.multiply(BigDecimal(85))
+            minPrice = minPrice.multiply(BigDecimal(2.5))
+            maxPrice = maxPrice.multiply(BigDecimal(2.5))
         }
-        if (currency === "THB") {
+        if (currency === "USD") {
             minPrice = minPrice.multiply(BigDecimal(0.03))
             maxPrice = maxPrice.multiply(BigDecimal(0.03))
         }
@@ -696,7 +696,7 @@ class EstateServiceImpl(
                       "      </description>\n")
             sb.append("      <deal>2</deal>\n" +
                       "      <price>$price</price>\n" +
-                      "      <currency>USD</currency>\n" +
+                      "      <currency>THB</currency>\n" +
                       "      <installment>1</installment>\n" +
                       "      <type>${type}</type>\n" +
                       "      <region>${region}</region>\n" +

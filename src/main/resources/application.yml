@@ -131,7 +131,7 @@ currency:
   integration:
     http-client:
       service-id: currency
-      url: https://open.er-api.com/v6/latest/USD
+      url: https://open.er-api.com/v6/latest/THB
       timeout:
         connection: 230s
         read: 230s

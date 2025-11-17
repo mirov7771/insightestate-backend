@@ -125,7 +125,7 @@ class EstateProcessorImpl(
     ): CustomPageDtoRs {
         var rMinPrice = minPrice
         var rMaxPrice = maxPrice
-        if (currency != null && currency != "USD") {
+        if (currency != null && currency != "THB") {
             val rate = currencyService.getRate(currency)
             if (rMinPrice != null && rMinPrice > BigDecimal.ZERO) {
                 rMinPrice = rMinPrice.divide(rate)
@@ -156,7 +156,7 @@ class EstateProcessorImpl(
             petFriendly = petFriendly,
         )
 
-        if (currency != null && currency != "USD") {
+        if (currency != null && currency != "THB") {
             estates.forEach { entity ->
                 entity.estateDetail.price.min = getPrice(entity.estateDetail.price.min, currency)!!
                 entity.estateDetail.price.max = getPrice(entity.estateDetail.price.max, currency)!!
@@ -284,7 +284,7 @@ class EstateProcessorImpl(
         val estates = estateService.aiRequest(
             String(Base64.getDecoder().decode(rq.request))
         )
-        if (currency != "USD") {
+        if (currency != "THB") {
             estates.forEach { entity ->
                 entity.estateDetail.price.min = getPrice(entity.estateDetail.price.min, currency)!!
                 entity.estateDetail.price.max = getPrice(entity.estateDetail.price.max, currency)!!
@@ -356,7 +356,7 @@ class EstateProcessorImpl(
         val projectId = "${estate.estateDetail.projectId}%"
         var units = unitRepository.findByProjectId(projectId)
 
-        if (currency != null && currency != "USD") {
+        if (currency != null && currency != "THB") {
             units.forEach {
                 it.price = dec.format(getPrice(strToBigDecimal(it.price), currency)).toString()
                 it.priceSq = dec.format(getPrice(strToBigDecimal(it.priceSq), currency)).toString()
@@ -491,7 +491,7 @@ class EstateProcessorImpl(
             return null
         return currencyService.getValueByCurrency(
             value = price,
-            currency = currency ?: "USD"
+            currency = currency ?: "THB"
         )
     }
 

@@ -177,10 +177,10 @@ class EstateImageLoaderImpl(
             estate.estateDetail.canShow = estate.isCanShow()
         }
 
-        estates.filter { !it.isCanShow() }.forEach {
-            it.estateDetail.exteriorImages = mutableListOf("https://lotsof.properties/estate-images/default_logo.png")
-            it.estateDetail.canShow = it.isCanShow()
-        }
+//        estates.filter { !it.isCanShow() }.forEach {
+//            it.estateDetail.exteriorImages = mutableListOf("default_logo.png")
+//            it.estateDetail.canShow = it.isCanShow()
+//        }
 
         transactionTemplate.executeWithoutResult {
             estateService.saveAll(estates)
