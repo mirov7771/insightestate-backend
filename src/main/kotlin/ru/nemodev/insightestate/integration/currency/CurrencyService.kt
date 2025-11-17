@@ -27,7 +27,7 @@ class CurrencyServiceImpl (
         private const val RUB = "RUB"
         private const val THB = "THB"
         private const val DEFAULT_RUB = "85"
-        private const val DEFAULT_THB = "33"
+        private const val DEFAULT_THB = "0.033"
     }
 
     private val currencyMap: ConcurrentHashMap<String, BigDecimal> = ConcurrentHashMap()
