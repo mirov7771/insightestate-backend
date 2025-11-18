@@ -22,6 +22,7 @@ import ru.nemodev.insightestate.service.estate.EstateService
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.extensions.nullIfEmpty
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.util.*
 
@@ -128,10 +129,10 @@ class EstateProcessorImpl(
         if (currency != null && currency != "THB") {
             val rate = currencyService.getRate(currency)
             if (rMinPrice != null && rMinPrice > BigDecimal.ZERO) {
-                rMinPrice = rMinPrice.divide(rate)
+                rMinPrice = rMinPrice.divide(rate, 2, RoundingMode.HALF_UP)
             }
             if (rMaxPrice != null && rMaxPrice > BigDecimal.ZERO) {
-                rMaxPrice = rMaxPrice.divide(rate)
+                rMaxPrice = rMaxPrice.divide(rate, 2, RoundingMode.HALF_UP)
             }
         }
 

@@ -15,4 +15,6 @@ data class CurrencyRate (
     val rub: BigDecimal? = null,
     @JsonProperty("THB")
     val thb: BigDecimal? = null,
+    @JsonProperty("USD")
+    val usd: BigDecimal? = null,
 )
