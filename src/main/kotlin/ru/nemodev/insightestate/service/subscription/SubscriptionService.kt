@@ -3,6 +3,7 @@ package ru.nemodev.insightestate.service.subscription
 import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.entity.SubscriptionEntity
 import ru.nemodev.insightestate.entity.TariffEntity
+import ru.nemodev.insightestate.repository.StripeUserRepository
 import ru.nemodev.insightestate.repository.SubscriptionRepository
 import ru.nemodev.insightestate.service.EmailService
 import ru.nemodev.insightestate.service.UserService
@@ -42,6 +43,7 @@ class SubscriptionServiceImpl (
     private val tariffService: TariffService,
     private val emailService: EmailService,
     private val userService: UserService,
+    private val stripeUserRepository: StripeUserRepository
 ) : SubscriptionService {
 
     override fun saveTariff(
@@ -121,6 +123,7 @@ class SubscriptionServiceImpl (
         type: Int = tariff.type,
         promoCode: String? = null,
     ) {
+        val currency = stripeUserRepository.findByUserId(userId)?.currency ?: "usd"
         var price = if (type == 0) tariff.price else null
         var date = if (type == 0) LocalDateTime.now().plusDays(14) else null
         var date2 = if (type == 1) LocalDateTime.now().plusDays(14) else null
@@ -146,6 +149,13 @@ class SubscriptionServiceImpl (
                 "START95" -> price2.multiply(BigDecimal(0.05))
                 else -> price2
             }
+        }
+
+        price = when (currency) {
+            "thb" -> price?.multiply(BigDecimal(33))
+            "eur" -> price?.multiply(BigDecimal(0.87))
+            "rub" -> price?.multiply(BigDecimal(81))
+            else -> price
         }
 
         if (subscription == null) {

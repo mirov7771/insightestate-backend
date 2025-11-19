@@ -199,9 +199,7 @@ class StripeServiceImpl (
         userId: UUID
     ): Long {
         val subscription = subscriptionService.getSubscription(userId) ?: return 0L
-        val price = subscription.mainPayAmount?.toLong()?.plus(
-            (subscription.extraPayAmount ?: BigDecimal.ZERO).toLong()
-        )
+        val price = subscription.mainPayAmount?.toLong()
         return (price ?: 0L) * 100
     }
 
