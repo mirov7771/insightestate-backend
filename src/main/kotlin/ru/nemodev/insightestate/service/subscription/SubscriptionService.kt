@@ -155,6 +155,7 @@ class SubscriptionServiceImpl (
             "thb" -> price?.multiply(BigDecimal(33))
             "eur" -> price?.multiply(BigDecimal(0.87))
             "rub" -> price?.multiply(BigDecimal(81))
+            "aud" -> price?.multiply(BigDecimal(1.54))
             else -> price
         }
 

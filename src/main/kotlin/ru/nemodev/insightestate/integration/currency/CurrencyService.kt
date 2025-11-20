@@ -26,8 +26,10 @@ class CurrencyServiceImpl (
         private const val USD = "USD"
         private const val RUB = "RUB"
         private const val THB = "THB"
+        private const val AUD = "AUD"
         private const val DEFAULT_RUB = "85"
         private const val DEFAULT_USD = "0.033"
+        private const val DEFAULT_AUD = "0.05"
     }
 
     private val currencyMap: ConcurrentHashMap<String, BigDecimal> = ConcurrentHashMap()
@@ -59,5 +61,6 @@ class CurrencyServiceImpl (
         }
         currencyMap[RUB] = rates?.rub ?: DEFAULT_RUB.toBigDecimal()
         currencyMap[USD] = rates?.usd ?: DEFAULT_USD.toBigDecimal()
+        currencyMap[AUD] = rates?.aud ?: DEFAULT_AUD.toBigDecimal()
     }
 }

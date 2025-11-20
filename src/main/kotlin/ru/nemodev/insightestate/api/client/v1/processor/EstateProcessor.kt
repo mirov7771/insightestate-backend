@@ -305,6 +305,7 @@ class EstateProcessorImpl(
         val currencySym = when (currency) {
             "RUB" -> "₽"
             "THB" -> "฿"
+            "AUD" -> "A$"
             else -> "$"
         }
         val list = estateService.findAll().map {

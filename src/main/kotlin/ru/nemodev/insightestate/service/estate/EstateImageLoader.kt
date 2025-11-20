@@ -102,47 +102,47 @@ class EstateImageLoaderImpl(
 
             val estateImageMap = mutableMapOf<String, EstateImages>()
 
-            googleDriveIntegration.downloadImageFiles().forEach { imageFile ->
-                try {
-                    val originalName = imageFile.name
-                    val originalExtension = imageFile.fileExtension ?: imageFile.name.getFileExtension()
-                    val projectId = originalName.substringBefore("_")
-                    val type = originalName.substringAfter("_").substringBefore("_")
-                    val order = try {
-                        originalName.substringAfterLast("_").substringBefore(".").filter { it.isDigit() }.toInt()
-                    } catch (e: Exception) {
-                        11
-                    }
-                    val extension = when (originalExtension) {
-                        "jpg", "JPG" -> "jpeg"
-                        "PNG" -> "png"
-                        else -> originalExtension
-                    }.lowercase()
-                    val estateImages = estateImageMap.computeIfAbsent(projectId) {
-                        EstateImages(
-                            projectId = projectId,
-                        )
-                    }
-                    val estateImage = EstateImage(
-                        order = order,
-                        name = "${projectId}_${type}_${order}.$extension",
-                        extension = extension,
-                        googleDriveFileId = imageFile.id,
-                    )
-                    when (type) {
-                        "fac" -> estateImages.facilityImages.add(estateImage)
-                        "ext" -> estateImages.exteriorImages.add(estateImage)
-                        "int" -> estateImages.interiorImages.add(estateImage)
-                    }
-                } catch (e: Exception) {
-                    logError(e) { "Ошибка парсинга имени фото объекта - ${imageFile.name}" }
-                }
-            }
-
-            if (estateImageMap.isEmpty()) {
-                logError { "В google drive нет фото объектов" }
-                return@withUpdatePhotoLock
-            }
+//            googleDriveIntegration.downloadImageFiles().forEach { imageFile ->
+//                try {
+//                    val originalName = imageFile.name
+//                    val originalExtension = imageFile.fileExtension ?: imageFile.name.getFileExtension()
+//                    val projectId = originalName.substringBefore("_")
+//                    val type = originalName.substringAfter("_").substringBefore("_")
+//                    val order = try {
+//                        originalName.substringAfterLast("_").substringBefore(".").filter { it.isDigit() }.toInt()
+//                    } catch (e: Exception) {
+//                        11
+//                    }
+//                    val extension = when (originalExtension) {
+//                        "jpg", "JPG" -> "jpeg"
+//                        "PNG" -> "png"
+//                        else -> originalExtension
+//                    }.lowercase()
+//                    val estateImages = estateImageMap.computeIfAbsent(projectId) {
+//                        EstateImages(
+//                            projectId = projectId,
+//                        )
+//                    }
+//                    val estateImage = EstateImage(
+//                        order = order,
+//                        name = "${projectId}_${type}_${order}.$extension",
+//                        extension = extension,
+//                        googleDriveFileId = imageFile.id,
+//                    )
+//                    when (type) {
+//                        "fac" -> estateImages.facilityImages.add(estateImage)
+//                        "ext" -> estateImages.exteriorImages.add(estateImage)
+//                        "int" -> estateImages.interiorImages.add(estateImage)
+//                    }
+//                } catch (e: Exception) {
+//                    logError(e) { "Ошибка парсинга имени фото объекта - ${imageFile.name}" }
+//                }
+//            }
+//
+//            if (estateImageMap.isEmpty()) {
+//                logError { "В google drive нет фото объектов" }
+//                return@withUpdatePhotoLock
+//            }
 
             loadImages(estateImageMap)
 
@@ -151,30 +151,82 @@ class EstateImageLoaderImpl(
     }
 
     private fun loadImages(estateImageMap: Map<String, EstateImages>) {
-        val estates = estateService.findAll()
+        val estates = estateService.findAll().filter { !it.isCanShow() }
         if (estates.isEmpty()) {
             logError { "Фото объектов не могут быть загружены т.к объектов нет в базе данных" }
             return
         }
 
         estates.forEachIndexed { index, estate ->
-            logInfo { "${index + 1}/${estates.size} - старт загрузки фото объекта ${estate.estateDetail.projectId}" }
+            logInfo { "${index + 1}/${estates.size} - старт загрузки фото объекта ${estate.estateDetail.projectId}, ${estate.id}" }
 
-            estateImageMap[estate.estateDetail.projectId]?.also { estateImages ->
+            val projectId = estate.estateDetail.projectId
 
-                // Загружаем каждую пачку фото последовательно иначе на сервере не хватает памяти
-                runBlocking { loadImageToMinio(estateImages.facilityImages).awaitAll() }
-                runBlocking { loadImageToMinio(estateImages.exteriorImages).awaitAll() }
-                runBlocking { loadImageToMinio(estateImages.interiorImages).awaitAll() }
+            val facList = mutableListOf<String>()
+            val extList = mutableListOf<String>()
+            val intList = mutableListOf<String>()
 
-                // Обновляем фото объекта
-                estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
-                estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
-                estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
+            for (i in 1..30) {
+                val facName = "${projectId}_fac_$i.webp"
+                val intName = "${projectId}_int_$i.webp"
+                val extName = "${projectId}_ext_$i.webp"
+                val facSize = try {
+                    minioS3Client.fileParams(bucket = "estate-images", fileName = facName).size()
+                } catch (_: Exception) {
+                    0L
+                }
+                val intSize = try {
+                    minioS3Client.fileParams(bucket = "estate-images", fileName = intName).size()
+                } catch (_: Exception) {
+                    0L
+                }
+                val extSize = try {
+                    minioS3Client.fileParams(bucket = "estate-images", fileName = extName).size()
+                } catch (_: Exception) {
+                    0L
+                }
+                if (facSize > 0) {
+                    facList.add(facName)
+                }
+                if (extSize > 0) {
+                    extList.add(extName)
+                }
+                if (intSize > 0) {
+                    intList.add(intName)
+                }
             }
 
+            if (facList.isNotEmpty()) {
+                estate.estateDetail.canShow = estate.isCanShow()
+                estate.estateDetail.facilityImages = facList
+            }
+
+            if (extList.isNotEmpty()) {
+                estate.estateDetail.canShow = estate.isCanShow()
+                estate.estateDetail.exteriorImages = extList
+            }
+
+            if (intList.isNotEmpty()) {
+                estate.estateDetail.canShow = estate.isCanShow()
+                estate.estateDetail.interiorImages = intList
+            }
+
+
+//            estateImageMap[estate.estateDetail.projectId]?.also { estateImages ->
+//
+//                // Загружаем каждую пачку фото последовательно иначе на сервере не хватает памяти
+//                runBlocking { loadImageToMinio(estateImages.facilityImages).awaitAll() }
+//                runBlocking { loadImageToMinio(estateImages.exteriorImages).awaitAll() }
+//                runBlocking { loadImageToMinio(estateImages.interiorImages).awaitAll() }
+//
+//                // Обновляем фото объекта
+//                estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
+//                estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
+//                estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
+//            }
+
             // Обновляем признак можно ли показывать объект
-            estate.estateDetail.canShow = estate.isCanShow()
+//            estate.estateDetail.canShow = estate.isCanShow()
         }
 
 //        estates.filter { !it.isCanShow() }.forEach {

@@ -488,6 +488,10 @@ class EstateServiceImpl(
             minPrice = minPrice.multiply(BigDecimal(0.03))
             maxPrice = maxPrice.multiply(BigDecimal(0.03))
         }
+        if (currency === "AUD") {
+            minPrice = minPrice.multiply(BigDecimal(0.05))
+            maxPrice = maxPrice.multiply(BigDecimal(0.05))
+        }
 
         val beachWalkTime = try {
             (rs.beachTravelTimesWalk ?: "0").toInt()
