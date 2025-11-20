@@ -45,6 +45,7 @@ class EstateDtoRsConverter(
             collectionCount = estateDetail.collectionCount ?: 0,
             lat = estateDetail.lat,
             lon = estateDetail.lon,
+            status = estateDetail.status
         )
     }
 }

@@ -28,6 +28,7 @@ data class EstateDtoRs(
     var collectionCount: Int? = null,
     var lat: String? = null,
     var lon: String? = null,
+    val status: EstateStatus
 )
 
 data class EstateDetailDtoRs(
