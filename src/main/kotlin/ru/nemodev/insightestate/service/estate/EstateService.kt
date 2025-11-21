@@ -42,7 +42,9 @@ interface EstateService {
         developer: Set<String>?,
         petFriendly: Boolean?,
         unitCountMin: Int?,
-        unitCountMax: Int?
+        unitCountMax: Int?,
+        sizeMin: Long?,
+        sizeMax: Long?,
     ): List<EstateEntity>
 
     fun findById(
@@ -74,7 +76,9 @@ interface EstateService {
         developer: Set<String>?,
         petFriendly: Boolean?,
         unitCountMin: Int?,
-        unitCountMax: Int?
+        unitCountMax: Int?,
+        sizeMin: Long?,
+        sizeMax: Long?,
     ): Int
 
     fun createXml(): String
@@ -113,6 +117,8 @@ class EstateServiceImpl(
         petFriendly: Boolean?,
         unitCountMin: Int?,
         unitCountMax: Int?,
+        sizeMin: Long?,
+        sizeMax: Long?,
     ): List<EstateEntity> {
 
         if (name.isNotNullOrEmpty()) {
@@ -260,6 +266,8 @@ class EstateServiceImpl(
             petFriendly = petFriendly,
             unitCountMin = unitCountMin,
             unitCountMax = unitCountMax,
+            sizeMin = sizeMin,
+            sizeMax = sizeMax,
         )
 
         if (estates.isNotEmpty() && userId != null) {
@@ -303,7 +311,9 @@ class EstateServiceImpl(
         developer: Set<String>?,
         petFriendly: Boolean?,
         unitCountMin: Int?,
-        unitCountMax: Int?
+        unitCountMax: Int?,
+        sizeMin: Long?,
+        sizeMax: Long?
     ): Int {
         if (name.isNotNullOrEmpty()) {
             var list = repository.findAll()
@@ -432,6 +442,8 @@ class EstateServiceImpl(
             petFriendly = petFriendly,
             unitCountMin = unitCountMin,
             unitCountMax = unitCountMax,
+            sizeMin = sizeMin,
+            sizeMax = sizeMax,
         ).size
     }
 
@@ -608,6 +620,8 @@ class EstateServiceImpl(
             petFriendly = null,
             unitCountMin = null,
             unitCountMax = null,
+            sizeMin = null,
+            sizeMax = null,
         )
         if (list.isEmpty())
             list = repository.findRandom()

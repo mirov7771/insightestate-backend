@@ -58,7 +58,9 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
                                                                                         
             and ((:unitCountMin is null or ((estate_detail -> 'unitCount' ->> 'total')::numeric >= :unitCountMin))
                 and (:unitCountMax is null or ((estate_detail -> 'unitCount' ->> 'total')::numeric < :unitCountMax)))
-                                                                                                                    
+            
+            and ((:sizeMin is null or ((estate_detail ->> 'size')::numeric >= :sizeMin))
+                and (:sizeMax is null or ((estate_detail ->> 'size' )::numeric <= :sizeMax)))                                                                                                        
         order by updated_at desc
         limit :limit offset :offset
     """)
@@ -118,6 +120,8 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         petFriendly: Boolean?,
         unitCountMin: Int?,
         unitCountMax: Int?,
+        sizeMin: Long?,
+        sizeMax: Long?,
     ): List<EstateEntity>
 
     @Query("""

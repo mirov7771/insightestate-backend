@@ -98,6 +98,12 @@ class EstateExcelParserImpl : EstateExcelParser {
     }
 
     private fun parseRow(row: Row): EstateEntity {
+        val size = row.getString("BM")
+        val sizeNumber = try {
+            size?.toLong()
+        } catch (_: Exception) {
+            null
+        }
         return EstateEntity(
             estateDetail = EstateDetail(
                 lat = row.getString("JB"),
@@ -112,6 +118,7 @@ class EstateExcelParserImpl : EstateExcelParser {
 
                 landPurchased = row.getBoolean("D"),
                 eiaEnabled = row.getBoolean("E"),
+                size = sizeNumber,
                 developer = EstateDeveloper(
                     name = row.getString("H")!!,
                     country = row.getString("AJ"),

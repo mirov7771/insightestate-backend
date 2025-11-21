@@ -79,6 +79,7 @@ data class EstateDetail (
 
     val lat: String? = null,
     val lon: String? = null,
+    val size: Long? = null,
 )
 
 // Оценка проекта

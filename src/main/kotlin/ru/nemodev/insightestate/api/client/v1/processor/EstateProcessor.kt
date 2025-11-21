@@ -47,6 +47,8 @@ interface EstateProcessor {
         developer: Set<String>?,
         petFriendly: Boolean?,
         units: Set<String>?,
+        sizeMin: Long? = null,
+        sizeMax: Long? = null,
     ): CustomPageDtoRs
 
     fun findById(
@@ -123,6 +125,8 @@ class EstateProcessorImpl(
         developer: Set<String>?,
         petFriendly: Boolean?,
         units: Set<String>?,
+        sizeMin: Long?,
+        sizeMax: Long?,
     ): CustomPageDtoRs {
         var rMinPrice = minPrice
         var rMaxPrice = maxPrice
@@ -184,6 +188,8 @@ class EstateProcessorImpl(
             petFriendly = petFriendly,
             unitCountMin = unitCountMin,
             unitCountMax = unitCountMax,
+            sizeMin = sizeMin,
+            sizeMax = sizeMax,
         )
 
         if (currency != null && currency != "THB") {
@@ -212,7 +218,9 @@ class EstateProcessorImpl(
             developer = developer,
             petFriendly = petFriendly,
             unitCountMin = unitCountMin,
-            unitCountMax = unitCountMax
+            unitCountMax = unitCountMax,
+            sizeMin = sizeMin,
+            sizeMax = sizeMax,
         )
 
         return CustomPageDtoRs(

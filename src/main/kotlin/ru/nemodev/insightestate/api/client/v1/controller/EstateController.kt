@@ -126,6 +126,12 @@ class EstateController (
         developer: Set<String>?,
         @RequestParam(name = "petFriendly", required = false)
         petFriendly: Boolean?,
+
+        @RequestParam(name = "sizeMin", required = false)
+        sizeMin: Long? = null,
+
+        @RequestParam(name = "sizeMax", required = false)
+        sizeMax: Long? = null,
     ): CustomPageDtoRs = estateProcessor.findAll(
         currency = currency,
         types = types,
@@ -150,6 +156,8 @@ class EstateController (
         developer = developer,
         petFriendly = petFriendly,
         units = units,
+        sizeMin = sizeMin,
+        sizeMax = sizeMax,
     )
 
     @Operation(
