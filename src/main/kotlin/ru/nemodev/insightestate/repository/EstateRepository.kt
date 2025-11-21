@@ -54,7 +54,11 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
             and ((:isTwoMinPrice is null or ((estate_detail -> 'roomLayouts' -> 'two' -> 'price' ->> 'min')::numeric > :isTwoMinPrice))
                 and (:isTwoMaxPrice is null or ((estate_detail -> 'roomLayouts' -> 'two' -> 'price' ->> 'min')::numeric <= :isTwoMaxPrice)))
             and ((:isFreeMinPrice is null or ((estate_detail -> 'roomLayouts' -> 'three' -> 'price' ->> 'min')::numeric > :isFreeMinPrice))
-                and (:isFreeMaxPrice is null or ((estate_detail -> 'roomLayouts' -> 'three' -> 'price' ->> 'min')::numeric <= :isFreeMaxPrice)))                                                                        
+                and (:isFreeMaxPrice is null or ((estate_detail -> 'roomLayouts' -> 'three' -> 'price' ->> 'min')::numeric <= :isFreeMaxPrice)))
+                                                                                        
+            and ((:unitCountMin is null or ((estate_detail -> 'unitCount' ->> 'total')::numeric >= :unitCountMin))
+                and (:unitCountMax is null or ((estate_detail -> 'unitCount' ->> 'total')::numeric < :unitCountMax)))
+                                                                                                                    
         order by updated_at desc
         limit :limit offset :offset
     """)
@@ -112,13 +116,9 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
 
         developer: Array<String>?,
         petFriendly: Boolean?,
+        unitCountMin: Int?,
+        unitCountMax: Int?,
     ): List<EstateEntity>
-
-    @Query("""
-        select count(*) from estate
-        where (estate_detail ->> 'canShow')::boolean = true
-    """)
-    fun findAllForShowCount(): Int?
 
     @Query("""
         select * from estate

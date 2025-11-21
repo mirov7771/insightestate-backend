@@ -1,6 +1,5 @@
 package ru.nemodev.insightestate.service.estate
 
-import jakarta.annotation.PostConstruct
 import org.springframework.data.domain.Pageable
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
@@ -42,6 +41,8 @@ interface EstateService {
         name: String?,
         developer: Set<String>?,
         petFriendly: Boolean?,
+        unitCountMin: Int?,
+        unitCountMax: Int?
     ): List<EstateEntity>
 
     fun findById(
@@ -72,6 +73,8 @@ interface EstateService {
         name: String?,
         developer: Set<String>?,
         petFriendly: Boolean?,
+        unitCountMin: Int?,
+        unitCountMax: Int?
     ): Int
 
     fun createXml(): String
@@ -108,6 +111,8 @@ class EstateServiceImpl(
         name: String?,
         developer: Set<String>?,
         petFriendly: Boolean?,
+        unitCountMin: Int?,
+        unitCountMax: Int?,
     ): List<EstateEntity> {
 
         if (name.isNotNullOrEmpty()) {
@@ -253,6 +258,8 @@ class EstateServiceImpl(
             isOneMinPrice = isOneMinPrice,
             developer = developerArray,
             petFriendly = petFriendly,
+            unitCountMin = unitCountMin,
+            unitCountMax = unitCountMax,
         )
 
         if (estates.isNotEmpty() && userId != null) {
@@ -294,7 +301,9 @@ class EstateServiceImpl(
         maxPrice: BigDecimal?,
         name: String?,
         developer: Set<String>?,
-        petFriendly: Boolean?
+        petFriendly: Boolean?,
+        unitCountMin: Int?,
+        unitCountMax: Int?
     ): Int {
         if (name.isNotNullOrEmpty()) {
             var list = repository.findAll()
@@ -421,6 +430,8 @@ class EstateServiceImpl(
             isOneMinPrice = isOneMinPrice,
             developer = developerArray,
             petFriendly = petFriendly,
+            unitCountMin = unitCountMin,
+            unitCountMax = unitCountMax,
         ).size
     }
 
@@ -595,6 +606,8 @@ class EstateServiceImpl(
             isFreeMaxPrice = null,
             developer = null,
             petFriendly = null,
+            unitCountMin = null,
+            unitCountMax = null,
         )
         if (list.isEmpty())
             list = repository.findRandom()

@@ -62,6 +62,9 @@ class EstateController (
         @RequestParam(name = "rooms", required = false)
         rooms: Set<String>?,
 
+        @RequestParam(name = "untis", required = false)
+        units: Set<String>?,
+
         @Parameter(description = "Стоимость / 1 - до 100 000 / 2 - \$100 000 — \$200 000 / 3 - \$200 000 — \$500 000 / 4 - \$500 000 — \$1 000 000 / 5 - от \$1 000 000", required = false)
         @RequestParam(name = "price", required = false)
         price: String?,
@@ -146,6 +149,7 @@ class EstateController (
         name = name,
         developer = developer,
         petFriendly = petFriendly,
+        units = units,
     )
 
     @Operation(

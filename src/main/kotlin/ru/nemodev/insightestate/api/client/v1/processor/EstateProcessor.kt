@@ -12,8 +12,6 @@ import ru.nemodev.insightestate.api.client.v1.dto.user.MainInfoDto
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.EstateType
 import ru.nemodev.insightestate.entity.UnitEntity
-import ru.nemodev.insightestate.extension.getBigDecimal
-import ru.nemodev.insightestate.extension.getString
 import ru.nemodev.insightestate.integration.currency.CurrencyService
 import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
@@ -48,6 +46,7 @@ interface EstateProcessor {
         name: String? = null,
         developer: Set<String>?,
         petFriendly: Boolean?,
+        units: Set<String>?,
     ): CustomPageDtoRs
 
     fun findById(
@@ -123,6 +122,7 @@ class EstateProcessorImpl(
         name: String?,
         developer: Set<String>?,
         petFriendly: Boolean?,
+        units: Set<String>?,
     ): CustomPageDtoRs {
         var rMinPrice = minPrice
         var rMaxPrice = maxPrice
@@ -134,6 +134,33 @@ class EstateProcessorImpl(
             if (rMaxPrice != null && rMaxPrice > BigDecimal.ZERO) {
                 rMaxPrice = rMaxPrice.divide(rate, 2, RoundingMode.HALF_UP)
             }
+        }
+
+        var unitCountMin: Int? = null
+        var unitCountMax: Int? = null
+
+        if (units.isNotNullOrEmpty()) {
+            if (units!!.contains("5"))
+                unitCountMin = 500
+            if (units.contains("4"))
+                unitCountMin = 200
+            if (units.contains("3"))
+                unitCountMin = 50
+            if (units.contains("2"))
+                unitCountMin = 10
+            if (units.contains("1"))
+                unitCountMin = 0
+
+            if (units.contains("1"))
+                unitCountMax = 10
+            if (units.contains("2"))
+                unitCountMax = 50
+            if (units.contains("3"))
+                unitCountMax = 200
+            if (units.contains("4"))
+                unitCountMax = 500
+            if (units.contains("4"))
+                unitCountMax = 50000
         }
 
         val estates = estateService.findAll(
@@ -155,6 +182,8 @@ class EstateProcessorImpl(
             name = name,
             developer = developer,
             petFriendly = petFriendly,
+            unitCountMin = unitCountMin,
+            unitCountMax = unitCountMax,
         )
 
         if (currency != null && currency != "THB") {
@@ -182,6 +211,8 @@ class EstateProcessorImpl(
             name = name,
             developer = developer,
             petFriendly = petFriendly,
+            unitCountMin = unitCountMin,
+            unitCountMax = unitCountMax
         )
 
         return CustomPageDtoRs(
