@@ -167,6 +167,11 @@ class EstateProcessorImpl(
                 unitCountMax = 50000
         }
 
+        var minSize = sizeMin
+        if (minSize == null && sizeMax != null) {
+            minSize = 0
+        }
+
         val estates = estateService.findAll(
             types = types,
             buildEndYears = buildEndYears,
@@ -188,7 +193,7 @@ class EstateProcessorImpl(
             petFriendly = petFriendly,
             unitCountMin = unitCountMin,
             unitCountMax = unitCountMax,
-            sizeMin = sizeMin,
+            sizeMin = minSize,
             sizeMax = sizeMax,
         )
 
@@ -219,7 +224,7 @@ class EstateProcessorImpl(
             petFriendly = petFriendly,
             unitCountMin = unitCountMin,
             unitCountMax = unitCountMax,
-            sizeMin = sizeMin,
+            sizeMin = minSize,
             sizeMax = sizeMax,
         )
 
