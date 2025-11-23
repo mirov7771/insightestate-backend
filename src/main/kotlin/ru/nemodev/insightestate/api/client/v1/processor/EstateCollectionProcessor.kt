@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.api.client.v1.converter.EstateCollectionDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.dto.estate.*
+import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessorImpl.Companion
 import ru.nemodev.insightestate.domen.EstateCollection
 import ru.nemodev.insightestate.entity.LikesEntity
 import ru.nemodev.insightestate.integration.currency.CurrencyService
@@ -14,7 +15,9 @@ import ru.nemodev.insightestate.service.UserService
 import ru.nemodev.insightestate.service.estate.EstateCollectionService
 import ru.nemodev.platform.core.api.dto.paging.PageDtoRs
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
+import ru.nemodev.platform.core.extensions.nullIfEmpty
 import java.math.BigDecimal
+import java.text.DecimalFormat
 import java.util.*
 
 interface EstateCollectionProcessor {
@@ -42,6 +45,10 @@ class EstateCollectionProcessorImpl(
     private val userService: UserService,
     private val currencyService: CurrencyService,
 ) : EstateCollectionProcessor {
+
+    companion object {
+        val dec = DecimalFormat("#,###")
+    }
 
     override fun findAll(currency: String?, authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs> {
         val estateCollections = estateCollectionService.findAll(authBasicToken, pageable)
@@ -159,6 +166,13 @@ class EstateCollectionProcessorImpl(
                     if (it.estateDetail.roomLayouts.villaFive?.price?.avg != null)
                         it.estateDetail.roomLayouts.villaFive?.price!!.avg = getPrice(it.estateDetail.roomLayouts.villaFive?.price?.avg, currency)
                 }
+
+                if (it.estateDetail.units.isNotNullOrEmpty()) {
+                    it.estateDetail.units?.forEach { unit ->
+                        unit.price = dec.format(getPrice(strToBigDecimal(unit.price), currency)).toString()
+                        unit.priceSq = dec.format(getPrice(strToBigDecimal(unit.priceSq), currency)).toString()
+                    }
+                }
             }
         }
 
@@ -175,6 +189,15 @@ class EstateCollectionProcessorImpl(
         )
         rs.agentInfo = userService.getUserById(entity.collectionDetail.userId)
         return rs
+    }
+
+    private fun strToBigDecimal(str: String?): BigDecimal? {
+        return str?.replace(" ", "")
+            ?.replace(",", ".")
+            ?.replace("%", "")
+            ?.replace(" ", "")
+            ?.nullIfEmpty()
+            ?.toBigDecimal()
     }
 
     override fun update(id: UUID, rq: EstateCollectionUpdateDto) {
