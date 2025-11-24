@@ -35,6 +35,8 @@ interface SubscriptionService {
     fun getPayments(): List<SubscriptionEntity>
 
     fun updatePaymentDate(payment: SubscriptionEntity)
+
+    fun confirm(userId: UUID)
 }
 
 @Service
@@ -60,9 +62,14 @@ class SubscriptionServiceImpl (
             promoCode = promoCode
         )
         val user = userService.getUserById(userId)
-        var message = "Клиент ${user.login} подключил тариф ${tariff.title}"
+        var message = "Клиент ${user.login} подключил тариф ${tariff.title}\n\n"
         if (promoCode != null) {
-            message += "; Использовал промокод $promoCode"
+            message += "Использовал промокод $promoCode\n"
+        }
+        val stripeUser = stripeUserRepository.findByUserId(userId)
+        if (stripeUser == null) {
+            message += "Подтвердите оплату перейдя по ссылкe\n"
+            message += "https://lotsof.properties/api/v1/subscription/confirm/$userId"
         }
         emailService.sendToAdmin(
             subject = "Клиент оформил подписку",
@@ -114,6 +121,12 @@ class SubscriptionServiceImpl (
         if (payment.extraPayDate != null)
             payment.extraPayDate = payment.extraPayDate?.plusMonths(1)
         subscriptionRepository.save(payment.apply { isNew = false })
+    }
+
+    override fun confirm(userId: UUID) {
+        val subscription = subscriptionRepository.findByUserId(userId) ?: return
+        subscription.mainPayDate = LocalDateTime.now().plusMonths(1)
+        subscriptionRepository.save(subscription)
     }
 
     private fun createOrUpdateTariff(

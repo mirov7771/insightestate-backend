@@ -22,6 +22,10 @@ interface SubscriptionProcessor {
     fun removeTariff(
         id: UUID
     )
+
+    fun confirm(
+        userId: UUID
+    )
 }
 
 @Component
@@ -63,6 +67,10 @@ class SubscriptionProcessorImpl (
         id: UUID
     ) {
         subscriptionService.removeTariff(id)
+    }
+
+    override fun confirm(userId: UUID) {
+        subscriptionService.confirm(userId)
     }
 }
 

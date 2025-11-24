@@ -29,4 +29,9 @@ class SubscriptionController (
     fun removeTariff(
         @PathVariable id: UUID
     ) = processor.removeTariff(id)
+
+    @GetMapping("/confirm/{userId}")
+    fun confirm(
+        @PathVariable userId: UUID
+    ) = processor.confirm(userId)
 }
