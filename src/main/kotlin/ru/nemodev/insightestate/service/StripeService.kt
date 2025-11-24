@@ -19,7 +19,6 @@ import ru.nemodev.insightestate.entity.StripeUserEntity
 import ru.nemodev.insightestate.repository.StripeUserRepository
 import ru.nemodev.insightestate.service.subscription.SubscriptionService
 import ru.nemodev.platform.core.logging.sl4j.Loggable
-import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
 
@@ -27,7 +26,7 @@ import java.util.*
 interface StripeService {
     fun session(rq: StripeRq): StripeRs
     fun subscription(rq: StripeSubscriptionRq)
-    fun recurrent(rq: StripeRecurrentRq)
+    fun recurrent(rq: StripeRecurrentRq): Boolean
     fun refund(rq: StripeRecurrentRq)
 }
 
@@ -67,11 +66,12 @@ class StripeServiceImpl (
         client.subscriptions().create(params)
     }
 
-    override fun recurrent(rq: StripeRecurrentRq) {
+    override fun recurrent(rq: StripeRecurrentRq): Boolean {
         val paymentId = getPaymentId(rq.userId)
         if (paymentId != null) {
-            startRecurrent(rq.userId, findOrCreate(rq.userId), paymentId, getCurrency(rq.userId))
+            return startRecurrent(rq.userId, findOrCreate(rq.userId), paymentId, getCurrency(rq.userId))
         }
+        return false
     }
 
     override fun refund(rq: StripeRecurrentRq) {
@@ -141,10 +141,10 @@ class StripeServiceImpl (
         customerId: String,
         paymentId: String,
         currency: String
-    ) {
+    ): Boolean {
         val amount = getAmount(userId)
         if (amount == 0L) {
-            return
+            return false
         }
         val tariffId = getTariff(userId)
         val params =
@@ -163,9 +163,11 @@ class StripeServiceImpl (
         try {
             val payment = client.paymentIntents().create(params)
             logger.info("Recurrent Success = ${payment.id}")
+            return true
         } catch (e: CardException) {
             logger.error("Recurrent Error =", e)
             client.paymentIntents().retrieve(e.stripeError.paymentIntent.id)
+            return false
         }
     }
 
@@ -215,10 +217,13 @@ class StripeServiceImpl (
         subscriptionService.getPayments().forEach {
             logger.info("Starting recurring payment for userId = {}, mainAmount = {}, extraAmount = {}"
                 , it.userId, it.mainPayAmount, it.extraPayAmount)
-            recurrent(
+            val rs = recurrent(
                 rq = StripeRecurrentRq(it.userId)
             )
-            subscriptionService.updatePaymentDate(it)
+            if (rs)
+                subscriptionService.updatePaymentDate(it)
+            else
+                subscriptionService.removeTariff(it.userId)
         }
         logger.info("End recurring payment at {}", LocalDateTime.now())
     }
