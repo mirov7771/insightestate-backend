@@ -27,6 +27,7 @@ class EstateDtoRsConverter(
             name = estateDetail.name,
             grade = estateDetail.grade.main,
             priceMin = estateDetail.price.min,
+            priceMax = estateDetail.price.max,
             roi = estateDetail.profitability.roi,
             buildEndDate = formatDate(estateDetail.buildEndDate?.toString()),
             level = estateDetail.level,

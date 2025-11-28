@@ -10,6 +10,7 @@ data class EstateDtoRs(
     val name: String,
     val grade: BigDecimal,
     val priceMin: BigDecimal,
+    val priceMax: BigDecimal,
     val roi: BigDecimal,
     val buildEndDate: String,
     val level: EstateLevelType,
