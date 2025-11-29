@@ -421,7 +421,7 @@ class EstateProcessorImpl(
                 }
             }
             if (rooms.isNotNullOrEmpty()) {
-                units = units.filter { it.rooms != null && rooms!!.contains(it.rooms) }
+                units = units.filter { it.rooms != null && rooms!!.contains(it.rooms.lowercase()) }
             }
 
             if (minPrice != null) {
