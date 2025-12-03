@@ -2,6 +2,7 @@ package ru.nemodev.insightestate.api.client.v1.dto.estate
 
 import ru.nemodev.insightestate.entity.*
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.*
 
 data class EstateDtoRs(
@@ -29,7 +30,9 @@ data class EstateDtoRs(
     var collectionCount: Int? = null,
     var lat: String? = null,
     var lon: String? = null,
-    val status: EstateStatus
+    val status: EstateStatus,
+    val updatedAt: LocalDateTime,
+    val sizeMin: BigDecimal,
 )
 
 data class EstateDetailDtoRs(

@@ -253,9 +253,6 @@ class EstateServiceImpl(
 
             city = cityArray,
 
-            limit = pageable.pageSize,
-            offset = pageable.offset,
-
             isFreeMaxPrice = isFreeMaxPrice,
             isFreeMinPrice = isFreeMinPrice,
             isOneMaxPrice = isOneMaxPrice,
@@ -428,9 +425,6 @@ class EstateServiceImpl(
             beachName = beachArray,
 
             city = cityArray,
-
-            limit = 500,
-            offset = 0,
 
             isFreeMaxPrice = isFreeMaxPrice,
             isFreeMinPrice = isFreeMinPrice,
@@ -608,8 +602,6 @@ class EstateServiceImpl(
             managementCompanyEnabled = managementCompanyEnabled,
             beachName = if (rs.beach != null) arrayOf(rs.beach) else null,
             city = if (rs.city != null) arrayOf(rs.city) else null,
-            offset = 0,
-            limit = 150,
             isFreeMinPrice = null,
             isOneMinPrice = null,
             isOneMaxPrice = null,

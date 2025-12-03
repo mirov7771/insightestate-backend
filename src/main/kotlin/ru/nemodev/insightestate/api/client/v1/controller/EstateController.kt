@@ -20,6 +20,7 @@ import ru.nemodev.insightestate.api.client.v1.dto.estate.UnitsRs
 import ru.nemodev.insightestate.api.client.v1.dto.user.MainInfoDto
 import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessor
 import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.utils.OrderBy
 import ru.nemodev.platform.core.api.dto.error.ErrorDtoRs
 import java.math.BigDecimal
 import java.util.*
@@ -132,6 +133,9 @@ class EstateController (
 
         @RequestParam(name = "sizeMax", required = false)
         sizeMax: Long? = null,
+
+        @RequestParam(name = "orderBy", required = false)
+        orderBy: OrderBy? = null
     ): CustomPageDtoRs = estateProcessor.findAll(
         currency = currency,
         types = types,
@@ -158,6 +162,7 @@ class EstateController (
         units = units,
         sizeMin = sizeMin,
         sizeMax = sizeMax,
+        orderBy = orderBy ?: OrderBy.UPDATED_AT,
     )
 
     @Operation(

@@ -4,8 +4,10 @@ import org.springframework.core.convert.converter.Converter
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateDtoRs
 import ru.nemodev.insightestate.config.property.AppProperties
+import ru.nemodev.insightestate.entity.EstateDetail
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.platform.core.integration.s3.minio.config.S3MinioProperties
+import java.math.BigDecimal
 
 @Component
 class EstateDtoRsConverter(
@@ -46,7 +48,9 @@ class EstateDtoRsConverter(
             collectionCount = estateDetail.collectionCount ?: 0,
             lat = estateDetail.lat,
             lon = estateDetail.lon,
-            status = estateDetail.status
+            status = estateDetail.status,
+            updatedAt = source.updatedAt,
+            sizeMin = getSize(estateDetail)
         )
     }
 }
@@ -66,4 +70,16 @@ fun formatDate(date: String?): String {
         else -> "Q4"
     }
     return "$quarter $year"
+}
+
+fun getSize(detail: EstateDetail): BigDecimal {
+    return detail.roomLayouts.one?.square?.min ?:
+        detail.roomLayouts.two?.square?.min ?:
+        detail.roomLayouts.three?.square?.min ?:
+        detail.roomLayouts.four?.square?.min ?:
+        detail.roomLayouts.five?.square?.min ?:
+        detail.roomLayouts.villaTwo?.square?.min ?:
+        detail.roomLayouts.villaThree?.square?.min ?:
+        detail.roomLayouts.villaFour?.square?.min ?:
+        detail.roomLayouts.villaFive?.square?.min ?: BigDecimal.ZERO
 }

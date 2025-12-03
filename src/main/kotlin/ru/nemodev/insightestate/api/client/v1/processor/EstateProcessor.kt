@@ -17,6 +17,7 @@ import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.estate.EstateImageLoader
 import ru.nemodev.insightestate.service.estate.EstateLoader
 import ru.nemodev.insightestate.service.estate.EstateService
+import ru.nemodev.insightestate.utils.OrderBy
 import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.extensions.nullIfEmpty
 import java.math.BigDecimal
@@ -49,6 +50,7 @@ interface EstateProcessor {
         units: Set<String>?,
         sizeMin: Long? = null,
         sizeMax: Long? = null,
+        orderBy: OrderBy,
     ): CustomPageDtoRs
 
     fun findById(
@@ -127,6 +129,7 @@ class EstateProcessorImpl(
         units: Set<String>?,
         sizeMin: Long?,
         sizeMax: Long?,
+        orderBy: OrderBy,
     ): CustomPageDtoRs {
         var rMinPrice = minPrice
         var rMaxPrice = maxPrice
@@ -228,11 +231,21 @@ class EstateProcessorImpl(
             sizeMax = sizeMax,
         )
 
+        var list = estates.map { estateDtoRsConverter.convert(it) }
+
+        list = when (orderBy) {
+            OrderBy.PRICE_ASC -> list.sortedBy { it.priceMin }
+            OrderBy.PRICE_DESC -> list.sortedByDescending { it.priceMin }
+            OrderBy.SIZE_ASC -> list.sortedBy { it.sizeMin }
+            OrderBy.SIZE_DESC -> list.sortedByDescending { it.sizeMin }
+            else -> list.sortedByDescending { it.updatedAt }
+        }.chunked(pageable.pageSize)[pageable.pageNumber]
+
         return CustomPageDtoRs(
-            items = estates.map { estateDtoRsConverter.convert(it) },
-            pageSize = estates.size,
+            items = list,
+            pageSize = list.size,
             pageNumber = pageable.pageNumber,
-            hasMore = estates.size >= pageable.pageSize,
+            hasMore = list.size >= pageable.pageSize,
             totalPages = estateService.findPages(pageable.pageSize, count),
             totalCount = count
         )

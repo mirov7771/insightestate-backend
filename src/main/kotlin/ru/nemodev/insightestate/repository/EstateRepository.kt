@@ -80,9 +80,7 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
                                   or ((estate_detail -> 'roomLayouts' -> 'villaThree' -> 'square' ->> 'min')::numeric <= :sizeMax)
                                   or ((estate_detail -> 'roomLayouts' -> 'villaFour' -> 'square' ->> 'min')::numeric <= :sizeMax)
                                   or ((estate_detail -> 'roomLayouts' -> 'villaFive' -> 'square' ->> 'min')::numeric <= :sizeMax)
-            )                                                                                                        
-        order by updated_at desc
-        limit :limit offset :offset
+            )                                                                                                                
     """)
     fun findByParams(
         types: Array<String>?,
@@ -125,9 +123,6 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         beachName: Array<String>?,
 
         city: Array<String>?,
-
-        offset: Long,
-        limit: Int,
 
         isOneMinPrice: BigDecimal?,
         isOneMaxPrice: BigDecimal?,
