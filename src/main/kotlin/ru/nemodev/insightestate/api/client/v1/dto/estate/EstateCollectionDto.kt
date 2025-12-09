@@ -33,6 +33,8 @@ data class EstateCollectionDtoRs(
     var agentInfo: UserDtoRs? = null,
 
     val comment: String? = null,
+
+    val archive: Boolean = false,
 )
 
 data class EstateCollectionUpdateDto (

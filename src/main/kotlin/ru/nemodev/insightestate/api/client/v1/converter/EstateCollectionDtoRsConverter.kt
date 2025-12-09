@@ -15,7 +15,8 @@ class EstateCollectionDtoRsConverter(
             id = source.estateCollection.id,
             name = source.estateCollection.collectionDetail.name,
             estates = source.estates.map { estateDetailDtoRsConverter.convert(it) }.ifEmpty { null },
-            comment = source.estateCollection.collectionDetail.comment
+            comment = source.estateCollection.collectionDetail.comment,
+            archive = source.estateCollection.collectionDetail.archive,
         )
     }
 }
