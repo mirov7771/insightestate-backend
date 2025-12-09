@@ -65,26 +65,31 @@ class EstateCollectionController (
         @Valid
         @Min(1, message = "Минимальное значение 1")
         @Max(100, message = "Максимальное значение 100")
-        pageSize: Int? = 25
+        pageSize: Int? = 25,
+
+        @RequestParam(name = "archive", required = false)
+        archive: Boolean? = null,
     ): PageDtoRs<EstateCollectionDtoRs> = getAll(
         currency = currency,
         authBasicToken = authBasicToken,
         pageable = PageRequest.of(
             pageNumber ?: 0,
             pageSize ?: 25
-        )
+        ),
+        archive = archive ?: false,
     )
 
     private fun getAll(
         currency: String? = null,
         authBasicToken: String,
-        pageable: Pageable
+        pageable: Pageable,
+        archive: Boolean
     ): PageDtoRs<EstateCollectionDtoRs> {
-        var rs = getAllWithEx(currency, authBasicToken, pageable)
+        var rs = getAllWithEx(currency, authBasicToken, pageable, archive)
         if (rs == null) {
             for (i in 0..5) {
                 Thread.sleep(250)
-                rs = getAllWithEx(currency, authBasicToken, pageable)
+                rs = getAllWithEx(currency, authBasicToken, pageable, archive)
                 if (rs != null) {
                     return rs
                 }
@@ -96,13 +101,15 @@ class EstateCollectionController (
     private fun getAllWithEx(
         currency: String? = null,
         authBasicToken: String,
-        pageable: Pageable
+        pageable: Pageable,
+        archive: Boolean
     ): PageDtoRs<EstateCollectionDtoRs>? {
         return try {
             estateCollectionProcessor.findAll(
                 currency = currency,
                 authBasicToken = authBasicToken,
-                pageable = pageable
+                pageable = pageable,
+                archive = archive
             )
         } catch (_: Exception) {
             null
@@ -301,4 +308,9 @@ class EstateCollectionController (
         @RequestBody
         rq: ActivityDto
     ) = estateCollectionProcessor.activity(rq)
+
+    @PostMapping("{id}")
+    fun archive(
+        @PathVariable("id") id: UUID,
+    ) = estateCollectionProcessor.archive(id)
 }

@@ -4,10 +4,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.api.client.v1.dto.estate.EstateCollectionCreateDtoRq
 import ru.nemodev.insightestate.domen.EstateCollection
-import ru.nemodev.insightestate.entity.EstateCollectionDetail
-import ru.nemodev.insightestate.entity.EstateCollectionEntity
-import ru.nemodev.insightestate.entity.EstateEntity
-import ru.nemodev.insightestate.entity.UnitEstateLink
+import ru.nemodev.insightestate.entity.*
 import ru.nemodev.insightestate.repository.EstateCollectionRepository
 import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.UserService
@@ -19,7 +16,7 @@ import java.util.*
 import kotlin.jvm.optionals.getOrNull
 
 interface EstateCollectionService {
-    fun findAll(authBasicToken: String, pageable: Pageable): List<EstateCollection>
+    fun findAll(authBasicToken: String, pageable: Pageable, archive: Boolean): List<EstateCollection>
     fun create(authBasicToken: String, request: EstateCollectionCreateDtoRq): EstateCollectionEntity
     fun create(userId: UUID, ids: List<UUID>, template: String): EstateCollectionEntity
     fun findById(authBasicToken: String, id: UUID): EstateCollectionEntity
@@ -31,6 +28,7 @@ interface EstateCollectionService {
     fun findEstatesWithUnites(ids: List<UnitEstateLink>): List<EstateEntity>
     fun update(collection: EstateCollectionEntity)
     fun duplicate(id: UUID)
+    fun archive(id: UUID)
 }
 
 @Service
@@ -41,20 +39,18 @@ class EstateCollectionServiceImpl(
     private val unitRepository: UnitRepository,
 ) : EstateCollectionService {
 
-    override fun findAll(authBasicToken: String, pageable: Pageable): List<EstateCollection> {
+    override fun findAll(authBasicToken: String, pageable: Pageable, archive: Boolean): List<EstateCollection> {
         val userEntity = userService.getUser(authBasicToken)
 
         val estateCollections = estateCollectionRepository.findAllByParams(
             userId = userEntity.id.toString(),
             limit = pageable.pageSize,
             offset = pageable.offset
-        )
+        ).filter { it.collectionDetail.archive == archive }
 
         val estateMap = estateService.findByIds(
             estateCollections.flatMap { it.collectionDetail.estateIds }.toSet()
         ).associateBy { it.id }
-
-
 
         return estateCollections.map { estateCollection ->
             val estateList = estateCollection.collectionDetail.estateIds.mapNotNull { estateMap[it] }.toMutableList()
@@ -224,5 +220,12 @@ class EstateCollectionServiceImpl(
             id = UUID.randomUUID(),
             collectionDetail = collection.collectionDetail
         ).apply { isNew = true })
+    }
+
+    override fun archive(id: UUID) {
+        val dao = estateCollectionRepository.findById(id).get()
+        val archive = !dao.collectionDetail.archive
+        dao.collectionDetail.archive = archive
+        estateCollectionRepository.save(dao.apply { isNew = false })
     }
 }

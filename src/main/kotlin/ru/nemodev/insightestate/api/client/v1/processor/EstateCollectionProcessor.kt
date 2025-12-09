@@ -4,7 +4,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.api.client.v1.converter.EstateCollectionDtoRsConverter
 import ru.nemodev.insightestate.api.client.v1.dto.estate.*
-import ru.nemodev.insightestate.api.client.v1.processor.EstateProcessorImpl.Companion
 import ru.nemodev.insightestate.domen.EstateCollection
 import ru.nemodev.insightestate.entity.LikesEntity
 import ru.nemodev.insightestate.integration.currency.CurrencyService
@@ -21,7 +20,7 @@ import java.text.DecimalFormat
 import java.util.*
 
 interface EstateCollectionProcessor {
-    fun findAll(currency: String? = null, authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs>
+    fun findAll(currency: String? = null, authBasicToken: String, pageable: Pageable, archive: Boolean): PageDtoRs<EstateCollectionDtoRs>
     fun create(authBasicToken: String, request: EstateCollectionCreateDtoRq): EstateCollectionCreateDtoRs
     fun addEstateToCollection(authBasicToken: String, id: UUID, estateId: UUID, unitId: UUID?)
     fun deleteEstateFromCollection(authBasicToken: String, id: UUID, estateId: UUID)
@@ -33,6 +32,7 @@ interface EstateCollectionProcessor {
     fun template(rq: TemplateRq): TemplateRs
     fun duplicate(id: UUID)
     fun activity(rq: ActivityDto)
+    fun archive(id: UUID)
 }
 
 @Component
@@ -50,8 +50,8 @@ class EstateCollectionProcessorImpl(
         val dec = DecimalFormat("#,###")
     }
 
-    override fun findAll(currency: String?, authBasicToken: String, pageable: Pageable): PageDtoRs<EstateCollectionDtoRs> {
-        val estateCollections = estateCollectionService.findAll(authBasicToken, pageable)
+    override fun findAll(currency: String?, authBasicToken: String, pageable: Pageable, archive: Boolean): PageDtoRs<EstateCollectionDtoRs> {
+        val estateCollections = estateCollectionService.findAll(authBasicToken, pageable, archive)
 
         return PageDtoRs(
             items = estateCollections.map { estateCollectionDtoRsConverter.convert(it) },
@@ -470,6 +470,10 @@ class EstateCollectionProcessorImpl(
             subject = "Client opened selection!",
             message = "Selection: ${collection.collectionDetail.name}\n\n${rq.url}"
         )
+    }
+
+    override fun archive(id: UUID) {
+        estateCollectionService.archive(id)
     }
 
     private fun getPrice(

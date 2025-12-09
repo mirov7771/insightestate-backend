@@ -11,6 +11,7 @@ import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
+import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.util.concurrent.locks.ReentrantLock
 
@@ -108,8 +109,12 @@ class EstateLoaderImpl(
     private fun loadUnits(parsedUnits: List<UnitEntity>?) {
         if (parsedUnits.isNullOrEmpty())
             return
-        unitRepository.deleteAll()
-        unitRepository.saveAll(parsedUnits)
+
+        val newUnits = parsedUnits.filter {
+            unitRepository.findByProjectId("${it.code}%").isEmpty()
+        }
+        if (newUnits.isNotNullOrEmpty())
+            unitRepository.saveAll(newUnits)
     }
 
     private fun withUpdateLock(action: () -> Unit) {
@@ -123,5 +128,4 @@ class EstateLoaderImpl(
             logWarn { "Загрузка объектов уже запущена, дождитесь окончания текущей загрузки" }
         }
     }
-
 }

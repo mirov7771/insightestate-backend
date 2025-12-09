@@ -24,6 +24,7 @@ data class EstateCollectionDetail(
     var estateIds: MutableList<UUID>,
     var unitIds: MutableList<UnitEstateLink>? = null,
     var comment: String? = null,
+    var archive: Boolean = false,
 )
 
 data class UnitEstateLink (

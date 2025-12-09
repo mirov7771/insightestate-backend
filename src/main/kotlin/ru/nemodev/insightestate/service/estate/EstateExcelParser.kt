@@ -182,16 +182,16 @@ class EstateExcelParserImpl : EstateExcelParser {
                 ),
                 infrastructure = EstateInfrastructure(
                     beachTime = TravelTime(
-                        walk = row.getInt("AX")!!,
-                        car = row.getInt("AY")!!,
+                        walk = row.getInt("AX") ?: 0,
+                        car = row.getInt("AY") ?: 0,
                     ),
                     airportTime = TravelTime(
                         walk = null,
-                        car = row.getInt("AZ")!!,
+                        car = row.getInt("AZ") ?: 0,
                     ),
                     mallTime = TravelTime(
-                        walk = row.getInt("BB")!!,
-                        car = row.getInt("BA")!!,
+                        walk = row.getInt("BB") ?: 0,
+                        car = row.getInt("BA") ?: 0,
                     ),
                     school = EstateInfrastructure.School(
                         radius = row.getBigDecimal("BC", 1) ?: BigDecimal.ZERO,
