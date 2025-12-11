@@ -217,13 +217,10 @@ class StripeServiceImpl (
         subscriptionService.getPayments().forEach {
             logger.info("Starting recurring payment for userId = {}, mainAmount = {}, extraAmount = {}"
                 , it.userId, it.mainPayAmount, it.extraPayAmount)
-            val rs = recurrent(
+            recurrent(
                 rq = StripeRecurrentRq(it.userId)
             )
-            if (rs)
-                subscriptionService.updatePaymentDate(it)
-            else
-                subscriptionService.removeTariff(it.userId)
+            subscriptionService.updatePaymentDate(it)
         }
         logger.info("End recurring payment at {}", LocalDateTime.now())
     }
