@@ -107,12 +107,16 @@ class EstateLoaderImpl(
     }
 
     private fun loadUnits(parsedUnits: List<UnitEntity>?) {
+        val list = unitRepository.findAll().toList()
         if (parsedUnits.isNullOrEmpty())
             return
 
         val newUnits = parsedUnits.filter {
-            unitRepository.findByProjectId("${it.code}%").isEmpty()
+            !list.any {
+                item -> item.code.contains(it.code, ignoreCase = true)
+            }
         }
+
         if (newUnits.isNotNullOrEmpty())
             unitRepository.saveAll(newUnits)
     }
