@@ -135,7 +135,13 @@ class EstateController (
         sizeMax: Long? = null,
 
         @RequestParam(name = "orderBy", required = false)
-        orderBy: OrderBy? = null
+        orderBy: OrderBy? = null,
+
+        @RequestParam(name = "eia", required = false)
+        eia: Boolean? = null,
+
+        @RequestParam(name = "landPurchased", required = false)
+        landPurchased: Boolean? = null,
     ): CustomPageDtoRs = estateProcessor.findAll(
         currency = currency,
         types = types,

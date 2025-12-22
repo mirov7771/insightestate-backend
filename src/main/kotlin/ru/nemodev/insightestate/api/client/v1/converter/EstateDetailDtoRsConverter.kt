@@ -76,6 +76,7 @@ class EstateDetailDtoRsConverter(
                 roiSummary = estateDetail.profitability.roiSummary,
                 irr = estateDetail.profitability.irr,
                 capRateFirstYear = estateDetail.profitability.capRateFirstYear,
+                guarantee = estateDetail.profitability.guarantee,
             ),
             location = EstateDetailDtoRs.EstateLocationDto(
                 name = estateDetail.location.name,

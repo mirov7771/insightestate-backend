@@ -80,6 +80,8 @@ data class EstateDetail (
     val lat: String? = null,
     val lon: String? = null,
     val size: Long? = null,
+
+    val furniture: String? = null,
 )
 
 // Оценка проекта
@@ -155,6 +157,7 @@ data class EstateProfitability(
     val roiSummary: BigDecimal,
     val irr: BigDecimal,
     val capRateFirstYear: BigDecimal,
+    val guarantee: String? = null
 )
 
 // Опции

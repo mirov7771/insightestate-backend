@@ -51,6 +51,8 @@ interface EstateProcessor {
         sizeMin: Long? = null,
         sizeMax: Long? = null,
         orderBy: OrderBy,
+        eia: Boolean? = null,
+        landPurchased: Boolean? = null,
     ): CustomPageDtoRs
 
     fun findById(
@@ -130,6 +132,8 @@ class EstateProcessorImpl(
         sizeMin: Long?,
         sizeMax: Long?,
         orderBy: OrderBy,
+        eia: Boolean?,
+        landPurchased: Boolean?
     ): CustomPageDtoRs {
         var rMinPrice = minPrice
         var rMaxPrice = maxPrice
@@ -198,6 +202,8 @@ class EstateProcessorImpl(
             unitCountMax = unitCountMax,
             sizeMin = minSize,
             sizeMax = sizeMax,
+            eia = eia,
+            landPurchased = landPurchased
         )
 
         if (currency != null && currency != "THB") {
@@ -229,6 +235,8 @@ class EstateProcessorImpl(
             unitCountMax = unitCountMax,
             sizeMin = minSize,
             sizeMax = sizeMax,
+            eia = eia,
+            landPurchased = landPurchased,
         )
 
         var list = estates.map { estateDtoRsConverter.convert(it) }

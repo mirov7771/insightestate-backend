@@ -45,6 +45,8 @@ interface EstateService {
         unitCountMax: Int?,
         sizeMin: Long?,
         sizeMax: Long?,
+        eia: Boolean?,
+        landPurchased: Boolean?,
     ): List<EstateEntity>
 
     fun findById(
@@ -79,6 +81,8 @@ interface EstateService {
         unitCountMax: Int?,
         sizeMin: Long?,
         sizeMax: Long?,
+        eia: Boolean?,
+        landPurchased: Boolean?,
     ): Int
 
     fun createXml(): String
@@ -119,6 +123,8 @@ class EstateServiceImpl(
         unitCountMax: Int?,
         sizeMin: Long?,
         sizeMax: Long?,
+        eia: Boolean?,
+        landPurchased: Boolean?,
     ): List<EstateEntity> {
 
         if (name.isNotNullOrEmpty()) {
@@ -265,6 +271,8 @@ class EstateServiceImpl(
             unitCountMax = unitCountMax,
             sizeMin = sizeMin,
             sizeMax = sizeMax,
+            eia = eia,
+            landPurchased = landPurchased,
         )
 
         if (estates.isNotEmpty() && userId != null) {
@@ -310,7 +318,9 @@ class EstateServiceImpl(
         unitCountMin: Int?,
         unitCountMax: Int?,
         sizeMin: Long?,
-        sizeMax: Long?
+        sizeMax: Long?,
+        eia: Boolean?,
+        landPurchased: Boolean?
     ): Int {
         if (name.isNotNullOrEmpty()) {
             var list = repository.findAll()
@@ -438,6 +448,8 @@ class EstateServiceImpl(
             unitCountMax = unitCountMax,
             sizeMin = sizeMin,
             sizeMax = sizeMax,
+            eia = eia,
+            landPurchased = landPurchased
         ).size
     }
 
@@ -614,6 +626,8 @@ class EstateServiceImpl(
             unitCountMax = null,
             sizeMin = null,
             sizeMax = null,
+            eia = null,
+            landPurchased = null,
         )
         if (list.isEmpty())
             list = repository.findRandom()

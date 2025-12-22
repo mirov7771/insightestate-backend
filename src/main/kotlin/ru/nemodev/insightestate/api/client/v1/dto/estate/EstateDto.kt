@@ -145,6 +145,7 @@ data class EstateDetailDtoRs(
         val roiSummary: BigDecimal,
         val irr: BigDecimal,
         val capRateFirstYear: BigDecimal,
+        val guarantee: String? = null
     )
 
     data class EstateOptionsDto(

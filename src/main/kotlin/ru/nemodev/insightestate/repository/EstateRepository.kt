@@ -80,7 +80,9 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
                                   or ((estate_detail -> 'roomLayouts' -> 'villaThree' -> 'square' ->> 'min')::numeric <= :sizeMax)
                                   or ((estate_detail -> 'roomLayouts' -> 'villaFour' -> 'square' ->> 'min')::numeric <= :sizeMax)
                                   or ((estate_detail -> 'roomLayouts' -> 'villaFive' -> 'square' ->> 'min')::numeric <= :sizeMax)
-            )                                                                                                                
+            ) 
+            and (:eia is null or (estate_detail ->> 'eiaEnabled')::boolean  = :eia)   
+            and (:landPurchased is null or (estate_detail ->> 'landPurchased')::boolean  = :landPurchased)   
     """)
     fun findByParams(
         types: Array<String>?,
@@ -137,6 +139,8 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         unitCountMax: Int?,
         sizeMin: Long?,
         sizeMax: Long?,
+        eia: Boolean?,
+        landPurchased: Boolean?,
     ): List<EstateEntity>
 
     @Query("""

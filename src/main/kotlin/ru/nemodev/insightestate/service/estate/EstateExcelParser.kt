@@ -115,7 +115,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                 name = row.getString("C")!!,
                 shortDescriptionRu = row.getString("IS"),
                 shortDescriptionEn = row.getString("IT"),
-
+                furniture = row.getString("EF"),
                 landPurchased = row.getBoolean("D"),
                 eiaEnabled = row.getBoolean("E"),
                 size = sizeNumber,
@@ -172,6 +172,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                     roiSummary = row.getBigDecimalFromPercent("IR", 0) ?: BigDecimal.ZERO,
                     irr = row.getBigDecimalFromPercent("HM", 1) ?: BigDecimal.ZERO,
                     capRateFirstYear = row.getBigDecimalFromPercent("HL", 1) ?: BigDecimal.ZERO,
+                    guarantee = row.getString("FJ")
                 ),
                 location = EstateLocation(
                     name = row.getString("AU")!!,
