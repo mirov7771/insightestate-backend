@@ -138,6 +138,7 @@ class EstateDetailDtoRsConverter(
             lat = estateDetail.lat,
             lon = estateDetail.lon,
             priceDate = LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+            furniture = estateDetail.furniture,
         )
     }
 }

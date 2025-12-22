@@ -83,6 +83,8 @@ data class EstateDetailDtoRs(
     val lon: String? = null,
 
     val priceDate: String? = null,
+
+    val furniture: String? = null,
 ) {
     data class EstateGradeDto(
         val main: BigDecimal,
