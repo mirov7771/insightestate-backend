@@ -169,6 +169,8 @@ class EstateController (
         sizeMin = sizeMin,
         sizeMax = sizeMax,
         orderBy = orderBy ?: OrderBy.UPDATED_AT,
+        landPurchased = landPurchased,
+        eia = eia,
     )
 
     @Operation(
