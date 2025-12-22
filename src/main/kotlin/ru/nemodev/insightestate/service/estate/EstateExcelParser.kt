@@ -172,7 +172,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                     roiSummary = row.getBigDecimalFromPercent("IR", 0) ?: BigDecimal.ZERO,
                     irr = row.getBigDecimalFromPercent("HM", 1) ?: BigDecimal.ZERO,
                     capRateFirstYear = row.getBigDecimalFromPercent("HL", 1) ?: BigDecimal.ZERO,
-                    guarantee = row.getBigDecimalFromPercent("FJ", 1)
+                    guarantee = row.getBigDecimalFromPercent("FJ", 0)
                 ),
                 location = EstateLocation(
                     name = row.getString("AU")!!,
