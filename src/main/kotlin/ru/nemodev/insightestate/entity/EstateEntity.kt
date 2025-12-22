@@ -157,7 +157,7 @@ data class EstateProfitability(
     val roiSummary: BigDecimal,
     val irr: BigDecimal,
     val capRateFirstYear: BigDecimal,
-    val guarantee: String? = null
+    val guarantee: BigDecimal? = null
 )
 
 // Опции
