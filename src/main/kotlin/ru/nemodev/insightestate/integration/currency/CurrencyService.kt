@@ -27,9 +27,15 @@ class CurrencyServiceImpl (
         private const val RUB = "RUB"
         private const val THB = "THB"
         private const val AUD = "AUD"
+        private const val ILS = "ILS"
+        private const val PLN = "PLN"
+        private const val GBP = "GBP"
         private const val DEFAULT_RUB = "85"
         private const val DEFAULT_USD = "0.033"
         private const val DEFAULT_AUD = "0.05"
+        private const val DEFAULT_ILS = "0.10"
+        private const val DEFAULT_PLN = "0.12"
+        private const val DEFAULT_GBP = "0.02"
     }
 
     private val currencyMap: ConcurrentHashMap<String, BigDecimal> = ConcurrentHashMap()
@@ -62,5 +68,8 @@ class CurrencyServiceImpl (
         currencyMap[RUB] = rates?.rub ?: DEFAULT_RUB.toBigDecimal()
         currencyMap[USD] = rates?.usd ?: DEFAULT_USD.toBigDecimal()
         currencyMap[AUD] = rates?.aud ?: DEFAULT_AUD.toBigDecimal()
+        currencyMap[ILS] = rates?.ils ?: DEFAULT_ILS.toBigDecimal()
+        currencyMap[PLN] = rates?.pln ?: DEFAULT_PLN.toBigDecimal()
+        currencyMap[GBP] = rates?.gbp ?: DEFAULT_GBP.toBigDecimal()
     }
 }

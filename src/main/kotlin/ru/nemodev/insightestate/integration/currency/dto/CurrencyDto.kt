@@ -18,5 +18,11 @@ data class CurrencyRate (
     @JsonProperty("USD")
     val usd: BigDecimal? = null,
     @JsonProperty("AUD")
-    val aud: BigDecimal? = null
+    val aud: BigDecimal? = null,
+    @JsonProperty("ILS")
+    val ils: BigDecimal? = null,
+    @JsonProperty("PLN")
+    val pln: BigDecimal? = null,
+    @JsonProperty("GBP")
+    val gbp: BigDecimal? = null,
 )
