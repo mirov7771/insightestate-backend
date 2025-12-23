@@ -479,8 +479,10 @@ class EstateCollectionProcessorImpl(
 
     override fun flags(id: UUID, showFinance: Boolean?, showPresentations: Boolean?) {
         val e = estateCollectionService.findById(id)
-        e.collectionDetail.showFinance = showFinance
-        e.collectionDetail.showPresentation = showPresentations
+        if (showFinance != null)
+            e.collectionDetail.showFinance = showFinance
+        if (showPresentations != null)
+            e.collectionDetail.showPresentation = showPresentations
         estateCollectionService.update(e)
     }
 

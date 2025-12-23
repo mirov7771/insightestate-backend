@@ -319,5 +319,5 @@ class EstateCollectionController (
         @PathVariable("id") id: UUID,
         @RequestParam(value = "showFinance", required = false) showFinance: Boolean? = null,
         @RequestParam(value = "showPresentation", required = false) showPresentation: Boolean? = null,
-    ) = estateCollectionProcessor.flags(id, showFinance, showFinance)
+    ) = estateCollectionProcessor.flags(id, showFinance, showPresentation)
 }
