@@ -33,6 +33,7 @@ interface EstateCollectionProcessor {
     fun duplicate(id: UUID)
     fun activity(rq: ActivityDto)
     fun archive(id: UUID)
+    fun flags(id: UUID, showFinance: Boolean?, showPresentations: Boolean?)
 }
 
 @Component
@@ -474,6 +475,13 @@ class EstateCollectionProcessorImpl(
 
     override fun archive(id: UUID) {
         estateCollectionService.archive(id)
+    }
+
+    override fun flags(id: UUID, showFinance: Boolean?, showPresentations: Boolean?) {
+        val e = estateCollectionService.findById(id)
+        e.collectionDetail.showFinance = showFinance
+        e.collectionDetail.showPresentation = showPresentations
+        estateCollectionService.update(e)
     }
 
     private fun getPrice(

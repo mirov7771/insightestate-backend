@@ -35,6 +35,10 @@ data class EstateCollectionDtoRs(
     val comment: String? = null,
 
     val archive: Boolean = false,
+
+    val showFinance: Boolean = true,
+
+    val showPresentation: Boolean = false,
 )
 
 data class EstateCollectionUpdateDto (
