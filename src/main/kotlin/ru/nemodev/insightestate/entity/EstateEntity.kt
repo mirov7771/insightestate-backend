@@ -82,6 +82,8 @@ data class EstateDetail (
     val size: Long? = null,
 
     val furniture: String? = null,
+    var rusPresentation: Boolean = false,
+    var engPresentation: Boolean = false,
 )
 
 // Оценка проекта

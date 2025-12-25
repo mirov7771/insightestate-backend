@@ -5,7 +5,6 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.springframework.stereotype.Component
 import ru.nemodev.insightestate.entity.*
 import ru.nemodev.insightestate.extension.*
-import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.extensions.nullIfEmpty
 import ru.nemodev.platform.core.extensions.scaleAndRoundAmount
 import ru.nemodev.platform.core.logging.sl4j.Loggable
@@ -26,7 +25,6 @@ class EstateExcelParserImpl : EstateExcelParser {
 
     companion object : Loggable {
         private val buildEndDateParseFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-        private val buildEndDateSaveFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
     }
 
     override fun parse(inputStream: InputStream): LoadDto {

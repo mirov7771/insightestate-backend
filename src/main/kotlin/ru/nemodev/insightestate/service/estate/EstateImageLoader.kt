@@ -1,13 +1,9 @@
 package ru.nemodev.insightestate.service.estate
 
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.runBlocking
+import jakarta.annotation.PostConstruct
 import org.springframework.stereotype.Component
 import org.springframework.transaction.support.TransactionTemplate
 import ru.nemodev.insightestate.config.property.AppProperties
-import ru.nemodev.insightestate.integration.google.GoogleDriveIntegration
-import ru.nemodev.platform.core.async.executor.CoroutineExecutor
 import ru.nemodev.platform.core.extensions.getFileExtension
 import ru.nemodev.platform.core.integration.s3.minio.client.MinioS3Client
 import ru.nemodev.platform.core.logging.sl4j.Loggable
@@ -24,8 +20,6 @@ class EstateImageLoaderImpl(
     private val appProperties: AppProperties,
     private val minioS3Client: MinioS3Client,
     private val estateService: EstateService,
-    private val googleDriveIntegration: GoogleDriveIntegration,
-    private val ioCoroutineExecutor: CoroutineExecutor,
     private val transactionTemplate: TransactionTemplate
 ) : EstateImageLoader {
 
@@ -90,7 +84,7 @@ class EstateImageLoaderImpl(
                 return@withUpdatePhotoLock
             }
 
-            loadImages(estateImageMap)
+            loadImages()
 
             logInfo { "Закончили загрузку фото объектов недвижимости из директории" }
         }
@@ -100,57 +94,13 @@ class EstateImageLoaderImpl(
         withUpdatePhotoLock {
             logInfo { "Начало загрузки фото объектов недвижимости из google drive" }
 
-            val estateImageMap = mutableMapOf<String, EstateImages>()
-
-//            googleDriveIntegration.downloadImageFiles().forEach { imageFile ->
-//                try {
-//                    val originalName = imageFile.name
-//                    val originalExtension = imageFile.fileExtension ?: imageFile.name.getFileExtension()
-//                    val projectId = originalName.substringBefore("_")
-//                    val type = originalName.substringAfter("_").substringBefore("_")
-//                    val order = try {
-//                        originalName.substringAfterLast("_").substringBefore(".").filter { it.isDigit() }.toInt()
-//                    } catch (e: Exception) {
-//                        11
-//                    }
-//                    val extension = when (originalExtension) {
-//                        "jpg", "JPG" -> "jpeg"
-//                        "PNG" -> "png"
-//                        else -> originalExtension
-//                    }.lowercase()
-//                    val estateImages = estateImageMap.computeIfAbsent(projectId) {
-//                        EstateImages(
-//                            projectId = projectId,
-//                        )
-//                    }
-//                    val estateImage = EstateImage(
-//                        order = order,
-//                        name = "${projectId}_${type}_${order}.$extension",
-//                        extension = extension,
-//                        googleDriveFileId = imageFile.id,
-//                    )
-//                    when (type) {
-//                        "fac" -> estateImages.facilityImages.add(estateImage)
-//                        "ext" -> estateImages.exteriorImages.add(estateImage)
-//                        "int" -> estateImages.interiorImages.add(estateImage)
-//                    }
-//                } catch (e: Exception) {
-//                    logError(e) { "Ошибка парсинга имени фото объекта - ${imageFile.name}" }
-//                }
-//            }
-//
-//            if (estateImageMap.isEmpty()) {
-//                logError { "В google drive нет фото объектов" }
-//                return@withUpdatePhotoLock
-//            }
-
-            loadImages(estateImageMap)
+            loadImages()
 
             logInfo { "Закончили загрузку фото объектов недвижимости из google drive" }
         }
     }
 
-    private fun loadImages(estateImageMap: Map<String, EstateImages>) {
+    private fun loadImages() {
         val estates = estateService.findAll().filter { !it.isCanShow() }
         if (estates.isEmpty()) {
             logError { "Фото объектов не могут быть загружены т.к объектов нет в базе данных" }
@@ -211,28 +161,7 @@ class EstateImageLoaderImpl(
                 estate.estateDetail.interiorImages = intList
             }
 
-
-//            estateImageMap[estate.estateDetail.projectId]?.also { estateImages ->
-//
-//                // Загружаем каждую пачку фото последовательно иначе на сервере не хватает памяти
-//                runBlocking { loadImageToMinio(estateImages.facilityImages).awaitAll() }
-//                runBlocking { loadImageToMinio(estateImages.exteriorImages).awaitAll() }
-//                runBlocking { loadImageToMinio(estateImages.interiorImages).awaitAll() }
-//
-//                // Обновляем фото объекта
-//                estate.estateDetail.facilityImages = estateImages.facilityImages.sortedBy { it.order }.map { it.name }.toMutableList()
-//                estate.estateDetail.exteriorImages = estateImages.exteriorImages.sortedBy { it.order }.map { it.name }.toMutableList()
-//                estate.estateDetail.interiorImages = estateImages.interiorImages.sortedBy { it.order }.map { it.name }.toMutableList()
-//            }
-
-            // Обновляем признак можно ли показывать объект
-//            estate.estateDetail.canShow = estate.isCanShow()
         }
-
-//        estates.filter { !it.isCanShow() }.forEach {
-//            it.estateDetail.exteriorImages = mutableListOf("default_logo.png")
-//            it.estateDetail.canShow = it.isCanShow()
-//        }
 
         transactionTemplate.executeWithoutResult {
             estateService.saveAll(estates)
@@ -251,22 +180,33 @@ class EstateImageLoaderImpl(
         }
     }
 
-    private fun loadImageToMinio(estateImages: List<EstateImage>): List<Deferred<*>> {
-        return estateImages.map { imageFile ->
-            ioCoroutineExecutor.async {
-                try {
-                    val imageSource = imageFile.file?.readBytes()
-                        ?: googleDriveIntegration.downloadImageFile(imageFile.googleDriveFileId!!).use { it.readAllBytes() }
-                    minioS3Client.upload(
-                        fileName = imageFile.name,
-                        fileContentType = "image/${imageFile.extension}",
-                        file = imageSource,
-                    )
-                } catch (e: Exception) {
-                    logError(e) { "Ошибка загрузки фото объекта - ${imageFile.name}" }
-                }
-            }
+    //@PostConstruct
+    fun loadPresentation() {
+        val estates = estateService.findAll().filter { !it.estateDetail.engPresentation || !it.estateDetail.rusPresentation }
+        if (estates.isEmpty()) {
+            return
         }
+
+        estates.forEachIndexed { index, estate ->
+            val engName = "${estate.estateDetail.projectId}_ENG.pdf"
+            val rusName = "${estate.estateDetail.projectId}_RUS.pdf"
+            val engSize = try {
+                minioS3Client.fileParams(bucket = "estate-images", fileName = engName).size()
+            } catch (_: Exception) {
+                0L
+            }
+            val resSize = try {
+                minioS3Client.fileParams(bucket = "estate-images", fileName = rusName).size()
+            } catch (_: Exception) {
+                0L
+            }
+            val engPresentation = engSize > 0
+            val rusPresentation = resSize > 0
+            logInfo { "$index/${estates.size} - ENG $engPresentation , RUS $rusPresentation" }
+            estate.estateDetail.rusPresentation = resSize > 0
+            estate.estateDetail.engPresentation = engPresentation
+        }
+        estateService.saveAll(estates)
     }
 
 }
