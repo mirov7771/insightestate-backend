@@ -24,31 +24,35 @@ fun Row.getString(cellName: String): String? {
 }
 
 fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
-    val cell = getCellByName(cellName) ?: return null
-    if (cell.cellType == CellType.NUMERIC) {
-        if (getString(cellName).isNullOrEmpty()) {
-            return null
+    try {
+        val cell = getCellByName(cellName) ?: return null
+        if (cell.cellType == CellType.NUMERIC) {
+            if (getString(cellName).isNullOrEmpty()) {
+                return null
+            }
+
+            val value = cell.numericCellValue.toBigDecimal()
+            if (scale != null) {
+                return value.scaleAndRoundAmount()
+            }
+            return value
         }
 
-        val value = cell.numericCellValue.toBigDecimal()
-        if (scale != null) {
-            return value.scaleAndRoundAmount()
+        val value = this.getString(cellName)
+            ?.replace(" ", "")
+            ?.replace(",", ".")
+            ?.replace("%", "")
+            ?.replace(" ", "")
+            ?.nullIfEmpty()
+            ?.toBigDecimal()
+
+        if (value == null || scale == null) {
+            return value
         }
-        return value
+        return value.scaleAndRoundAmount()
+    } catch (_: Exception) {
+        return BigDecimal.ZERO
     }
-
-    val value = this.getString(cellName)
-        ?.replace(" ", "")
-        ?.replace(",", ".")
-        ?.replace("%", "")
-        ?.replace(" ", "")
-        ?.nullIfEmpty()
-        ?.toBigDecimal()
-
-    if (value == null || scale == null) {
-        return value
-    }
-    return value.scaleAndRoundAmount()
 }
 
 fun String.getBigDecimal(): BigDecimal {

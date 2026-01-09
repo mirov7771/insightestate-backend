@@ -166,6 +166,8 @@ class EstateImageLoaderImpl(
         transactionTemplate.executeWithoutResult {
             estateService.saveAll(estates)
         }
+
+        loadPresentation()
     }
 
     private fun withUpdatePhotoLock(action: () -> Unit) {
