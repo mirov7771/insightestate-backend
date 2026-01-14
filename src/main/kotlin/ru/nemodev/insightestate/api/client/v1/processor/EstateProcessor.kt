@@ -241,13 +241,16 @@ class EstateProcessorImpl(
 
         var list = estates.map { estateDtoRsConverter.convert(it) }
 
-        list = when (orderBy) {
+        val chunkedList = when (orderBy) {
             OrderBy.PRICE_ASC -> list.sortedBy { it.priceMin }
             OrderBy.PRICE_DESC -> list.sortedByDescending { it.priceMin }
             OrderBy.SIZE_ASC -> list.sortedBy { it.sizeMin }
             OrderBy.SIZE_DESC -> list.sortedByDescending { it.sizeMin }
             else -> list.sortedByDescending { it.updatedAt }
-        }.chunked(pageable.pageSize)[pageable.pageNumber]
+        }.chunked(pageable.pageSize)
+
+        if (chunkedList.size > pageable.pageNumber)
+            list = chunkedList[pageable.pageNumber]
 
         return CustomPageDtoRs(
             items = list,
