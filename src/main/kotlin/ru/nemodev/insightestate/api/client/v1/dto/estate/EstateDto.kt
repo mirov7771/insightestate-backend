@@ -1,6 +1,9 @@
 package ru.nemodev.insightestate.api.client.v1.dto.estate
 
-import ru.nemodev.insightestate.entity.*
+import ru.nemodev.insightestate.entity.EstateLevelType
+import ru.nemodev.insightestate.entity.EstateStatus
+import ru.nemodev.insightestate.entity.EstateType
+import ru.nemodev.insightestate.entity.UnitEntity
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.util.*
@@ -9,7 +12,7 @@ data class EstateDtoRs(
     val id: UUID,
     val projectId: String,
     val name: String,
-    val grade: BigDecimal,
+    val grade: BigDecimal?,
     val priceMin: BigDecimal,
     val priceMax: BigDecimal,
     val roi: BigDecimal,
@@ -45,7 +48,7 @@ data class EstateDetailDtoRs(
     val landPurchased: Boolean,
     val eiaEnabled: Boolean,
     val developer: EstateDeveloperDto,
-    val grade: EstateGradeDto,
+    val grade: EstateGradeDto?,
     val projectCount: ProjectCountDto,
     val status: EstateStatus,
     val saleStartDate: String?,
@@ -54,7 +57,6 @@ data class EstateDetailDtoRs(
 
     var type: EstateType,
     val level: EstateLevelType,
-    val product: EstateProductType,
     val profitability: EstateProfitabilityDto,
 
     val location: EstateLocationDto,
@@ -63,7 +65,6 @@ data class EstateDetailDtoRs(
     val managementCompany: ManagementCompany,
 
     val price: MinMaxAvgParamDto,
-    val ceilingHeight: BigDecimal?,
     val floors: Int?,
     val roomLayouts: RoomLayoutsDto,
 
@@ -129,9 +130,6 @@ data class EstateDetailDtoRs(
         val beachTime: TravelTimeDto,
         val airportTime: TravelTimeDto,
         val mallTime: TravelTimeDto,
-        @Deprecated("Использовать school")
-        val schoolRadius: BigDecimal,
-        val school: SchoolDto
     )
 
     data class TravelTimeDto(

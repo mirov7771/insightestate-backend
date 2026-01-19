@@ -75,6 +75,24 @@ cutt:
         connection: 230s
         read: 230s
 
+airtable:
+  integration:
+    http-client:
+      service-id: airtable
+      url: https://api.airtable.com
+      timeout:
+        connection: 3s
+        read: 30s
+      retry:
+        enabled: true
+      headers:
+        - name: Authorization
+          value: Bearer patTTQ3nbo4mCE1eB.6d6a34c9347a82696b008db0da78e7ff4eb458f646e9c0a2d9cea8d9edbbc140
+  settings:
+    base-id: appKLB89qbbbJGnuJ
+    estate-table-id: tbls7Sk1jRewSKoAk
+    units-table-id: tbl5VpGhdOzUD9t4Z
+
 google:
   spreadsheets:
     estate-load-cron: 0 0 8 * * *
@@ -112,10 +130,6 @@ springdoc:
       - description: PROD
         url: ${SERVER_PROD_URL:http://77.238.232.18:8080}
   group-configs:
-    - group: admin
-      display-name: Admin API
-      packages-to-scan:
-        - "ru.nemodev.insightestate.api.admin"
     - group: auth
       display-name: Auth API
       packages-to-scan:

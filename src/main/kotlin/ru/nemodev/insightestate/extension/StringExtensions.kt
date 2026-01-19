@@ -4,6 +4,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication
 import ru.nemodev.platform.core.extensions.fileExtensionToContentTypeMap
 import ru.nemodev.platform.core.extensions.parseBasicAuth
+import java.math.RoundingMode
 
 val imageSupportedExtensions = setOf(
     "jpeg",
@@ -26,3 +27,9 @@ fun String.toAuthenticationToken(): Authentication {
         loginAndPassword.second
     )
 }
+
+fun String?.toRoundedString(
+    scale: Int = 0,
+    roundingMode: RoundingMode = RoundingMode.HALF_UP
+): String? =
+    this?.toBigDecimal()?.setScale(scale, roundingMode)?.toString()

@@ -260,6 +260,21 @@ class EstateController (
     @PostMapping("/load/images/google-drive")
     fun loadImagesFromGoogleDrive() = estateProcessor.loadImagesFromGoogleDrive()
 
+    @Operation(
+        summary = "Загрузить объекты из airtable, существующие объекты обновляются с сохранением картинок",
+        responses = [
+            ApiResponse(responseCode = "200", description = "Успешный ответ"),
+            ApiResponse(responseCode = "400", description = "Не правильный формат запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            ),
+            ApiResponse(responseCode = "500", description = "Ошибка обработки запроса",
+                content = [Content(schema = Schema(implementation = ErrorDtoRs::class))]
+            )
+        ]
+    )
+    @PostMapping("/load/airtable")
+    fun loadFromAirtable() = estateProcessor.loadFromAirtable()
+
     @PostMapping("ai")
     fun aiRequest(
         @RequestHeader("Currency", required = false)

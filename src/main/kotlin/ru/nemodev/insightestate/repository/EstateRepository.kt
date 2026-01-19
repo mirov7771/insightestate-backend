@@ -150,4 +150,14 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
         limit 250
     """)
     fun findRandom(): List<EstateEntity>
+
+    @Query(
+        """
+        select * from estate
+        where estate_detail ->> 'projectId' in (:projectIds)
+        """
+    )
+    fun findAllByProjectIds(
+        projectIds: List<String>,
+    ): List<EstateEntity>
 }

@@ -64,6 +64,7 @@ interface EstateProcessor {
     fun loadFromGoogle()
     fun loadImagesFromDir()
     fun loadImagesFromGoogleDrive()
+    fun loadFromAirtable()
 
     fun aiRequest(
         currency: String? = null,
@@ -349,6 +350,10 @@ class EstateProcessorImpl(
         estateImageLoader.loadFromGoogleDrive()
     }
 
+    override fun loadFromAirtable() {
+        estateLoader.loadFromAirtable()
+    }
+
     override fun aiRequest(currency: String?, rq: AiRequest): CustomPageDtoRs {
         val estates = estateService.aiRequest(
             String(Base64.getDecoder().decode(rq.request))
@@ -445,7 +450,7 @@ class EstateProcessorImpl(
                 }
             }
             if (rooms.isNotNullOrEmpty()) {
-                units = units.filter { it.rooms != null && rooms!!.contains(it.rooms.lowercase()) }
+                units = units.filter { it.rooms != null && rooms!!.contains(it.rooms!!.lowercase()) }
             }
 
             if (minPrice != null) {

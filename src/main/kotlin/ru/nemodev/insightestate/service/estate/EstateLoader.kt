@@ -8,6 +8,7 @@ import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.UnitEntity
 import ru.nemodev.insightestate.integration.google.GoogleDriveIntegration
 import ru.nemodev.insightestate.repository.UnitRepository
+import ru.nemodev.insightestate.service.airtable.AirtableService
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
@@ -18,11 +19,13 @@ import java.util.concurrent.locks.ReentrantLock
 interface EstateLoader {
     fun loadFromFile(filePart: MultipartFile)
     fun loadFromGoogleSpreadsheets()
+    fun loadFromAirtable()
 }
 
 @Service
 class EstateLoaderImpl(
     private val estateExcelParser: EstateExcelParser,
+    private val airtableService: AirtableService,
     private val estateService: EstateService,
     private val googleProperties: GoogleProperties,
     private val googleDriveIntegration: GoogleDriveIntegration,
@@ -120,6 +123,17 @@ class EstateLoaderImpl(
         if (newUnits.isNotNullOrEmpty())
             unitRepository.saveAll(newUnits)
     }
+
+    override fun loadFromAirtable() {
+        withUpdateLock {
+            logInfo { "Начало парсинга объектов недвижимости из airtable" }
+
+            airtableService.refreshEstateData()
+
+            logInfo { "Закончили парсинг и загрузку объектов недвижимости из airtable" }
+        }
+    }
+
 
     private fun withUpdateLock(action: () -> Unit) {
         if (updateLock.tryLock()) {

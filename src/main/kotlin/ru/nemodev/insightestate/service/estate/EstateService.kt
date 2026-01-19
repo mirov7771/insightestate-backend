@@ -22,6 +22,7 @@ import kotlin.jvm.optionals.getOrNull
 interface EstateService {
 
     fun findAll(): List<EstateEntity>
+    fun findAllByProjectIds(projectIds: List<String>): List<EstateEntity>
     fun findAll(
         types: Set<EstateType>?,
         buildEndYears: Set<Int>?,
@@ -98,6 +99,12 @@ class EstateServiceImpl(
 
     override fun findAll(): List<EstateEntity> {
         return repository.findAll()
+    }
+
+    override fun findAllByProjectIds(
+        projectIds: List<String>
+    ): List<EstateEntity> {
+        return repository.findAllByProjectIds(projectIds)
     }
 
     override fun findAll(

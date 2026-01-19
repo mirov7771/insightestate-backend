@@ -70,7 +70,6 @@ class EstateDetailDtoRsConverter(
             ),
             type = estateDetail.type,
             level = estateDetail.level,
-            product = estateDetail.product,
             profitability = EstateDetailDtoRs.EstateProfitabilityDto(
                 roi = estateDetail.profitability.roi,
                 roiSummary = estateDetail.profitability.roiSummary,
@@ -88,11 +87,6 @@ class EstateDetailDtoRsConverter(
                 beachTime = estateDetail.infrastructure.beachTime.toTravelTimeDto(),
                 airportTime = estateDetail.infrastructure.airportTime.toTravelTimeDto(),
                 mallTime = estateDetail.infrastructure.mallTime.toTravelTimeDto(),
-                schoolRadius = estateDetail.infrastructure.school.radius,
-                school = EstateDetailDtoRs.SchoolDto(
-                    radius = estateDetail.infrastructure.school.radius,
-                    name = estateDetail.infrastructure.school.name
-                )
             ),
             options = EstateDetailDtoRs.EstateOptionsDto(
                 parkingSize = estateDetail.options.parkingSize,
@@ -107,7 +101,6 @@ class EstateDetailDtoRsConverter(
                 enabled = estateDetail.managementCompany.enabled
             ),
             price = estateDetail.price.toMinMaxAvgParamDto(),
-            ceilingHeight = estateDetail.ceilingHeight,
             floors = estateDetail.floors,
             roomLayouts = EstateDetailDtoRs.RoomLayoutsDto(
                 studio = estateDetail.roomLayouts.studio?.toRoomParamsDto(),

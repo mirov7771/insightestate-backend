@@ -3,6 +3,7 @@ package ru.nemodev.insightestate.config.property
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration
+import ru.nemodev.insightestate.config.integration.AirtableProperties
 import ru.nemodev.insightestate.config.integration.CurrencyProperties
 import ru.nemodev.insightestate.config.integration.CuttProperties
 import ru.nemodev.insightestate.config.integration.GptProperties
@@ -15,6 +16,7 @@ import java.time.Duration
     GptProperties::class,
     CurrencyProperties::class,
     CuttProperties::class,
+    AirtableProperties::class,
 )
 class PropertyConfig
 

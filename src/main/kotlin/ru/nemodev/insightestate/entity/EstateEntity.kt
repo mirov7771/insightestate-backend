@@ -41,17 +41,18 @@ data class EstateDetail (
     val landPurchased: Boolean,                 // земля выкуплена
     val eiaEnabled: Boolean,                    // наличие EIA
     val developer: EstateDeveloper,             // застройщик
-    val grade: EstateGrade,                     // оценка проекта
+    val grade: EstateGrade,                     // оценка проекта (больше не используются)
     val projectCount: ProjectCount,             // количество проектов
     val status: EstateStatus,                   // статус проекта
     var canShow: Boolean = true,                // можно ли показывать объект
     val saleStartDate: LocalDate? = null,       // дата начала продаж // TODO в таблице нужно поменять формат на дату как у даты окончания строительства
     val buildEndDate: LocalDate? = null,        // дата окончания строительства
     val unitCount: UnitCount,                   // количество юнитов
+    val soldOut: Boolean? = null,               // Sold Out
 
     var type: EstateType,                       // тип проекта
     val level: EstateLevelType,                 // класс проекта
-    val product: EstateProductType,             // тип продукта
+    val product: EstateProductType? = null,     // тип продукта (не используется)
     val profitability: EstateProfitability,     // доходность
 
     val location: EstateLocation,               // локация
@@ -70,20 +71,20 @@ data class EstateDetail (
 
     val paymentPlan: String? = null,
     var likesCount: Long? = null,
-    var toolTip1: String? = null,
-    var toolTip2: String? = null,
-    var toolTip3: String? = null,
+    var toolTip1: String? = null,      // лидеры продаж
+    var toolTip2: String? = null,      // выбор платформы
+    var toolTip3: String? = null,      // выбор брокеров
     var collectionCount: Int? = null,
 
     var units: List<UnitEntity>? = null,
 
     val lat: String? = null,
     val lon: String? = null,
-    val size: Long? = null,
+    val size: Long? = null,                 // Средняя площадь
 
-    val furniture: String? = null,
+    val furniture: String? = null,          // Мебельный пакет
     var rusPresentation: Boolean = false,
-    var engPresentation: Boolean = false,
+    var engPresentation: Boolean = false
 )
 
 // Оценка проекта
@@ -134,7 +135,7 @@ data class EstateInfrastructure(
     val beachTime: TravelTime,                      // время в пути до пляжа
     val airportTime: TravelTime,                    // время в пути до аэропорта
     val mallTime: TravelTime,                       // время в пути до тц
-    val school: School = School()                   // школа
+    val school: School? = School()                  // школа (не используется)
 ) {
     data class School(
         val radius: BigDecimal = BigDecimal.ZERO,
@@ -155,11 +156,12 @@ data class TravelTime(
 
 // Доходность
 data class EstateProfitability(
-    val roi: BigDecimal,
-    val roiSummary: BigDecimal,
-    val irr: BigDecimal,
-    val capRateFirstYear: BigDecimal,
-    val guarantee: BigDecimal? = null
+    val roi: BigDecimal,                            // не используется
+    val roiSummary: BigDecimal,                     // не используется
+    val irr: BigDecimal,                            // не используется
+    val capRateFirstYear: BigDecimal,               // не используется
+    val guarantee: BigDecimal? = null,               // Показатель доходности гарантированный доход, %
+    val guaranteedDeveloperIncome: Boolean? = null   // Гарантированный доход от застройщика
 )
 
 // Опции
