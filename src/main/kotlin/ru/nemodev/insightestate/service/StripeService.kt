@@ -2,19 +2,14 @@ package ru.nemodev.insightestate.service
 
 import com.stripe.StripeClient
 import com.stripe.exception.CardException
-import com.stripe.param.ChargeListParams
-import com.stripe.param.CustomerCreateParams
-import com.stripe.param.PaymentIntentCreateParams
-import com.stripe.param.PaymentIntentListParams
-import com.stripe.param.PaymentMethodListParams
-import com.stripe.param.RefundCreateParams
-import com.stripe.param.SubscriptionCreateParams
+import com.stripe.param.*
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeRecurrentRq
 import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeRq
 import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeRs
 import ru.nemodev.insightestate.api.client.v1.dto.stripe.StripeSubscriptionRq
+import ru.nemodev.insightestate.config.property.AppProperties
 import ru.nemodev.insightestate.entity.StripeUserEntity
 import ru.nemodev.insightestate.repository.StripeUserRepository
 import ru.nemodev.insightestate.service.subscription.SubscriptionService
@@ -33,7 +28,9 @@ interface StripeService {
 @Service
 class StripeServiceImpl (
     private val stripeUserRepository: StripeUserRepository,
-    private val subscriptionService: SubscriptionService
+    private val subscriptionService: SubscriptionService,
+    private val emailService: EmailService,
+    private val appProperties: AppProperties
 ) : StripeService {
 
     companion object: Loggable {
@@ -41,16 +38,41 @@ class StripeServiceImpl (
     }
 
     override fun session(rq: StripeRq): StripeRs {
-        val stripeUser = findOrCreate(rq.userId, rq.currency)
-        val params =
-            PaymentIntentCreateParams.builder()
-                .setAmount(rq.amount)
-                .setCustomer(stripeUser)
-                .setCurrency(rq.currency)
-                .setSetupFutureUsage(PaymentIntentCreateParams.SetupFutureUsage.OFF_SESSION)
-                .build()
-        val paymentIntent = client.paymentIntents().create(params)
-        return StripeRs(paymentIntent.clientSecret)
+        try {
+            val stripeUser = findOrCreate(rq.userId, rq.currency)
+            val params =
+                PaymentIntentCreateParams.builder()
+                    .setAmount(rq.amount)
+                    .setCustomer(stripeUser)
+                    .setCurrency(rq.currency)
+                    .setSetupFutureUsage(PaymentIntentCreateParams.SetupFutureUsage.OFF_SESSION)
+                    .build()
+            val paymentIntent = client.paymentIntents().create(params)
+            return StripeRs(paymentIntent.clientSecret)
+        } catch (e: Exception) {
+            sendNotification(rq, e)
+            logError {"Ошибка создания сессия для оплаты, userId = ${rq.userId}"}
+            throw e
+        }
+    }
+
+    private fun sendNotification(rq: StripeRq, e: Exception) {
+        val message = buildString {
+            appendLine("Ошибка создания paymentIntents для оплаты в stripe")
+            appendLine()
+            appendLine("userId: ${rq.userId}")
+            appendLine("amount: ${rq.amount}")
+            appendLine("currency: ${rq.currency}")
+            appendLine()
+            appendLine("Exception: ${e::class.qualifiedName}")
+            appendLine("Message: ${e.message}")
+        }
+
+        emailService.sendMessage(
+            email = appProperties.developerEmail,
+            subject = "Stripe error: userId=${rq.userId}",
+            message = message
+        )
     }
 
     override fun subscription(rq: StripeSubscriptionRq) {

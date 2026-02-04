@@ -23,7 +23,8 @@ class PropertyConfig
 data class AppProperties(
     val auth: Auth,
     val imageBaseUrl: String,
-    val estate: Estate
+    val estate: Estate,
+    val developerEmail: String,
 ) {
     data class Auth(
         val tokens: AuthTokens
