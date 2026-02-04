@@ -456,7 +456,6 @@ class EstateProcessorImpl(
 
         if (units.isNotEmpty()) {
 
-            // 2️⃣ Сортировка по числу
             if (orderBy != null) {
                 units = when (orderBy.lowercase()) {
                     "price" -> units.sortedBy { it.price }
