@@ -56,20 +56,28 @@ fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
 }
 
 fun String.getBigDecimal(): BigDecimal {
-    val value = this.replace(" ", "")
-        .replace(",", ".")
-        .replace("%", "")
-        .replace(" ", "")
-        .nullIfEmpty()?.toBigDecimal()
-    if (value == null) {
+    try {
+        val value = this.replace(" ", "")
+            .replace(",", ".")
+            .replace("%", "")
+            .replace(" ", "")
+            .nullIfEmpty()?.toBigDecimal()
+        if (value == null) {
+            return BigDecimal.ZERO
+        }
+        return value.scaleAndRoundAmount()
+    } catch (_: Exception) {
         return BigDecimal.ZERO
     }
-    return value.scaleAndRoundAmount()
 }
 
 fun Row.getBigDecimalFromPercent(cellName: String, scale: Int): BigDecimal? {
-    val value = getBigDecimal(cellName)?.toDouble() ?: return null
-    return (value * 100).toBigDecimal().scaleAndRoundAmount()
+    try {
+        val value = getBigDecimal(cellName)?.toDouble() ?: return null
+        return (value * 100).toBigDecimal().scaleAndRoundAmount()
+    } catch (_: Exception) {
+        return BigDecimal.ZERO
+    }
 }
 
 fun Row.getInt(cellName: String): Int? {

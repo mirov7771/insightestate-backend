@@ -118,7 +118,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                 eiaEnabled = row.getBoolean("E"),
                 size = sizeNumber,
                 developer = EstateDeveloper(
-                    name = row.getString("H")!!,
+                    name = row.getString("H") ?: "unknown",
                     country = row.getString("AJ"),
                     //yearOfFoundation = row.getInt("AL"),
                     phone = row.getString("AL"),
@@ -126,16 +126,16 @@ class EstateExcelParserImpl : EstateExcelParser {
                     presentation = row.getString("AJ"),
                 ),
                 grade = EstateGrade(
-                    main = row.getBigDecimal("I", 1)!!,
-                    investmentSecurity = row.getBigDecimal("J", 1)!!,
-                    investmentPotential = row.getBigDecimal("O", 1)!!,
-                    projectLocation = row.getBigDecimal("T", 1)!!,
-                    comfortOfLife = row.getBigDecimal("Y", 1)!!,
+                    main = row.getBigDecimal("I", 1) ?: BigDecimal.ZERO,
+                    investmentSecurity = row.getBigDecimal("J", 1) ?: BigDecimal.ZERO,
+                    investmentPotential = row.getBigDecimal("O", 1) ?: BigDecimal.ZERO,
+                    projectLocation = row.getBigDecimal("T", 1) ?: BigDecimal.ZERO,
+                    comfortOfLife = row.getBigDecimal("Y", 1) ?: BigDecimal.ZERO,
                 ),
                 projectCount = ProjectCount(
-                    total = row.getInt("AG")!!,
-                    build = row.getInt("AH")!!,
-                    finished = row.getInt("AI")!!,
+                    total = row.getInt("AG") ?: 0,
+                    build = row.getInt("AH") ?: 0,
+                    finished = row.getInt("AI") ?: 0,
                     deviationFromDeadline = row.getInt("AM"),
                 ),
                 status = when (row.getString("AN") ?: "") {
