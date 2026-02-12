@@ -11,7 +11,6 @@ import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.ValidationLogicException
 import ru.nemodev.platform.core.extensions.getFileExtension
-import ru.nemodev.platform.core.extensions.isNotNullOrEmpty
 import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.util.concurrent.locks.ReentrantLock
 
@@ -107,18 +106,47 @@ class EstateLoaderImpl(
     }
 
     private fun loadUnits(parsedUnits: List<UnitEntity>?) {
-        val list = unitRepository.findAll().toList()
-        if (parsedUnits.isNullOrEmpty())
-            return
+        if (parsedUnits.isNullOrEmpty()) return
 
-        val newUnits = parsedUnits.filter {
-            !list.any {
-                item -> item.code.contains(it.code, ignoreCase = true)
+        val existingMap = unitRepository.findAll().associateBy { it.code.lowercase() }
+
+        val unitsToSave = parsedUnits.mapNotNull { parsed ->
+            val codeKey = parsed.code.lowercase()
+            val existing = existingMap[codeKey]
+
+            if (existing != null) {
+                val isChanged =
+                    existing.corpus != parsed.corpus ||
+                            existing.number != parsed.number ||
+                            existing.floor != parsed.floor ||
+                            existing.rooms != parsed.rooms ||
+                            existing.square != parsed.square ||
+                            existing.priceSq != parsed.priceSq ||
+                            existing.price != parsed.price ||
+                            existing.planImage != parsed.planImage
+
+                if (isChanged) {
+                    existing.corpus = parsed.corpus
+                    existing.number = parsed.number
+                    existing.floor = parsed.floor
+                    existing.rooms = parsed.rooms
+                    existing.square = parsed.square
+                    existing.priceSq = parsed.priceSq
+                    existing.price = parsed.price
+                    existing.planImage = parsed.planImage
+                    existing
+                } else {
+                    null
+                }
+            } else {
+                parsed.apply { isNew = true }
             }
         }
 
-        if (newUnits.isNotNullOrEmpty())
-            unitRepository.saveAll(newUnits)
+        val batchSize = 500
+        unitsToSave.chunked(batchSize).forEach { batch ->
+            unitRepository.saveAll(batch)
+        }
     }
 
     private fun withUpdateLock(action: () -> Unit) {

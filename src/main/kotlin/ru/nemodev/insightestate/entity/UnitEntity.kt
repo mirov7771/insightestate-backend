@@ -14,19 +14,19 @@ class UnitEntity (
     @Column("code")
     val code: String,
     @Column("corpus")
-    val corpus: String? = null,
+    var corpus: String? = null,
     @Column("number")
-    val number: String? = null,
+    var number: String? = null,
     @Column("floor")
-    val floor: String? = null,
+    var floor: String? = null,
     @Column("rooms")
-    val rooms: String? = null,
+    var rooms: String? = null,
     @Column("square")
-    val square: String? = null,
+    var square: String? = null,
     @Column("pricesq")
     var priceSq: String? = null,
     @Column("price")
     var price: String? = null,
     @Column("planimage")
-    val planImage: String? = null,
+    var planImage: String? = null,
 ) : AbstractEntity<UUID>(id, createdAt, updatedAt)

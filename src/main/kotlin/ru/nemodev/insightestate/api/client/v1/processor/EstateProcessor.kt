@@ -468,7 +468,7 @@ class EstateProcessorImpl(
 
             if (rooms.isNotNullOrEmpty()) {
                 units = units.filter {
-                    it.unit.rooms != null && rooms!!.contains(it.unit.rooms.lowercase())
+                    it.unit.rooms != null && rooms!!.contains(it.unit.rooms!!.lowercase())
                 }
             }
 

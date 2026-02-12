@@ -1,13 +1,14 @@
 package ru.nemodev.insightestate.extension
 
 import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.ss.usermodel.DateUtil
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.util.CellReference
 import org.apache.poi.xssf.usermodel.XSSFCell
+import ru.nemodev.insightestate.service.estate.EstateExcelParserImpl.Companion.buildEndDateParseFormatter
 import ru.nemodev.platform.core.extensions.nullIfEmpty
 import ru.nemodev.platform.core.extensions.scaleAndRoundAmount
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -61,6 +62,7 @@ fun String.getBigDecimal(): BigDecimal {
             .replace(",", ".")
             .replace("%", "")
             .replace(" ", "")
+            .replace("#N/A", "")
             .nullIfEmpty()?.toBigDecimal()
         if (value == null) {
             return BigDecimal.ZERO
@@ -100,8 +102,20 @@ fun Row.getBoolean(cellName: String): Boolean {
     return this.getString(cellName)?.lowercase() == "да"
 }
 
-fun Row.getLocalDate(cellName: String): LocalDate? {
-    return this.getCellByName(cellName)?.dateCellValue?.let {
-        LocalDate.ofInstant(it.toInstant(), ZoneId.of("Europe/Moscow"))
+fun Row.getLocalDateSafe(cellName: String): LocalDate? {
+    val cell = getCellByName(cellName) ?: return null
+
+    return try {
+        when (cell.cellType) {
+            CellType.NUMERIC -> if (DateUtil.isCellDateFormatted(cell)) {
+                cell.dateCellValue.toInstant().atZone(ZoneId.of("Europe/Moscow")).toLocalDate()
+            } else null
+            CellType.STRING -> cell.stringCellValue.trim().nullIfEmpty()?.let {
+                LocalDate.parse(it, buildEndDateParseFormatter)
+            }
+            else -> null
+        }
+    } catch (e: Exception) {
+        null
     }
 }
