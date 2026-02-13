@@ -74,11 +74,10 @@ fun String.getBigDecimal(): BigDecimal {
 }
 
 fun Row.getBigDecimalFromPercent(cellName: String, scale: Int): BigDecimal? {
-    try {
-        val value = getBigDecimal(cellName)?.toDouble() ?: return null
-        return (value * 100).toBigDecimal().scaleAndRoundAmount()
+    return try {
+        getBigDecimal(cellName)?.scaleAndRoundAmount()
     } catch (_: Exception) {
-        return BigDecimal.ZERO
+        BigDecimal.ZERO
     }
 }
 
