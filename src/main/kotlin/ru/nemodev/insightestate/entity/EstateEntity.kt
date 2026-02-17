@@ -38,8 +38,8 @@ data class EstateDetail (
     val shortDescriptionRu: String? = null,     // краткое описание ru
     val shortDescriptionEn: String? = null,     // краткое описание en
 
-    val landPurchased: Boolean,                 // земля выкуплена
-    val eiaEnabled: Boolean,                    // наличие EIA
+    val landPurchased: Boolean?,                 // земля выкуплена
+    val eiaEnabled: Boolean?,                    // наличие EIA
     val developer: EstateDeveloper,             // застройщик
     val grade: EstateGrade,                     // оценка проекта (больше не используются)
     val projectCount: ProjectCount,             // количество проектов
@@ -84,7 +84,16 @@ data class EstateDetail (
 
     val furniture: String? = null,          // Мебельный пакет
     var rusPresentation: Boolean = false,
-    var engPresentation: Boolean = false
+    var engPresentation: Boolean = false,
+
+    // Поля для Грузии
+    val parkingPrice: BigDecimal? = null,                          // Парковка цена
+    val parkingPurchaseMethod: ParkingPurchaseMethod? = null,      // Парковка — Способ покупки
+    val managementCompanyName: String? = null,                     // Название УК
+    val serviceCost: BigDecimal? = null,                           // Стоимость обслуживания
+    val livingConditions: String? = null,                          // Условия проживания
+    val bookingConditions: String? = null,                         // Условия бронирования
+    val incomeDistributionMethod: String? = null,                  // Метод распределения доходности
 )
 
 // Оценка проекта
@@ -125,7 +134,7 @@ data class UnitCount(
 data class EstateLocation(
     val name: String,                               // локация
     val district: String,                           // район
-    val beach: String,                              // пляж
+    val beach: String?,                             // пляж
     val mapUrl: String,                             // ссылка на карту
     val city: String = "Phuket",                    // Город
 )
@@ -224,5 +233,10 @@ enum class EstateStatus {
     BUILD,
     FINISHED,
     UNKNOWN
+}
+
+enum class ParkingPurchaseMethod {
+    WITHOUT_APARTMENT,
+    ONLY_APARTMENT
 }
 

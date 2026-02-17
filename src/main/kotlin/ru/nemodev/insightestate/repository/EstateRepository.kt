@@ -1,5 +1,6 @@
 package ru.nemodev.insightestate.repository
 
+import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.ListCrudRepository
 import org.springframework.stereotype.Repository
@@ -160,4 +161,13 @@ interface EstateRepository: ListCrudRepository<EstateEntity, UUID> {
     fun findAllByProjectIds(
         projectIds: List<String>,
     ): List<EstateEntity>
+
+    @Modifying
+    @Query(
+        """
+        delete from estate
+        where estate_detail ->> 'projectId' in (:projectIds)
+        """
+    )
+    fun deleteByProjectIds(projectIds: List<String>): Int
 }

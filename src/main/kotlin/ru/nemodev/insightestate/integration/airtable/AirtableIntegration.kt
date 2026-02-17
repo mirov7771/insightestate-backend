@@ -9,23 +9,34 @@ import ru.nemodev.insightestate.integration.airtable.dto.UnitRecordsDtoRs
 import ru.nemodev.platform.core.exception.critical.IntegrationCriticalException
 import ru.nemodev.platform.core.exception.error.ErrorCode
 import ru.nemodev.platform.core.exception.logic.IntegrationLogicException
-import java.time.LocalDateTime
 
 
 interface AirtableIntegration {
     fun estateRecords(
-        updatedAt: LocalDateTime,
         pageSize: Int? = null,
         offset: String? = null,
-        country: Country
+        country: Country,
+        filterByFormula: String,
     ): EstateRecordsDtoRs
 
     fun unitRecords(
-        updatedAt: LocalDateTime,
         pageSize: Int? = null,
         offset: String? = null,
-        country: Country
+        country: Country,
+        filterByFormula: String,
     ): UnitRecordsDtoRs
+
+    fun deleteUnits(
+        offset: String? = null,
+        ids: List<String>,
+        country: Country
+    )
+
+    fun deleteEstate(
+        offset: String? = null,
+        ids: List<String>,
+        country: Country
+    )
 }
 
 @Component
@@ -43,17 +54,17 @@ class AirtableIntegrationImpl(
     }
 
     override fun estateRecords(
-        updatedAt: LocalDateTime,
         pageSize: Int?,
         offset: String?,
-        country: Country
+        country: Country,
+        filterByFormula: String
     ): EstateRecordsDtoRs {
         return airtableRestClient
             .get()
             .uri(AIRTABLE_LIST_RECORDS_PATH) { uriBuilder ->
                 pageSize?.let { uriBuilder.queryParam("pageSize", it) }
                 offset?.let { uriBuilder.queryParam("offset", it) }
-                uriBuilder.queryParam("filterByFormula", buildFilterByFormula(updatedAt))
+                uriBuilder.queryParam("filterByFormula", filterByFormula)
 
                 uriBuilder.build(
                     airtableProperties.markets[country]!!.baseId,
@@ -86,17 +97,17 @@ class AirtableIntegrationImpl(
     }
 
     override fun unitRecords(
-        updatedAt: LocalDateTime,
         pageSize: Int?,
         offset: String?,
-        country: Country
+        country: Country,
+        filterByFormula: String
     ): UnitRecordsDtoRs {
         return airtableRestClient
             .get()
             .uri(AIRTABLE_LIST_RECORDS_PATH) { uriBuilder ->
                 pageSize?.let { uriBuilder.queryParam("pageSize", it) }
                 offset?.let { uriBuilder.queryParam("offset", it) }
-                uriBuilder.queryParam("filterByFormula", buildFilterByFormula(updatedAt))
+                uriBuilder.queryParam("filterByFormula", filterByFormula)
 
                 uriBuilder.build(
                     airtableProperties.markets[country]!!.baseId,
@@ -128,7 +139,81 @@ class AirtableIntegrationImpl(
             .body!!
     }
 
-    private fun buildFilterByFormula(updatedAt: LocalDateTime): String {
-        return "AND(updatedAt > '${updatedAt}', active)"
+    override fun deleteUnits(
+        offset: String?,
+        ids: List<String>,
+        country: Country
+    ) {
+        airtableRestClient
+            .delete()
+            .uri(AIRTABLE_LIST_RECORDS_PATH) { uriBuilder ->
+                offset?.let { uriBuilder.queryParam("offset", it) }
+                ids.forEach { uriBuilder.queryParam("records[]", it) }
+
+                uriBuilder.build(
+                    airtableProperties.markets[country]!!.baseId,
+                    airtableProperties.markets[country]!!.unitsTableId
+                )
+            }
+            .retrieve()
+            .onStatus(
+                { it.is4xxClientError },
+                { _, response ->
+                    throw IntegrationLogicException(
+                        serviceId = airtableProperties.integration.httpClient.serviceId,
+                        errorCode = ErrorCode.create(AIRTABLE_INTEGRATION_ERROR_CODE, AIRTABLE_INTEGRATION_ERROR_DESCRIPTION),
+                        httpStatus = response.statusCode
+                    )
+                }
+            )
+            .onStatus(
+                { it.is5xxServerError },
+                { _, response ->
+                    throw IntegrationCriticalException(
+                        serviceId = airtableProperties.integration.httpClient.serviceId,
+                        errorCode = ErrorCode.create(AIRTABLE_INTEGRATION_ERROR_CODE, AIRTABLE_INTEGRATION_ERROR_DESCRIPTION),
+                        httpStatus = response.statusCode
+                    )
+                }
+            )
+    }
+
+    override fun deleteEstate(
+        offset: String?,
+        ids: List<String>,
+        country: Country
+    ) {
+        airtableRestClient
+            .delete()
+            .uri(AIRTABLE_LIST_RECORDS_PATH) { uriBuilder ->
+                offset?.let { uriBuilder.queryParam("offset", it) }
+                ids.forEach { uriBuilder.queryParam("records[]", it) }
+
+                uriBuilder.build(
+                    airtableProperties.markets[country]!!.baseId,
+                    airtableProperties.markets[country]!!.estateTableId
+                )
+            }
+            .retrieve()
+            .onStatus(
+                { it.is4xxClientError },
+                { _, response ->
+                    throw IntegrationLogicException(
+                        serviceId = airtableProperties.integration.httpClient.serviceId,
+                        errorCode = ErrorCode.create(AIRTABLE_INTEGRATION_ERROR_CODE, AIRTABLE_INTEGRATION_ERROR_DESCRIPTION),
+                        httpStatus = response.statusCode
+                    )
+                }
+            )
+            .onStatus(
+                { it.is5xxServerError },
+                { _, response ->
+                    throw IntegrationCriticalException(
+                        serviceId = airtableProperties.integration.httpClient.serviceId,
+                        errorCode = ErrorCode.create(AIRTABLE_INTEGRATION_ERROR_CODE, AIRTABLE_INTEGRATION_ERROR_DESCRIPTION),
+                        httpStatus = response.statusCode
+                    )
+                }
+            )
     }
 }

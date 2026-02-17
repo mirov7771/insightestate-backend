@@ -31,10 +31,10 @@ data class EstateRecordsDtoRs(
             val projectName: String,
 
             @JsonProperty("Выкуплена земля")
-            val landPurchased: String,
+            val landPurchased: String?,
 
             @JsonProperty("Наличие EIA")
-            val hasEia: String,
+            val hasEia: String?,
 
             @JsonProperty("Developer")
             val developer: String,
@@ -79,7 +79,7 @@ data class EstateRecordsDtoRs(
             val district: String,
 
             @JsonProperty("Пляж")
-            val beach: String,
+            val beach: String?,
 
             @JsonProperty("Время пути до моря пешком, мин.")
             val walkToBeachMinutes: Int,

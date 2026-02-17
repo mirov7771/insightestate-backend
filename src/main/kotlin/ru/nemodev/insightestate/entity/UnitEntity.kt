@@ -13,6 +13,8 @@ class UnitEntity (
     updatedAt: LocalDateTime = LocalDateTime.now(),
     @Column("code")
     var code: String,
+    @Column("projectid")
+    var projectId: String?,
     @Column("corpus")
     var corpus: String? = null,
     @Column("number")

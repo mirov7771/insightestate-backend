@@ -1,6 +1,7 @@
 package ru.nemodev.insightestate.service.airtable
 
 import org.springframework.stereotype.Service
+import ru.nemodev.insightestate.config.integration.AirtableProperties
 import ru.nemodev.insightestate.entity.Country
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.UnitEntity
@@ -10,10 +11,12 @@ import ru.nemodev.insightestate.integration.airtable.dto.UnitRecordsDtoRs
 import ru.nemodev.insightestate.repository.UnitRepository
 import ru.nemodev.insightestate.service.SyncMetadataService
 import ru.nemodev.insightestate.service.estate.EstateService
+import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.time.LocalDateTime
 
 interface AirtableService {
     fun refreshEstateData(country: Country)
+    fun deleteFromAirtable()
 }
 
 @Service
@@ -24,10 +27,11 @@ class AirtableServiceImpl(
     private val estateService: EstateService,
     private val syncMetadataService: SyncMetadataService,
     private val unitRepository: UnitRepository,
+    private val airtableProperties: AirtableProperties,
 ) : AirtableService {
 
-    companion object {
-        private const val REFRESH_BATCH_SIZE = 30
+    companion object : Loggable {
+        private const val BATCH_SIZE = 30
     }
 
     override fun refreshEstateData(
@@ -40,14 +44,14 @@ class AirtableServiceImpl(
     private fun refreshEstate(
         country: Country
     ) {
-        val syncMetadata = syncMetadataService.getOne()
+        val syncMetadata = syncMetadataService.getOne(country)
         val estateLastUpdatedAt = syncMetadata.syncMetadataDetail.airtable.estateLastUpdatedAt
         var newLastUpdatedAt = estateLastUpdatedAt
         val estateForUpdate = mutableListOf<EstateEntity>()
         var estateFromAirtable = estateRecords(
-            updatedAt = estateLastUpdatedAt,
-            pageSize = REFRESH_BATCH_SIZE,
+            pageSize = BATCH_SIZE,
             country = country,
+            filterByFormula = buildFilterByFormula(estateLastUpdatedAt)
         )
 
         var offset = estateFromAirtable.offset
@@ -90,10 +94,10 @@ class AirtableServiceImpl(
                 estateFromAirtableRecords = emptyList()
             } else {
                 estateFromAirtable = estateRecords(
-                    updatedAt = estateLastUpdatedAt,
-                    pageSize = REFRESH_BATCH_SIZE,
+                    pageSize = BATCH_SIZE,
                     offset = offset,
-                    country = country
+                    country = country,
+                    filterByFormula = buildFilterByFormula(estateLastUpdatedAt)
                 )
                 offset = estateFromAirtable.offset
                 estateFromAirtableRecords = estateFromAirtable.records
@@ -107,14 +111,14 @@ class AirtableServiceImpl(
     private fun refreshUnits(
         country: Country
     ) {
-        val syncMetadata = syncMetadataService.getOne()
+        val syncMetadata = syncMetadataService.getOne(country)
         val unitsLastUpdatedAt = syncMetadata.syncMetadataDetail.airtable.unitsLastUpdatedAt
         var newLastUpdatedAt = unitsLastUpdatedAt
         val unitsForUpdate = mutableListOf<UnitEntity>()
         var unitsFromAirtable = unitRecords(
-            updatedAt = unitsLastUpdatedAt,
-            pageSize = REFRESH_BATCH_SIZE,
-            country = country
+            pageSize = BATCH_SIZE,
+            country = country,
+            filterByFormula = buildFilterByFormula(unitsLastUpdatedAt)
         )
 
         var offset = unitsFromAirtable.offset
@@ -144,10 +148,10 @@ class AirtableServiceImpl(
                 unitsFromAirtableRecords = emptyList()
             } else {
                 unitsFromAirtable = unitRecords(
-                    updatedAt = unitsLastUpdatedAt,
-                    pageSize = REFRESH_BATCH_SIZE,
+                    pageSize = BATCH_SIZE,
                     offset = offset,
-                    country = country
+                    country = country,
+                    filterByFormula = buildFilterByFormula(unitsLastUpdatedAt)
                 )
                 offset = unitsFromAirtable.offset
                 unitsFromAirtableRecords = unitsFromAirtable.records
@@ -159,30 +163,105 @@ class AirtableServiceImpl(
     }
 
     private fun estateRecords(
-        updatedAt: LocalDateTime,
         pageSize: Int? = null,
         offset: String? = null,
-        country: Country
+        country: Country,
+        filterByFormula: String
     ): EstateRecordsDtoRs {
         return airtableIntegration.estateRecords(
-            updatedAt,
             pageSize,
             offset,
-            country
+            country,
+            filterByFormula
         )
     }
 
     private fun unitRecords(
-        updatedAt: LocalDateTime,
         pageSize: Int? = null,
         offset: String? = null,
-        country: Country
+        country: Country,
+        filterByFormula: String
     ): UnitRecordsDtoRs {
         return airtableIntegration.unitRecords(
-            updatedAt,
             pageSize,
             offset,
-            country
+            country,
+            filterByFormula
         )
+    }
+
+    override fun deleteFromAirtable() {
+        airtableProperties.countriesForDelete.forEach { country ->
+            logInfo { "Начало удаление объектов недвижимости из airtable $country" }
+
+            deleteEstate(country)
+            deleteUnits(country)
+
+            logInfo { "Закончили удаление объектов недвижимости из airtable $country" }
+        }
+    }
+
+    private fun deleteEstate(country: Country) {
+        var estateForDelete = estateRecords(
+            pageSize = BATCH_SIZE,
+            country = country,
+            filterByFormula = "not(active)"
+        )
+
+        var offset = estateForDelete.offset
+        var estateRecords = estateForDelete.records
+
+        while (estateRecords.isNotEmpty()) {
+            val deletedCount = estateService.deleteByProjectIds(estateRecords.map { it.fields.projectId })
+            logInfo { "$deletedCount объектов удалено из БД" }
+
+            if (offset == null) {
+                estateRecords = emptyList()
+            } else {
+                estateForDelete = estateRecords(
+                    offset = offset,
+                    pageSize = BATCH_SIZE,
+                    country = country,
+                    filterByFormula = "delete"
+                )
+
+                offset = estateForDelete.offset
+                estateRecords = estateForDelete.records
+            }
+        }
+    }
+
+    private fun deleteUnits(country: Country) {
+        var unitsForDelete = unitRecords(
+            pageSize = BATCH_SIZE,
+            country = country,
+            filterByFormula = "not(active)"
+        )
+
+        var offset = unitsForDelete.offset
+        var unitRecords = unitsForDelete.records
+
+        while (unitRecords.isNotEmpty()) {
+            val deletedCount = unitRepository.deleteByCodes(unitRecords.map { it.fields.unitId })
+            logInfo { "$deletedCount юнитов удалено из БД" }
+
+            if (offset == null) {
+                unitRecords = emptyList()
+            } else {
+                unitsForDelete = unitRecords(
+                    offset = offset,
+                    pageSize = BATCH_SIZE,
+                    country = country,
+                    filterByFormula = "delete"
+                )
+
+                offset = unitsForDelete.offset
+                unitRecords = unitsForDelete.records
+            }
+        }
+    }
+
+    private fun buildFilterByFormula(updatedAt: LocalDateTime): String {
+        return "AND(updatedAt > '${updatedAt}', active)"
     }
 }

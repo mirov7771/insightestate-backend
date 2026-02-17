@@ -13,9 +13,9 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://77.238.232.18:5432/insightestate}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/insightestate}
     username: ${DATABASE_USERNAME:insightestate_admin}
-    password: ${DATABASE_PASSWORD:ROucKPoLoNgu}
+    password: ${DATABASE_PASSWORD:insightestate_admin}
   mail:
     host: smtp.gmail.com
     port: 587
@@ -98,6 +98,9 @@ airtable:
       base-id: app4KnvZCKSch1x6s
       estate-table-id: tbls7Sk1jRewSKoAk
       units-table-id: tblI7UhLZtubsnQgT
+  countries-for-parsing: GEORGIA
+  countries-for-delete: GEORGIA
+  estate-refresh-cron: 0 */30 * * * *
 
 google:
   spreadsheets:

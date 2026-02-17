@@ -3,6 +3,7 @@ package ru.nemodev.insightestate.service.estate
 import org.springframework.stereotype.Service
 import org.springframework.transaction.support.TransactionTemplate
 import org.springframework.web.multipart.MultipartFile
+import ru.nemodev.insightestate.config.integration.AirtableProperties
 import ru.nemodev.insightestate.config.property.GoogleProperties
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.UnitEntity
@@ -30,9 +31,12 @@ class EstateLoaderImpl(
     private val googleDriveIntegration: GoogleDriveIntegration,
     private val transactionTemplate: TransactionTemplate,
     private val unitRepository: UnitRepository,
+    private val airtableProperties: AirtableProperties
 ) : EstateLoader {
 
-    companion object : Loggable
+    companion object : Loggable {
+        const val BATCH_SIZE = 500
+    }
 
     private val updateLock = ReentrantLock()
 
@@ -146,19 +150,20 @@ class EstateLoaderImpl(
             }
         }
 
-        val batchSize = 500
-        unitsToSave.chunked(batchSize).forEach { batch ->
+        unitsToSave.chunked(BATCH_SIZE).forEach { batch ->
             unitRepository.saveAll(batch)
         }
     }
 
     override fun loadFromAirtable() {
-        withUpdateLock {
-            logInfo { "Начало парсинга объектов недвижимости из airtable" }
+        airtableProperties.countriesForParsing.forEach { country ->
+            withUpdateLock {
+                logInfo { "Начало парсинга объектов недвижимости из airtable $country" }
 
-            airtableService.refreshEstateData()
+                airtableService.refreshEstateData(country)
 
-            logInfo { "Закончили парсинг и загрузку объектов недвижимости из airtable" }
+                logInfo { "Закончили парсинг и загрузку объектов недвижимости из airtable $country" }
+            }
         }
     }
 

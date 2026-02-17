@@ -1,5 +1,6 @@
 package ru.nemodev.insightestate.repository
 
+import org.springframework.data.jdbc.repository.query.Modifying
 import org.springframework.data.jdbc.repository.query.Query
 import org.springframework.data.repository.ListCrudRepository
 import org.springframework.stereotype.Repository
@@ -30,4 +31,13 @@ interface UnitRepository: ListCrudRepository<UnitEntity, UUID> {
         where collection_detail ->> 'userId' = :userId
     """)
     fun findAllCollections(userId: String): Int
+
+    @Modifying
+    @Query(
+        """
+        delete from unit
+        where code in (:codes)
+        """
+    )
+    fun deleteByCodes(codes: List<String>): Int
 }

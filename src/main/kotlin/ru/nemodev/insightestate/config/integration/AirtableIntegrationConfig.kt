@@ -10,7 +10,9 @@ import ru.nemodev.platform.core.integration.http.factory.RestClientFactory
 @ConfigurationProperties("airtable")
 class AirtableProperties (
     val integration: AirtableIntegration,
-    val markets: Map<Country, Market>
+    val markets: Map<Country, Market>,
+    val countriesForParsing: List<Country>,
+    val countriesForDelete: List<Country>,
 ) {
     data class AirtableIntegration (
         val httpClient: RestClientProperties

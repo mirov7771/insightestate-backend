@@ -24,6 +24,7 @@ class UnitAirtableMapperImpl : UnitAirtableMapper {
         return if (entity == null) {
             UnitEntity(
                 code = airtableDto.unitId,
+                projectId = airtableDto.projectIds?.get(0),
                 corpus = airtableDto.corpus,
                 number = airtableDto.unitNumber,
                 floor = airtableDto.floor,
@@ -35,6 +36,7 @@ class UnitAirtableMapperImpl : UnitAirtableMapper {
             )
         } else {
             entity.code = airtableDto.unitId
+            entity.projectId = airtableDto.projectIds?.get(0)
             entity.corpus = airtableDto.corpus
             entity.number = airtableDto.unitNumber
             entity.floor = airtableDto.floor

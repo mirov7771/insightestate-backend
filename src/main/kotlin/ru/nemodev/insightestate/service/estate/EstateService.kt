@@ -87,6 +87,7 @@ interface EstateService {
     ): Int
 
     fun createXml(): String
+    fun deleteByProjectIds(projectIds: List<String>): Int
 }
 
 @Service
@@ -782,5 +783,9 @@ class EstateServiceImpl(
         }
         sb.append("</objects>\n")
         return sb.toString()
+    }
+
+    override fun deleteByProjectIds(projectIds: List<String>): Int {
+        return repository.deleteByProjectIds(projectIds)
     }
 }

@@ -19,17 +19,19 @@ class EstateAirtableMapperImpl : EstateAirtableMapper {
         return EstateEntity(
             estateDetail = EstateDetail(
                 // не используются
-                airtableDto.projectId,
-                airtableDto.projectName,
-                airtableDto.descriptionRu,
-                airtableDto.descriptionEn,
-                when (airtableDto.landPurchased) {
+                projectId = airtableDto.projectId,
+                name = airtableDto.projectName,
+                shortDescriptionRu = airtableDto.descriptionRu,
+                shortDescriptionEn = airtableDto.descriptionEn,
+                landPurchased = when (airtableDto.landPurchased) {
                     "Да" -> true
-                    else -> false
+                    "Нет" -> false
+                    else -> null
                 },
-                when (airtableDto.hasEia) {
+                eiaEnabled = when (airtableDto.hasEia) {
                     "Да" -> true
-                    else -> false
+                    "Нет" -> false
+                    else -> null
                 },
                 EstateDeveloper(
                     name = airtableDto.developer,
@@ -256,7 +258,18 @@ class EstateAirtableMapperImpl : EstateAirtableMapper {
                 lat = airtableDto.latitude,
                 lon = airtableDto.longitude,
                 size = airtableDto.size,
-                furniture = airtableDto.furniturePackage
+                furniture = airtableDto.furniturePackage,
+                parkingPrice = airtableDto.parkingPrice,
+                parkingPurchaseMethod = when (airtableDto.parkingPurchaseMethod) {
+                    "Только с квартирой" -> ParkingPurchaseMethod.ONLY_APARTMENT
+                    "Можно без квартиры" -> ParkingPurchaseMethod.WITHOUT_APARTMENT
+                    else -> null
+                },
+                managementCompanyName = airtableDto.managementCompanyName,
+                serviceCost = airtableDto.serviceCost,
+                livingConditions = airtableDto.livingConditions,
+                bookingConditions = airtableDto.bookingConditions,
+                incomeDistributionMethod = airtableDto.incomeDistributionMethod
             )
         )
     }

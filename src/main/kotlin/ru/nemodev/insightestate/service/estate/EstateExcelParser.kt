@@ -89,7 +89,8 @@ class EstateExcelParserImpl : EstateExcelParser {
                 square = parseNumber(row.getString("G")),
                 priceSq = parseNumber(row.getString("H")),
                 price = parseNumber(row.getString("I")),
-                planImage = image
+                planImage = image,
+                projectId = null
             ).apply { isNew = true }
         } catch (e: Exception) {
             logError(e) { "Ошибка парсинга юнита с кодом = ${row.getString("A")} строка = ${index + 1}" }

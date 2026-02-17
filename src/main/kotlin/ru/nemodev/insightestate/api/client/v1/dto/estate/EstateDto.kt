@@ -45,8 +45,8 @@ data class EstateDetailDtoRs(
     val shortDescriptionRu: String?,
     val shortDescriptionEn: String?,
 
-    val landPurchased: Boolean,
-    val eiaEnabled: Boolean,
+    val landPurchased: Boolean?,
+    val eiaEnabled: Boolean?,
     val developer: EstateDeveloperDto,
     val grade: EstateGradeDto?,
     val projectCount: ProjectCountDto,
@@ -122,7 +122,7 @@ data class EstateDetailDtoRs(
     data class EstateLocationDto(
         val name: String,
         val district: String,
-        val beach: String,
+        val beach: String?,
         val mapUrl: String,
     )
 
