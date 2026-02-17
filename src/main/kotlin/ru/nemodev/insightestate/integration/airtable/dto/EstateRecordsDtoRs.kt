@@ -393,6 +393,28 @@ data class EstateRecordsDtoRs(
 
             @JsonProperty("Максимальная площадь Villa 5 BR")
             val maxAreaVilla5Br: String?,
+
+            // Поля для Грузии
+            @JsonProperty("Парковка цена")
+            val parkingPrice: BigDecimal?,
+
+            @JsonProperty("Парковка — Способ покупки")
+            val parkingPurchaseMethod: String?,
+
+            @JsonProperty("Название УК")
+            val managementCompanyName: String?,
+
+            @JsonProperty("Стоимость обслуживания")
+            val serviceCost: BigDecimal?,
+
+            @JsonProperty("Условия проживания")
+            val livingConditions: String?,
+
+            @JsonProperty("Условия бронирования")
+            val bookingConditions: String?,
+
+            @JsonProperty("Метод распределения доходности")
+            val incomeDistributionMethod: String?,
         )
     }
 }

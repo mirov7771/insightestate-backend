@@ -22,8 +22,14 @@ data class SyncMetadataDetail(
     var airtable: Airtable,
 ) {
     data class Airtable(
+        val country: Country,
         var estateLastUpdatedAt: LocalDateTime, // хранится в UTC
         var unitsLastUpdatedAt: LocalDateTime,  // хранится в UTC
     )
+}
 
+enum class Country {
+    THAILAND,
+    GEORGIA,
+    CYPRUS
 }

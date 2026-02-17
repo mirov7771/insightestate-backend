@@ -88,10 +88,15 @@ airtable:
       headers:
         - name: Authorization
           value: Bearer patTTQ3nbo4mCE1eB.6d6a34c9347a82696b008db0da78e7ff4eb458f646e9c0a2d9cea8d9edbbc140
-  settings:
-    base-id: appKLB89qbbbJGnuJ
-    estate-table-id: tbls7Sk1jRewSKoAk
-    units-table-id: tbl5VpGhdOzUD9t4Z
+  markets:
+    THAILAND:
+      base-id: appKLB89qbbbJGnuJ
+      estate-table-id: tbls7Sk1jRewSKoAk
+      units-table-id: tbl5VpGhdOzUD9t4Z
+    GEORGIA:
+      base-id: app4KnvZCKSch1x6s
+      estate-table-id: tbls7Sk1jRewSKoAk
+      units-table-id: tblI7UhLZtubsnQgT
 
 google:
   spreadsheets:
@@ -138,8 +143,6 @@ springdoc:
       display-name: Client API
       packages-to-scan:
         - "ru.nemodev.insightestate.api.client"
-
-
 
 currency:
   integration:

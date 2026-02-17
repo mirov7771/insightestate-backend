@@ -3,6 +3,7 @@ package ru.nemodev.insightestate.integration.airtable
 import org.springframework.stereotype.Component
 import org.springframework.web.client.RestClient
 import ru.nemodev.insightestate.config.integration.AirtableProperties
+import ru.nemodev.insightestate.entity.Country
 import ru.nemodev.insightestate.integration.airtable.dto.EstateRecordsDtoRs
 import ru.nemodev.insightestate.integration.airtable.dto.UnitRecordsDtoRs
 import ru.nemodev.platform.core.exception.critical.IntegrationCriticalException
@@ -15,13 +16,15 @@ interface AirtableIntegration {
     fun estateRecords(
         updatedAt: LocalDateTime,
         pageSize: Int? = null,
-        offset: String? = null
+        offset: String? = null,
+        country: Country
     ): EstateRecordsDtoRs
 
     fun unitRecords(
         updatedAt: LocalDateTime,
         pageSize: Int? = null,
-        offset: String? = null
+        offset: String? = null,
+        country: Country
     ): UnitRecordsDtoRs
 }
 
@@ -42,7 +45,8 @@ class AirtableIntegrationImpl(
     override fun estateRecords(
         updatedAt: LocalDateTime,
         pageSize: Int?,
-        offset: String?
+        offset: String?,
+        country: Country
     ): EstateRecordsDtoRs {
         return airtableRestClient
             .get()
@@ -52,8 +56,8 @@ class AirtableIntegrationImpl(
                 uriBuilder.queryParam("filterByFormula", buildFilterByFormula(updatedAt))
 
                 uriBuilder.build(
-                    airtableProperties.settings.baseId,
-                    airtableProperties.settings.estateTableId
+                    airtableProperties.markets[country]!!.baseId,
+                    airtableProperties.markets[country]!!.estateTableId
                 )
             }
             .retrieve()
@@ -84,7 +88,8 @@ class AirtableIntegrationImpl(
     override fun unitRecords(
         updatedAt: LocalDateTime,
         pageSize: Int?,
-        offset: String?
+        offset: String?,
+        country: Country
     ): UnitRecordsDtoRs {
         return airtableRestClient
             .get()
@@ -94,8 +99,8 @@ class AirtableIntegrationImpl(
                 uriBuilder.queryParam("filterByFormula", buildFilterByFormula(updatedAt))
 
                 uriBuilder.build(
-                    airtableProperties.settings.baseId,
-                    airtableProperties.settings.unitsTableId
+                    airtableProperties.markets[country]!!.baseId,
+                    airtableProperties.markets[country]!!.unitsTableId
                 )
             }
             .retrieve()

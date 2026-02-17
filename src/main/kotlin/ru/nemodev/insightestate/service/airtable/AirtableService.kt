@@ -1,6 +1,7 @@
 package ru.nemodev.insightestate.service.airtable
 
 import org.springframework.stereotype.Service
+import ru.nemodev.insightestate.entity.Country
 import ru.nemodev.insightestate.entity.EstateEntity
 import ru.nemodev.insightestate.entity.UnitEntity
 import ru.nemodev.insightestate.integration.airtable.AirtableIntegration
@@ -12,7 +13,7 @@ import ru.nemodev.insightestate.service.estate.EstateService
 import java.time.LocalDateTime
 
 interface AirtableService {
-    fun refreshEstateData()
+    fun refreshEstateData(country: Country)
 }
 
 @Service
@@ -29,19 +30,24 @@ class AirtableServiceImpl(
         private const val REFRESH_BATCH_SIZE = 30
     }
 
-    override fun refreshEstateData() {
-        refreshEstate()
-        refreshUnits()
+    override fun refreshEstateData(
+        country: Country
+    ) {
+        refreshEstate(country)
+        refreshUnits(country)
     }
 
-    private fun refreshEstate() {
+    private fun refreshEstate(
+        country: Country
+    ) {
         val syncMetadata = syncMetadataService.getOne()
         val estateLastUpdatedAt = syncMetadata.syncMetadataDetail.airtable.estateLastUpdatedAt
         var newLastUpdatedAt = estateLastUpdatedAt
         val estateForUpdate = mutableListOf<EstateEntity>()
         var estateFromAirtable = estateRecords(
             updatedAt = estateLastUpdatedAt,
-            pageSize = REFRESH_BATCH_SIZE
+            pageSize = REFRESH_BATCH_SIZE,
+            country = country,
         )
 
         var offset = estateFromAirtable.offset
@@ -87,6 +93,7 @@ class AirtableServiceImpl(
                     updatedAt = estateLastUpdatedAt,
                     pageSize = REFRESH_BATCH_SIZE,
                     offset = offset,
+                    country = country
                 )
                 offset = estateFromAirtable.offset
                 estateFromAirtableRecords = estateFromAirtable.records
@@ -97,14 +104,17 @@ class AirtableServiceImpl(
         syncMetadataService.save(syncMetadata)
     }
 
-    private fun refreshUnits() {
+    private fun refreshUnits(
+        country: Country
+    ) {
         val syncMetadata = syncMetadataService.getOne()
         val unitsLastUpdatedAt = syncMetadata.syncMetadataDetail.airtable.unitsLastUpdatedAt
         var newLastUpdatedAt = unitsLastUpdatedAt
         val unitsForUpdate = mutableListOf<UnitEntity>()
         var unitsFromAirtable = unitRecords(
             updatedAt = unitsLastUpdatedAt,
-            pageSize = REFRESH_BATCH_SIZE
+            pageSize = REFRESH_BATCH_SIZE,
+            country = country
         )
 
         var offset = unitsFromAirtable.offset
@@ -137,6 +147,7 @@ class AirtableServiceImpl(
                     updatedAt = unitsLastUpdatedAt,
                     pageSize = REFRESH_BATCH_SIZE,
                     offset = offset,
+                    country = country
                 )
                 offset = unitsFromAirtable.offset
                 unitsFromAirtableRecords = unitsFromAirtable.records
@@ -150,24 +161,28 @@ class AirtableServiceImpl(
     private fun estateRecords(
         updatedAt: LocalDateTime,
         pageSize: Int? = null,
-        offset: String? = null
+        offset: String? = null,
+        country: Country
     ): EstateRecordsDtoRs {
         return airtableIntegration.estateRecords(
             updatedAt,
             pageSize,
-            offset
+            offset,
+            country
         )
     }
 
     private fun unitRecords(
         updatedAt: LocalDateTime,
         pageSize: Int? = null,
-        offset: String? = null
+        offset: String? = null,
+        country: Country
     ): UnitRecordsDtoRs {
         return airtableIntegration.unitRecords(
             updatedAt,
             pageSize,
-            offset
+            offset,
+            country
         )
     }
 }
