@@ -1,13 +1,14 @@
 package ru.nemodev.insightestate.extension
 
 import org.apache.poi.ss.usermodel.CellType
+import org.apache.poi.ss.usermodel.DateUtil
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.util.CellReference
 import org.apache.poi.xssf.usermodel.XSSFCell
+import ru.nemodev.insightestate.service.estate.EstateExcelParserImpl.Companion.buildEndDateParseFormatter
 import ru.nemodev.platform.core.extensions.nullIfEmpty
 import ru.nemodev.platform.core.extensions.scaleAndRoundAmount
 import java.math.BigDecimal
-import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -56,20 +57,28 @@ fun Row.getBigDecimal(cellName: String, scale: Int? = null): BigDecimal? {
 }
 
 fun String.getBigDecimal(): BigDecimal {
-    val value = this.replace(" ", "")
-        .replace(",", ".")
-        .replace("%", "")
-        .replace(" ", "")
-        .nullIfEmpty()?.toBigDecimal()
-    if (value == null) {
+    try {
+        val value = this.replace(" ", "")
+            .replace(",", ".")
+            .replace("%", "")
+            .replace(" ", "")
+            .replace("#N/A", "")
+            .nullIfEmpty()?.toBigDecimal()
+        if (value == null) {
+            return BigDecimal.ZERO
+        }
+        return value.scaleAndRoundAmount()
+    } catch (_: Exception) {
         return BigDecimal.ZERO
     }
-    return value.scaleAndRoundAmount()
 }
 
 fun Row.getBigDecimalFromPercent(cellName: String, scale: Int): BigDecimal? {
-    val value = getBigDecimal(cellName)?.toDouble() ?: return null
-    return (value * 100).toBigDecimal().scaleAndRoundAmount()
+    return try {
+        getBigDecimal(cellName)?.scaleAndRoundAmount()
+    } catch (_: Exception) {
+        BigDecimal.ZERO
+    }
 }
 
 fun Row.getInt(cellName: String): Int? {
@@ -92,8 +101,20 @@ fun Row.getBoolean(cellName: String): Boolean {
     return this.getString(cellName)?.lowercase() == "да"
 }
 
-fun Row.getLocalDate(cellName: String): LocalDate? {
-    return this.getCellByName(cellName)?.dateCellValue?.let {
-        LocalDate.ofInstant(it.toInstant(), ZoneId.of("Europe/Moscow"))
+fun Row.getLocalDateSafe(cellName: String): LocalDate? {
+    val cell = getCellByName(cellName) ?: return null
+
+    return try {
+        when (cell.cellType) {
+            CellType.NUMERIC -> if (DateUtil.isCellDateFormatted(cell)) {
+                cell.dateCellValue.toInstant().atZone(ZoneId.of("Europe/Moscow")).toLocalDate()
+            } else null
+            CellType.STRING -> cell.stringCellValue.trim().nullIfEmpty()?.let {
+                LocalDate.parse(it, buildEndDateParseFormatter)
+            }
+            else -> null
+        }
+    } catch (e: Exception) {
+        null
     }
 }

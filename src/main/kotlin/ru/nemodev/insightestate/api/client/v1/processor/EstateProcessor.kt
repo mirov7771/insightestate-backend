@@ -23,6 +23,7 @@ import ru.nemodev.platform.core.extensions.nullIfEmpty
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.util.*
 
 interface EstateProcessor {
@@ -106,7 +107,8 @@ class EstateProcessorImpl(
 ) : EstateProcessor {
 
     companion object {
-        val dec = DecimalFormat("#,###")
+        private val DECIMAL_SYMBOLS = DecimalFormatSymbols(Locale.US)
+        val dec = DecimalFormat("#,###", DECIMAL_SYMBOLS)
     }
 
     override fun findAll(
@@ -427,58 +429,77 @@ class EstateProcessorImpl(
         minPriceSq: Double?,
         maxPriceSq: Double?
     ): UnitsRs {
+
         val estate = estateService.findById(id)
         val projectId = "${estate.estateDetail.projectId}%"
-        var units = unitRepository.findByProjectId(projectId)
 
-        if (currency != null && currency != "THB") {
-            units.forEach {
-                it.price = dec.format(getPrice(strToBigDecimal(it.price), currency)).toString()
-                it.priceSq = dec.format(getPrice(strToBigDecimal(it.priceSq), currency)).toString()
-            }
+        val rawUnits = unitRepository.findByProjectId(projectId)
+
+        data class UnitWithNumbers(
+            val unit: UnitEntity,
+            val price: Double,
+            val priceSq: Double,
+            val square: Double
+        )
+
+        val unitsWithNumbers = rawUnits.map { unit ->
+            val priceValue = if (currency != null && currency != "THB")
+                getPrice(strToBigDecimal(unit.price), currency)?.toDouble() ?: 0.0
+            else stringToDouble(unit.price)
+
+            val priceSqValue = if (currency != null && currency != "THB")
+                getPrice(strToBigDecimal(unit.priceSq), currency)?.toDouble() ?: 0.0
+            else stringToDouble(unit.priceSq)
+
+            val squareValue = stringToDouble(unit.square)
+
+            UnitWithNumbers(unit, priceValue, priceSqValue, squareValue)
         }
 
+        var units = unitsWithNumbers
         val counts = units.size
+
         if (units.isNotEmpty()) {
+
             if (orderBy != null) {
                 units = when (orderBy.lowercase()) {
-                    "price" -> units.sortedBy { stringToDouble(it.price) }
-                    "area" -> units.sortedBy { stringToDouble(it.square) }
-                    "income" -> units.sortedBy { stringToDouble(it.priceSq) }
-                    "payback" -> units.sortedBy { it.rooms }
+                    "price" -> units.sortedBy { it.price }
+                    "area" -> units.sortedBy { it.square }
+                    "income" -> units.sortedBy { it.priceSq }
+                    "payback" -> units.sortedBy { it.unit.rooms }
                     else -> units
                 }
             }
+
             if (rooms.isNotNullOrEmpty()) {
-                units = units.filter { it.rooms != null && rooms!!.contains(it.rooms!!.lowercase()) }
+                units = units.filter {
+                    it.unit.rooms != null && rooms!!.contains(it.unit.rooms!!.lowercase())
+                }
             }
 
-            if (minPrice != null) {
-                units = units.filter { stringToDouble(it.price) >= minPrice }
-            }
-            if (maxPrice != null) {
-                units = units.filter { stringToDouble(it.price) <= maxPrice }
-            }
-            if (minSize != null) {
-                units = units.filter { stringToDouble(it.square) >= minSize }
-            }
-            if (maxSize != null) {
-                units = units.filter { stringToDouble(it.square) <= maxSize }
-            }
-            if (minPriceSq != null) {
-                units = units.filter { stringToDouble(it.priceSq) >= minPriceSq }
-            }
-            if (maxPriceSq != null) {
-                units = units.filter { stringToDouble(it.priceSq) >= maxPriceSq }
+            if (minPrice != null) units = units.filter { it.price >= minPrice }
+            if (maxPrice != null) units = units.filter { it.price <= maxPrice }
+            if (minSize != null) units = units.filter { it.square >= minSize }
+            if (maxSize != null) units = units.filter { it.square <= maxSize }
+            if (minPriceSq != null) units = units.filter { it.priceSq >= minPriceSq }
+            if (maxPriceSq != null) units = units.filter { it.priceSq <= maxPriceSq }
+        }
+
+        val resultUnits = units.map { uwn ->
+            uwn.unit.apply {
+                price = dec.format(uwn.price)
+                priceSq = dec.format(uwn.priceSq)
             }
         }
 
         return UnitsRs(
             id = estate.id,
             name = estate.estateDetail.name,
-            images = estate.estateDetail.exteriorImages ?: estate.estateDetail.facilityImages ?: estate.estateDetail.interiorImages,
-            items = units,
-            count = counts,
+            images = estate.estateDetail.exteriorImages
+                ?: estate.estateDetail.facilityImages
+                ?: estate.estateDetail.interiorImages,
+            items = resultUnits,
+            count = counts
         )
     }
 

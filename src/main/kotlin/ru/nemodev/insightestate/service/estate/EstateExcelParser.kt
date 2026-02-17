@@ -11,7 +11,6 @@ import ru.nemodev.platform.core.logging.sl4j.Loggable
 import java.io.InputStream
 import java.math.BigDecimal
 import java.math.RoundingMode
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -24,12 +23,15 @@ interface EstateExcelParser {
 class EstateExcelParserImpl : EstateExcelParser {
 
     companion object : Loggable {
-        private val buildEndDateParseFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        val buildEndDateParseFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+        const val ESTATE_SHEET = "База"
+        const val UNITS_SHEET = "Прайс платформа"
     }
 
     override fun parse(inputStream: InputStream): LoadDto {
         val workbook = XSSFWorkbook(inputStream)
-        val estateSheet = workbook.getSheet("База")
+        val estateSheet = workbook.getSheet(ESTATE_SHEET)
         val estates = estateSheet
             .mapIndexedNotNull { index, row ->
                 if (row.getString("F") != "Done") {
@@ -43,7 +45,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                 }
             }
 
-        val unitSheet = workbook.getSheet("Прайс платформа")
+        val unitSheet = workbook.getSheet(UNITS_SHEET)
         val units = unitSheet.mapIndexedNotNull { index, row ->
             if (index == 0)
                 return@mapIndexedNotNull null
@@ -118,7 +120,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                 eiaEnabled = row.getBoolean("E"),
                 size = sizeNumber,
                 developer = EstateDeveloper(
-                    name = row.getString("H")!!,
+                    name = row.getString("H") ?: "unknown",
                     country = row.getString("AJ"),
                     //yearOfFoundation = row.getInt("AL"),
                     phone = row.getString("AL"),
@@ -126,16 +128,16 @@ class EstateExcelParserImpl : EstateExcelParser {
                     presentation = row.getString("AJ"),
                 ),
                 grade = EstateGrade(
-                    main = row.getBigDecimal("I", 1)!!,
-                    investmentSecurity = row.getBigDecimal("J", 1)!!,
-                    investmentPotential = row.getBigDecimal("O", 1)!!,
-                    projectLocation = row.getBigDecimal("T", 1)!!,
-                    comfortOfLife = row.getBigDecimal("Y", 1)!!,
+                    main = row.getBigDecimal("I", 1) ?: BigDecimal.ZERO,
+                    investmentSecurity = row.getBigDecimal("J", 1) ?: BigDecimal.ZERO,
+                    investmentPotential = row.getBigDecimal("O", 1) ?: BigDecimal.ZERO,
+                    projectLocation = row.getBigDecimal("T", 1) ?: BigDecimal.ZERO,
+                    comfortOfLife = row.getBigDecimal("Y", 1) ?: BigDecimal.ZERO,
                 ),
                 projectCount = ProjectCount(
-                    total = row.getInt("AG")!!,
-                    build = row.getInt("AH")!!,
-                    finished = row.getInt("AI")!!,
+                    total = row.getInt("AG") ?: 0,
+                    build = row.getInt("AH") ?: 0,
+                    finished = row.getInt("AI") ?: 0,
                     deviationFromDeadline = row.getInt("AM"),
                 ),
                 status = when (row.getString("AN") ?: "") {
@@ -144,8 +146,7 @@ class EstateExcelParserImpl : EstateExcelParser {
                     else -> EstateStatus.UNKNOWN
                 },
                 saleStartDate = null, // TODO столбец AO вроде поле нигде не требуется в таблицу нужно поменять формат на дату
-                buildEndDate = row.getLocalDate("AP")
-                    ?: row.getString("AP")?.nullIfEmpty()?.let { LocalDate.parse(it, buildEndDateParseFormatter) },
+                buildEndDate = row.getLocalDateSafe("AP"),
                 unitCount = UnitCount(
                     total = row.getInt("AQ") ?: 0,
                     sailed = row.getInt("AR"),

@@ -38,7 +38,7 @@ dependencies {
     // spring
     val springBootVersion = "3.3.2"
     implementation("org.springframework.boot:spring-boot-starter-mail:$springBootVersion")
-    developmentOnly("org.springframework.boot:spring-boot-docker-compose:$springBootVersion")
+    //developmentOnly("org.springframework.boot:spring-boot-docker-compose:$springBootVersion")
     kapt("org.springframework.boot:spring-boot-configuration-processor:$springBootVersion")
 
     val apachePoiVersion = "5.3.0"

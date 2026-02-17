@@ -44,6 +44,7 @@ insightestate:
   image-base-url: "https://lotsof.properties"
   estate:
     image-dir: ${ESTATE_IMAGE_DIR:/Users/nemodev/Downloads/estate/images/estate-images-1} # TODO для локальной загрузки меняем путь на свой
+  developer-email: dbelov@eqvatech.ru
 
 ai:
   integration:
