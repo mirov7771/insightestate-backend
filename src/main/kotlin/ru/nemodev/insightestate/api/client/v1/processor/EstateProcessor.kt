@@ -208,6 +208,10 @@ class EstateProcessorImpl(
             landPurchased = landPurchased
         )
 
+        if (minSize != null || rooms.isNotNullOrEmpty()) {
+            estates.forEach { includeFilterForMinPrice(it, minSize, rooms) }
+        }
+
         if (currency != null && currency != "THB") {
             estates.forEach { entity ->
                 entity.estateDetail.price.min = getPrice(entity.estateDetail.price.min, currency)!!
@@ -262,6 +266,62 @@ class EstateProcessorImpl(
             totalPages = estateService.findPages(pageable.pageSize, count),
             totalCount = count
         )
+    }
+
+    private fun includeFilterForMinPrice(
+        estate: EstateEntity,
+        minSize: Long?,
+        rooms: Set<String>?
+    ) {
+
+        val layouts = estate.estateDetail.roomLayouts
+
+        val expandedRoomKeys: Set<String>? = rooms?.flatMap { room ->
+            when (room) {
+                "0" -> listOf("studio")
+                "1" -> listOf("one")
+                "2" -> listOf("two", "villa2")
+                "3" -> listOf("three", "villa3")
+                "4" -> listOf("four", "villa4")
+                "5" -> listOf("five", "villa5")
+                else -> emptyList()
+            }
+        }?.toSet()
+
+        val roomMap = mapOf(
+            "studio" to layouts.studio,
+            "one" to layouts.one,
+            "two" to layouts.two,
+            "three" to layouts.three,
+            "four" to layouts.four,
+            "five" to layouts.five,
+            "villa2" to layouts.villaTwo,
+            "villa3" to layouts.villaThree,
+            "villa4" to layouts.villaFour,
+            "villa5" to layouts.villaFive
+        )
+
+        val filteredLayouts = roomMap
+            .filter { (roomKey, _) ->
+                expandedRoomKeys.isNullOrEmpty() || expandedRoomKeys.contains(roomKey)
+            }
+            .mapNotNull { it.value }
+            .filter { roomParams ->
+                val squareMin = roomParams.square?.min
+                if (minSize != null && squareMin != null) {
+                    squareMin >= BigDecimal.valueOf(minSize)
+                } else {
+                    true
+                }
+            }
+
+        val minPrice = filteredLayouts
+            .mapNotNull { it.price?.min }
+            .minOrNull()
+
+        if (minPrice != null) {
+            estate.estateDetail.price.min = minPrice
+        }
     }
 
     override fun findById(currency: String?, id: UUID): EstateDetailDtoRs {
