@@ -13,9 +13,9 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://77.238.232.18:5432/insightestate}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/insightestate}
     username: ${DATABASE_USERNAME:insightestate_admin}
-    password: ${DATABASE_PASSWORD:ROucKPoLoNgu}
+    password: ${DATABASE_PASSWORD:insightestate_admin}
   mail:
     host: smtp.gmail.com
     port: 587
@@ -29,10 +29,6 @@ spring:
       mail.smtp.timeout: 5000
       mail.smtp.writetimeout: 5000
 
-# TODO перенести в insightestate
-application:
-  admin: arturmirov777@gmail.com, service@insightestate.com
-
 insightestate:
   auth:
     tokens:
@@ -45,6 +41,7 @@ insightestate:
   estate:
     image-dir: ${ESTATE_IMAGE_DIR:/Users/nemodev/Downloads/estate/images/estate-images-1} # TODO для локальной загрузки меняем путь на свой
   developer-email: dbelov@eqvatech.ru
+  admin-emails: dbelov@eqvatech.ru, it@insightestate.com
 
 ai:
   integration:

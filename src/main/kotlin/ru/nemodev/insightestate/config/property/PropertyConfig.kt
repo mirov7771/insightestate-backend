@@ -25,6 +25,7 @@ data class AppProperties(
     val imageBaseUrl: String,
     val estate: Estate,
     val developerEmail: String,
+    val adminEmails: List<String>,
 ) {
     data class Auth(
         val tokens: AuthTokens
