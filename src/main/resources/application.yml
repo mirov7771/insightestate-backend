@@ -29,10 +29,6 @@ spring:
       mail.smtp.timeout: 5000
       mail.smtp.writetimeout: 5000
 
-# TODO перенести в insightestate
-application:
-  admin: arturmirov777@gmail.com, service@insightestate.com
-
 insightestate:
   auth:
     tokens:
@@ -45,6 +41,7 @@ insightestate:
   estate:
     image-dir: ${ESTATE_IMAGE_DIR:/Users/nemodev/Downloads/estate/images/estate-images-1} # TODO для локальной загрузки меняем путь на свой
   developer-email: dbelov@eqvatech.ru
+  admin-emails: dbelov@eqvatech.ru, it@insightestate.com
 
 ai:
   integration:

@@ -1,9 +1,9 @@
 package ru.nemodev.insightestate.service
 
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.javamail.JavaMailSenderImpl
 import org.springframework.mail.javamail.MimeMessageHelper
 import org.springframework.stereotype.Service
+import ru.nemodev.insightestate.config.property.AppProperties
 import ru.nemodev.platform.core.logging.sl4j.Loggable
 
 interface EmailService {
@@ -16,7 +16,7 @@ interface EmailService {
 @Service
 class EmailServiceImpl(
     private val emailSender: JavaMailSenderImpl,
-    @Value("\${application.admin}") private val adminEmail: List<String>
+    private val properties: AppProperties
 ) : EmailService {
 
     companion object : Loggable
@@ -52,7 +52,7 @@ class EmailServiceImpl(
     }
 
     override fun sendToAdmin(subject: String, message: String) {
-        adminEmail.forEach {
+        properties.adminEmails.forEach {
             send(it, subject, message)
         }
     }

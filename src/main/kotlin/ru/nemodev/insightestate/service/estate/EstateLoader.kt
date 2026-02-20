@@ -117,6 +117,10 @@ class EstateLoaderImpl(
 
         val existingMap = unitRepository.findAll().associateBy { it.code.lowercase() }
 
+        val parsedCodes = parsedUnits
+            .map { it.code.lowercase() }
+            .toSet()
+
         val unitsToSave = parsedUnits.mapNotNull { parsed ->
             val codeKey = parsed.code.lowercase()
             val existing = existingMap[codeKey]
@@ -150,8 +154,16 @@ class EstateLoaderImpl(
             }
         }
 
+        val unitsToDelete = existingMap
+            .filterKeys { it !in parsedCodes }
+            .values
+
         unitsToSave.chunked(BATCH_SIZE).forEach { batch ->
             unitRepository.saveAll(batch)
+        }
+
+        unitsToDelete.chunked(BATCH_SIZE).forEach {
+            unitRepository.deleteAll(it)
         }
     }
 
