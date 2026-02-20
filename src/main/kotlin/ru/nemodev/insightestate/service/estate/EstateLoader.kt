@@ -172,7 +172,11 @@ class EstateLoaderImpl(
             withUpdateLock {
                 logInfo { "Начало парсинга объектов недвижимости из airtable $country" }
 
-                airtableService.refreshEstateData(country)
+                try {
+                    airtableService.refreshEstateData(country)
+                } catch (_: Exception) {
+                    logError { "Ошибка парсинга объектов" }
+                }
 
                 logInfo { "Закончили парсинг и загрузку объектов недвижимости из airtable $country" }
             }
